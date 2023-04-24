@@ -89,31 +89,31 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
  *
  * @see https://trpc.io/docs/router
  */
-export const createTRPCRouter = t.router;
 
 const isAdmin = t.middleware(async ({ ctx, next }) => {
   const { req } = ctx;
   const token = req.cookies["user-token"];
-
+  
   if (!token) {
     throw new TRPCError({
       code: "UNAUTHORIZED",
       message: "Missing user token",
     });
   }
-
+  
   const verifiedToken = await verifyAuth(token);
-
+  
   if (!verifiedToken) {
     throw new TRPCError({
       code: "UNAUTHORIZED",
       message: "Invalid user token",
     });
   }
-
+  
   return next();
 });
 
+export const createTRPCRouter = t.router;
 /**
  * Public (unauthenticated) procedure
  *
