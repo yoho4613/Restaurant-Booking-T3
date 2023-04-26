@@ -6,7 +6,7 @@ import Link from "next/link";
 
 import { api } from "~/utils/api";
 import Calendar from "../components/Calendar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { type DateType } from "@types";
 import Spinner from "~/components/Spinner";
 import Menu from "~/components/Menu";
@@ -16,6 +16,17 @@ const Home: NextPage = () => {
     justDate: null,
     dateTime: null,
   });
+
+  useEffect(() => {
+    console.log(date.dateTime);
+    if (date.dateTime) {
+      checkMenuStatus();
+    }
+  }, [date]);
+
+  // tRPC
+  const { mutate: checkMenuStatus, isSuccess } =
+    api.menu.checkMenuStatus.useMutation();
 
   return (
     <>
@@ -27,7 +38,7 @@ const Home: NextPage = () => {
 
       <main>
         {!date.dateTime && <Calendar date={date} setDate={setDate} />}
-        {date.dateTime && false ? (
+        {date.dateTime && isSuccess ? (
           <Menu />
         ) : (
           <div className="flex h-screen items-center justify-center">

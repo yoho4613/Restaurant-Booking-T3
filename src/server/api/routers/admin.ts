@@ -84,13 +84,13 @@ export const adminRouter = createTRPCRouter({
             z.literal("breakfast"),
             z.literal("lunch"),
             z.literal("dinner"),
-          ])
+          ]) 
         ),
       })
     )
     .mutation(async ({ ctx, input }) => {
       const { name, price, imageKey, categories } = input;
-      const menuItem = await ctx.prisma.MenuItem.create({
+      const menuItem = await ctx.prisma.menuItem.create({
         data: {
           name,
           price,
@@ -110,7 +110,7 @@ export const adminRouter = createTRPCRouter({
         .deleteObject({ Bucket: "restaurant-booking-app", Key: imageKey })
         .promise();
       // Delete the image form db
-      const menuItem = await ctx.prisma.MenuItem.delete({ where: { id } });
+      const menuItem = await ctx.prisma.menuItem.delete({ where: { id } });
 
       return menuItem;
     }),

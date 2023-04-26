@@ -6,9 +6,8 @@ export const sleep = (ms: number) =>
 
 export const menuRouter = createTRPCRouter({
   getMenuItems: publicProcedure.query(async ({ ctx }) => {
-    console.log(ctx.prisma)
-    const menuItems = ctx.prisma.menuItem.findMany();
 
+    const menuItems = await ctx.prisma.menuItem.findMany();
     // Each menu item only contains its AWS key. Extend all items with their actual img url
     const withUrls = await Promise.all(
       menuItems.map(async (menuItem: any) => ({

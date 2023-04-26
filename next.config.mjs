@@ -18,8 +18,8 @@ const config = {
     locales: ["en"],
     defaultLocale: "en",
   },
-  // images: {
-  //   domains: []
-  // }
+  images: {
+    domains: ["restaurant-booking-app.s3.ap-southeast-2.amazonaws.com"]
+  }
 };
 export default config;
