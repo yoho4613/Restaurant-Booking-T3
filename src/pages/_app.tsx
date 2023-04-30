@@ -7,11 +7,19 @@ import "~/styles/globals.css";
 import "~/styles/Calendar.css";
 import "~/styles/Spinner.css";
 import { ChakraProvider } from "@chakra-ui/react";
+import Footer from "~/components/Footer";
+import Navbar from "~/components/Navbar";
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
     <ChakraProvider>
-      <Component {...pageProps} />
+      <header>
+        <Navbar />
+      </header>
+      <main>
+        <Component {...pageProps} />
+      </main>
+      <Footer />
     </ChakraProvider>
   );
 };
