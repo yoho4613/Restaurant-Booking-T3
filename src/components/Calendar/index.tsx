@@ -1,43 +1,56 @@
-import React, { Dispatch, FC, SetStateAction, useState } from "react";
+import React, {
+  Dispatch,
+  FC,
+  SetStateAction,
+  useEffect,
+  useState,
+} from "react";
 import ReactCalendar from "react-calendar";
-import { add, format, getTime } from "date-fns";
-import { INTERVAL, STORE_CLISING_TIME, STORE_OPENING_TIME } from "~/constants/config";
+import { format, formatISO, isBefore, parse } from "date-fns";
 import { DateType } from "@types";
+import { useRouter } from "next/router";
+import { getOpeningTimes, roundToNearestMinutes } from "~/utils/helpers";
+import { Day } from "@prisma/client";
+import { OPENING_HOURS_INTERVAL, now } from "~/constants/config";
 
-interface IndexProps {
-  date: DateType
-  setDate: Dispatch<SetStateAction<DateType>>
+interface CalendarProps {
+  days: Day[];
+  closedDays: string[];
 }
 
-const index: FC<IndexProps> = ({date, setDate}) => {
+const CalendarComponent: FC<CalendarProps> = ({ days, closedDays }) => {
+  const router = useRouter();
 
-  const getTimes = () => {
-    if (!date?.justDate) return;
+  // Determine if today is closed
+  const today = days.find((day) => day.dayOfWeek === now.getDay());
+  const rounded = roundToNearestMinutes(now, OPENING_HOURS_INTERVAL);
+  const closing = parse(today!.closeTime, "kk:mm", now);
+  const tooLate = !isBefore(rounded, closing);
+  if (tooLate) closedDays.push(formatISO(new Date().setHours(0, 0, 0, 0)));
 
-    const { justDate } = date;
+  const [date, setDate] = useState<DateType>({
+    justDate: null,
+    dateTime: null,
+  });
 
-    const beginning = add(justDate, { hours: STORE_OPENING_TIME });
-    const end = add(justDate, { hours: STORE_CLISING_TIME });
-    const interval = INTERVAL; //in minutes
-
-    const times = [];
-    for (let i = beginning; i <= end; i = add(i, { minutes: interval })) {
-      times.push(i);
+  useEffect(() => {
+    if (date.dateTime) {
+      localStorage.setItem("selectedTime", date.dateTime.toISOString());
+      router.push("/menu");
     }
-    return times;
-  };
+  }, [date.dateTime, router]);
 
-  const times = getTimes();
-  console.log(date?.dateTime)
+  const times = date.justDate && getOpeningTimes(date.justDate, days);
 
   return (
     <div className="flex h-screen flex-col items-center justify-center">
       {date?.justDate ? (
-        <div className="flex gap-4">
+        <div className="flex w-64 flex-wrap gap-4">
           {times?.map((time, i) => (
-            <div key={`tim-${i}`} className="bg-gray-1090 rounded-sm p-2">
+            <div key={`tim-${i}`} className=" bg-gray-1090 rounded-sm p-2">
               <button
                 type="button"
+                className="bg-gray-200 p-2"
                 onClick={() =>
                   setDate((prev: any) => ({ ...prev, dateTime: time }))
                 }
@@ -49,9 +62,10 @@ const index: FC<IndexProps> = ({date, setDate}) => {
         </div>
       ) : (
         <ReactCalendar
-          minDate={new Date()}
+          minDate={now}
           className="REACT-CALENDAR p-2"
           view="month"
+          tileDisabled={({ date }) => closedDays.includes(formatISO(date))}
           onClickDay={(date) =>
             setDate((prev: DateType | any) => ({ ...prev, justDate: date }))
           }
@@ -61,4 +75,4 @@ const index: FC<IndexProps> = ({date, setDate}) => {
   );
 };
 
-export default index;
+export default CalendarComponent;
