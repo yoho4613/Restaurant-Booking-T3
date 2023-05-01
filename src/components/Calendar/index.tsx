@@ -1,10 +1,4 @@
-import React, {
-  Dispatch,
-  FC,
-  SetStateAction,
-  useEffect,
-  useState,
-} from "react";
+import React, { FC, useEffect, useState } from "react";
 import ReactCalendar from "react-calendar";
 import { format, formatISO, isBefore, parse } from "date-fns";
 import { DateType } from "@types";
@@ -12,6 +6,7 @@ import { useRouter } from "next/router";
 import { getOpeningTimes, roundToNearestMinutes } from "~/utils/helpers";
 import { Day } from "@prisma/client";
 import { OPENING_HOURS_INTERVAL, now } from "~/constants/config";
+import Confirmation from "../Confirmation";
 
 interface CalendarProps {
   days: Day[];
@@ -20,6 +15,7 @@ interface CalendarProps {
 
 const CalendarComponent: FC<CalendarProps> = ({ days, closedDays }) => {
   const router = useRouter();
+  const [withPreOrder, setWithPreOrder] = useState<boolean | null>(null);
 
   // Determine if today is closed
   const today = days.find((day) => day.dayOfWeek === now.getDay());
@@ -36,9 +32,13 @@ const CalendarComponent: FC<CalendarProps> = ({ days, closedDays }) => {
   useEffect(() => {
     if (date.dateTime) {
       localStorage.setItem("selectedTime", date.dateTime.toISOString());
-      router.push("/menu");
+      if(withPreOrder === true) {
+        router.push("/menu");
+      } else if (withPreOrder === false) {
+        router.push('/')
+      }
     }
-  }, [date.dateTime, router]);
+  }, [date.dateTime, router, withPreOrder]);
 
   const times = date.justDate && getOpeningTimes(date.justDate, days);
 
@@ -69,6 +69,15 @@ const CalendarComponent: FC<CalendarProps> = ({ days, closedDays }) => {
           onClickDay={(date) =>
             setDate((prev: DateType | any) => ({ ...prev, justDate: date }))
           }
+        />
+      )}
+      {date.dateTime && (
+        <Confirmation
+          onCancel={() => {
+            setDate({ ...date, dateTime: null });
+          }}
+          onConfirm={setWithPreOrder}
+          message="Would you like to pre-order food?"
         />
       )}
     </div>
