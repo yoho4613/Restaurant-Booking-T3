@@ -19,7 +19,7 @@ export interface Form {
 }
 
 const booking: FC<BookingProps> = ({ days, closedDays }) => {
-  const [customerDetail, setCustomerDetail] = useState(true);
+  const [customerDetail, setCustomerDetail] = useState(false);
   const [form, setForm] = useState<Form>({
     name: "",
     mobile: "",
@@ -30,7 +30,7 @@ const booking: FC<BookingProps> = ({ days, closedDays }) => {
   return (
     <div>
       {!customerDetail ? (
-        <CustomerDetail form={form} setForm={setForm} />
+        <CustomerDetail setCustomerDetail={setCustomerDetail} setForm={setForm} form={form} />
       ) : (
         <Calendar days={days} closedDays={closedDays} />
       )}

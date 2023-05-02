@@ -45,6 +45,22 @@ export const adminRouter = createTRPCRouter({
       });
     }),
 
+  logout: adminProcedure.mutation(async ({ ctx }) => {
+    const { res } = ctx;
+
+    res.setHeader(
+      "Set-Cookie",
+      cookie.serialize("user-token", "", {
+        httpOnly: true,
+        path: "/",
+        expires: new Date(0),
+        secure: process.env.NODE_ENV === "production",
+      })
+    );
+
+    return { success: true };
+  }),
+
   createPresignedUrl: adminProcedure
     .input(z.object({ fileType: z.string() }))
     .mutation(async ({ input }) => {
@@ -84,7 +100,7 @@ export const adminRouter = createTRPCRouter({
             z.literal("breakfast"),
             z.literal("lunch"),
             z.literal("dinner"),
-          ]) 
+          ])
         ),
       })
     )

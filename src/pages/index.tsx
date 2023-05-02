@@ -4,7 +4,7 @@ import { formatISO } from "date-fns";
 import { prisma } from "~/server/db";
 import { Day } from "@prisma/client";
 import Landing from "~/components/Landing";
-
+import Footer from "~/components/Footer";
 
 interface HomeProps {
   days: Day[];
@@ -26,6 +26,7 @@ const Home: NextPage<HomeProps> = ({ days, closedDays }) => {
         <Landing />
         {/* <Calendar days={days} closedDays={closedDays} /> */}
       </main>
+      <Footer />
     </>
   );
 };
