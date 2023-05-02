@@ -4,21 +4,24 @@ type ConfirmationProps = {
   message: string;
   onConfirm: (prev: boolean) => void;
   onCancel: () => void;
-
 };
 
-const Confirmation: React.FC<ConfirmationProps> = ({ message, onConfirm, onCancel }) => {
+const Confirmation: React.FC<ConfirmationProps> = ({
+  message,
+  onConfirm,
+  onCancel,
+}) => {
   const handleConfirmOne = () => {
     onConfirm(true);
     window.removeEventListener("keydown", handleKeyDown);
   };
   const handleConfirmTwo = () => {
-    onConfirm(false)
+    onConfirm(false);
     window.removeEventListener("keydown", handleKeyDown);
-  }
+  };
 
   const handleCancel = () => {
-    onCancel()
+    onCancel();
     window.removeEventListener("keydown", handleKeyDown);
   };
 
@@ -36,10 +39,16 @@ const Confirmation: React.FC<ConfirmationProps> = ({ message, onConfirm, onCance
       <div className="confirmation">
         <div className="confirmation-message">{message}</div>
         <div className="confirmation-buttons">
-          <button className="confirmation-button confirm" onClick={handleConfirmOne}>
+          <button
+            className="confirmation-button confirm"
+            onClick={handleConfirmOne}
+          >
             With Pre-Order
           </button>
-          <button className="confirmation-button cancel" onClick={handleConfirmTwo}>
+          <button
+            className="confirmation-button cancel"
+            onClick={handleConfirmTwo}
+          >
             Without Pre-Order
           </button>
         </div>

@@ -44,4 +44,5 @@ model Booking {
   mobile     String
   email      String
   preorder   Boolean
+  dateTime   DateTime
 }

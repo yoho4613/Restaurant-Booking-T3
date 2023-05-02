@@ -15,7 +15,10 @@
   flex-direction: column;
   padding: 24px;
   position: absolute;
+  top: 50%;
+  left: 50%;
   z-index: 10;
+  transform: translate(-50%, -50%);
 }
 
 
@@ -31,6 +34,7 @@
   justify-content: space-between;
 }
 
+
 .confirmation-button {
   background-color: #fff;
   border: 1px solid #ccc;
@@ -43,6 +47,24 @@
   margin: 8px;
 }
 
+@media screen and (max-width: 660px) {
+  .confirmation-button {
+    font-size: 0.75rem;
+  }
+
+  .confirmation-buttons {
+    flex-direction: column;
+  }
+
+  .confirmation-message {
+    font-size: 1rem;
+  }
+
+  .confirmation {
+    padding: 14px;
+  }
+
+}
 .confirmation-button.confirm {
   background-color: #4caf50;
   border-color: #4caf50;

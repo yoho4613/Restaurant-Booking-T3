@@ -20,11 +20,12 @@ const CustomerDetail: FC<CustomerDetailProps> = ({
       return emailRegex.test(email);
     }
 
-    if (form.name.length && isValidEmail(form.email!) && form.people > 0) {
+    if (form.name.length && isValidEmail(form.email!) && form.people) {
       setCustomerDetail(true);
     } else {
       setIsMissing(true);
     }
+    console.log(form)
   };
 
   return (
@@ -67,7 +68,7 @@ const CustomerDetail: FC<CustomerDetailProps> = ({
                   placeholder="021-123-1234"
                   className="w-full appearance-none rounded-md border border-[#e0e0e0] bg-white px-6 py-3 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
                   onChange={(e) =>
-                    setForm((form) => ({ ...form, email: e.target.value }))
+                    setForm((form) => ({ ...form, mobile: e.target.value }))
                   }
                 />
               </div>
@@ -106,13 +107,15 @@ const CustomerDetail: FC<CustomerDetailProps> = ({
               min="0"
               className="w-full appearance-none rounded-md border border-[#e0e0e0] bg-white px-6 py-3 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
               onChange={(e) =>
-                setForm((form) => ({ ...form, people: Number(e.target.value) }))
+                setForm((form) => ({ ...form, people: e.target.value }))
               }
             />
           </div>
           {isMissing && (
             <div className="mb-4 mt-4">
-              <p className=" text-base text-red-600">Please fill all fields correctly.</p>
+              <p className=" text-base text-red-600">
+                Please fill all fields correctly.
+              </p>
             </div>
           )}
           <div>

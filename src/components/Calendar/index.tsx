@@ -6,16 +6,21 @@ import { useRouter } from "next/router";
 import { getOpeningTimes, roundToNearestMinutes } from "~/utils/helpers";
 import { Day } from "@prisma/client";
 import { OPENING_HOURS_INTERVAL, now } from "~/constants/config";
-import Confirmation from "../Confirmation";
 
 interface CalendarProps {
   days: Day[];
   closedDays: string[];
+  date: DateType;
+  setDate: (date: any) => void;
 }
 
-const CalendarComponent: FC<CalendarProps> = ({ days, closedDays }) => {
+const CalendarComponent: FC<CalendarProps> = ({
+  date,
+  setDate,
+  days,
+  closedDays,
+}) => {
   const router = useRouter();
-  const [withPreOrder, setWithPreOrder] = useState<boolean | null>(null);
 
   // Determine if today is closed
   const today = days.find((day) => day.dayOfWeek === now.getDay());
@@ -23,22 +28,6 @@ const CalendarComponent: FC<CalendarProps> = ({ days, closedDays }) => {
   const closing = parse(today!.closeTime, "kk:mm", now);
   const tooLate = !isBefore(rounded, closing);
   if (tooLate) closedDays.push(formatISO(new Date().setHours(0, 0, 0, 0)));
-
-  const [date, setDate] = useState<DateType>({
-    justDate: null,
-    dateTime: null,
-  });
-
-  useEffect(() => {
-    if (date.dateTime) {
-      localStorage.setItem("selectedTime", date.dateTime.toISOString());
-      if(withPreOrder === true) {
-        router.push("/menu");
-      } else if (withPreOrder === false) {
-        router.push('/')
-      }
-    }
-  }, [date.dateTime, router, withPreOrder]);
 
   const times = date.justDate && getOpeningTimes(date.justDate, days);
 
@@ -52,7 +41,10 @@ const CalendarComponent: FC<CalendarProps> = ({ days, closedDays }) => {
                 type="button"
                 className="bg-gray-200 p-2"
                 onClick={() =>
-                  setDate((prev: any) => ({ ...prev, dateTime: time }))
+                  setDate((prev: DateType | any) => ({
+                    ...prev,
+                    dateTime: time,
+                  }))
                 }
               >
                 {format(time, "kk:mm")}
@@ -71,15 +63,7 @@ const CalendarComponent: FC<CalendarProps> = ({ days, closedDays }) => {
           }
         />
       )}
-      {date.dateTime && (
-        <Confirmation
-          onCancel={() => {
-            setDate({ ...date, dateTime: null });
-          }}
-          onConfirm={setWithPreOrder}
-          message="Would you like to pre-order food?"
-        />
-      )}
+     
     </div>
   );
 };
