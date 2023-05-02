@@ -1,15 +1,20 @@
+import { DateType } from "@types";
 import React, { FC, useState } from "react";
 import { Form } from "~/pages/booking";
 
 interface CustomerDetailProps {
   form: Form;
   setForm: React.Dispatch<React.SetStateAction<Form>>;
+  setOrderConfirmed: React.Dispatch<React.SetStateAction<boolean>>;
+  setDate: React.Dispatch<React.SetStateAction<DateType>>;
   setCustomerDetail: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const CustomerDetail: FC<CustomerDetailProps> = ({
   form,
   setForm,
+  setOrderConfirmed,
+  setDate,
   setCustomerDetail,
 }) => {
   const [isMissing, setIsMissing] = useState(false);
@@ -21,17 +26,42 @@ const CustomerDetail: FC<CustomerDetailProps> = ({
     }
 
     if (form.name.length && isValidEmail(form.email!) && form.people) {
-      setCustomerDetail(true);
+      //confirmation
+      setOrderConfirmed(true);
     } else {
       setIsMissing(true);
     }
-    console.log(form)
+    console.log(form);
   };
 
   return (
     <div>
       <div className="flex items-center justify-center p-12">
         <div className="mx-auto w-full max-w-[550px]">
+          <button
+            onClick={() => {
+              setDate((date) => ({ ...date, dateTime: null }));
+              setCustomerDetail(false);
+            }}
+            type="button"
+            className="mb-6 mr-2 inline-flex items-center rounded-lg border border-blue-700 p-2.5 text-center text-sm font-medium text-blue-700 hover:bg-blue-700 hover:text-white focus:outline-none focus:ring-4 focus:ring-blue-300 dark:border-blue-500 dark:text-blue-500 dark:hover:bg-blue-500 dark:hover:text-white dark:focus:ring-blue-800"
+          >
+            <svg
+              aria-hidden="true"
+              className="h-5 w-5 rotate-180 transform"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fillRule="evenodd"
+                d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                clipRule="evenodd"
+              ></path>
+            </svg>
+            <span className="ml-2">Go Back</span>
+          </button>
+
           <div className="-mx-3 flex flex-wrap">
             <div className="w-full px-3 sm:w-1/2">
               <div className="mb-5">

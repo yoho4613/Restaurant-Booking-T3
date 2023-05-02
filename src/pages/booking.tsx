@@ -18,7 +18,7 @@ interface BookingProps {
 export interface Form {
   name: string;
   mobile: string;
-  email: string ;
+  email: string;
   people: string;
   preorder: boolean;
 }
@@ -26,6 +26,7 @@ export interface Form {
 const booking: FC<BookingProps> = ({ days, closedDays }) => {
   const router = useRouter();
   const [customerDetail, setCustomerDetail] = useState(false);
+  const [orderConfirmed, setOrderConfirmed] = useState(false);
   const [form, setForm] = useState<Form>({
     name: "",
     mobile: "",
@@ -44,6 +45,10 @@ const booking: FC<BookingProps> = ({ days, closedDays }) => {
     if (date.dateTime) {
       localStorage.setItem("selectedTime", date.dateTime.toISOString());
       if (withPreOrder === true) {
+        localStorage.setItem(
+          "bookingWithPreorder",
+          JSON.stringify({ ...form, dateTime: date.dateTime, preoder: true })
+        );
         router.push("/menu");
       } else if (withPreOrder === false) {
         sendForm(form);
@@ -60,18 +65,20 @@ const booking: FC<BookingProps> = ({ days, closedDays }) => {
     if (isValidEmail(form.email)) {
       await addBooking({
         ...form,
-        dateTime: date.dateTime!
+        dateTime: date.dateTime!,
       });
     }
   };
 
   return (
     <div>
-      {!customerDetail ? (
+      {customerDetail ? (
         <CustomerDetail
-          setCustomerDetail={setCustomerDetail}
+          setOrderConfirmed={setOrderConfirmed}
           setForm={setForm}
           form={form}
+          setDate={setDate}
+          setCustomerDetail={setCustomerDetail}
         />
       ) : (
         <Calendar
@@ -79,9 +86,10 @@ const booking: FC<BookingProps> = ({ days, closedDays }) => {
           setDate={setDate}
           days={days}
           closedDays={closedDays}
+          setCustomerDetail={setCustomerDetail}
         />
       )}
-      {date.dateTime && (
+      {orderConfirmed && (
         <Confirmation
           onCancel={() => {
             setDate({ ...date, dateTime: null });

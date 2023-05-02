@@ -17,6 +17,14 @@ export const checkoutRouter = createTRPCRouter({
             quantity: z.number().min(1, "Quantity must be at least 1"),
           })
         ),
+        customerDetail: z.object({
+          name: z.string(),
+          mobile: z.string(),
+          email: z.string(),
+          people: z.string(),
+          dateTime: z.date(),
+          preorder: z.boolean(),
+        }),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -68,12 +76,18 @@ export const checkoutRouter = createTRPCRouter({
               },
             },
           ],
+          customer_email: input.customerDetail.email,
+          client_reference_id: input.customerDetail.mobile,
+          metadata: {
+            name: input.customerDetail.name,
+            bookingTime: input.customerDetail.dateTime.toISOString(),
+          },
           success_url: "http://localhost:3000/success",
           cancel_url: "https://localhost:3000/menu",
         });
         return {
-          url: session.url || '',
-        }
+          url: session.url || "",
+        };
       } catch (error) {
         let msg = "";
         if (error instanceof Error) {

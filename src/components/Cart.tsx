@@ -1,7 +1,14 @@
 import { Spinner } from "@chakra-ui/react";
 import { Dialog, Transition } from "@headlessui/react";
 import { useRouter } from "next/router";
-import { Fragment, type Dispatch, type FC, type SetStateAction } from "react";
+import {
+  Fragment,
+  type Dispatch,
+  type FC,
+  type SetStateAction,
+  useEffect,
+  useState,
+} from "react";
 import { HiX } from "react-icons/hi";
 import { capitalize } from "~/utils/helpers";
 import { api } from "src/utils/api";
@@ -15,8 +22,8 @@ interface CartProps {
 
 const Cart: FC<CartProps> = ({ open, setOpen, products, removeFromCart }) => {
   const router = useRouter();
-
   // tRPC
+  const { mutate: addBooking } = api.booking.addBooking.useMutation({});
   const { data: itemsInCart } = api.menu.getCartItems.useQuery(products);
   const {
     mutate: checkout,
@@ -24,12 +31,22 @@ const Cart: FC<CartProps> = ({ open, setOpen, products, removeFromCart }) => {
     error,
   } = api.checkout.checkoutSession.useMutation({
     onSuccess: ({ url }) => {
+      addBooking({
+        ...customerDetail,
+        dateTime: new Date(customerDetail.dateTime)
+      });
       router.push(url);
     },
     onMutate: ({ products }) => {
       localStorage.setItem("products", JSON.stringify(products));
     },
   });
+  const [customerDetail, setCustomerDetail] = useState<any>({});
+
+  useEffect(() => {
+    setCustomerDetail(JSON.parse(localStorage.getItem("bookingWithPreorder")!));
+
+  }, []);
 
   const subtotal = (
     itemsInCart?.reduce(
@@ -157,10 +174,20 @@ const Cart: FC<CartProps> = ({ open, setOpen, products, removeFromCart }) => {
                       </p>
                       <div className="mt-6">
                         <button
-                          onClick={() => checkout({ products })}
+                          onClick={() => {
+                            console.log(customerDetail);
+                            checkout({
+                              products,
+                              customerDetail: {...customerDetail, dateTime: new Date(customerDetail.dateTime)}
+                            });
+                          }}
                           className="flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
                         >
-                          {isLoading ? <Spinner color="indigo" size={'xl'} /> : "Checkout"}
+                          {isLoading ? (
+                            <Spinner color="indigo" size={"xl"} />
+                          ) : (
+                            "Checkout"
+                          )}
                         </button>
                       </div>
                       <div className="mt-6 flex justify-center text-center text-sm text-gray-500">
