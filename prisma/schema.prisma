@@ -46,3 +46,12 @@ model Booking {
   preorder   Boolean
   dateTime   DateTime
 }
+
+model Preorder {
+  id        String   @id @default(cuid())
+  bookingId String
+  item      String
+  quantity  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

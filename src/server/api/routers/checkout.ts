@@ -83,10 +83,26 @@ export const checkoutRouter = createTRPCRouter({
             bookingTime: input.customerDetail.dateTime.toISOString(),
           },
           success_url: "http://localhost:3000/success",
-          cancel_url: "https://localhost:3000/menu",
+          cancel_url: "https://localhost:3000/",
         });
+
         return {
           url: session.url || "",
+          bookingAndPreorder: await ctx.prisma.booking
+            .create({
+              data: {
+                ...input.customerDetail,
+              },
+            })
+            .then((res) =>
+              ctx.prisma.preorder.createMany({
+                data: productsInCart.map((product) => ({
+                  bookingId: res.id,
+                  item: product.name,
+                  quantity: product.quantity,
+                })),
+              })
+            ),
         };
       } catch (error) {
         let msg = "";

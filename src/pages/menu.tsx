@@ -17,17 +17,21 @@ const menu: FC<MenuProps> = ({}) => {
   const { isFetchedAfterMount } = api.menu.checkMenuStatus.useQuery(undefined, {
     onError: () => {},
   });
+  const { mutate: addBooking } = api.booking.addBooking.useMutation({});
+  
+  const [customerDetail, setCustomerDetail] = useState<any>({});
 
-  const { mutate } = api.checkout.checkoutSession.useMutation({
-    onSuccess: ({ url }) => {
-      router.push(url);
-    },
-  });
+  useEffect(() => {
+    setCustomerDetail(JSON.parse(localStorage.getItem("bookingWithPreorder")!));
+
+  }, []);
 
   const [showCart, setShowCart] = useState<boolean>(false);
   const [productsInCart, setProductsInCart] = useState<
     { id: string; quantity: number }[]
   >([]);
+
+
   const addToCart = (id: string, quantity: number) => {
     setProductsInCart((prev) => {
       const existing = prev.find((item) => item.id === id)

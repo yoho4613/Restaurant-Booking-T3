@@ -23,7 +23,6 @@ interface CartProps {
 const Cart: FC<CartProps> = ({ open, setOpen, products, removeFromCart }) => {
   const router = useRouter();
   // tRPC
-  const { mutate: addBooking } = api.booking.addBooking.useMutation({});
   const { data: itemsInCart } = api.menu.getCartItems.useQuery(products);
   const {
     mutate: checkout,
@@ -31,10 +30,11 @@ const Cart: FC<CartProps> = ({ open, setOpen, products, removeFromCart }) => {
     error,
   } = api.checkout.checkoutSession.useMutation({
     onSuccess: ({ url }) => {
-      addBooking({
-        ...customerDetail,
-        dateTime: new Date(customerDetail.dateTime)
-      });
+      // const booking = addBooking({
+      //   ...customerDetail,
+      //   dateTime: new Date(customerDetail.dateTime)
+      // })
+      // console.log(booking)
       router.push(url);
     },
     onMutate: ({ products }) => {
@@ -45,7 +45,6 @@ const Cart: FC<CartProps> = ({ open, setOpen, products, removeFromCart }) => {
 
   useEffect(() => {
     setCustomerDetail(JSON.parse(localStorage.getItem("bookingWithPreorder")!));
-
   }, []);
 
   const subtotal = (
@@ -175,10 +174,12 @@ const Cart: FC<CartProps> = ({ open, setOpen, products, removeFromCart }) => {
                       <div className="mt-6">
                         <button
                           onClick={() => {
-                            console.log(customerDetail);
                             checkout({
                               products,
-                              customerDetail: {...customerDetail, dateTime: new Date(customerDetail.dateTime)}
+                              customerDetail: {
+                                ...customerDetail,
+                                dateTime: new Date(customerDetail.dateTime),
+                              },
                             });
                           }}
                           className="flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700"

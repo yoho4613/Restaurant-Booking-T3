@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
-
 export const bookingRouter = createTRPCRouter({
   addBooking: publicProcedure
     .input(
@@ -11,7 +10,7 @@ export const bookingRouter = createTRPCRouter({
         mobile: z.string(),
         email: z.string(),
         preorder: z.boolean(),
-        dateTime: z.date()
+        dateTime: z.date(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -28,4 +27,27 @@ export const bookingRouter = createTRPCRouter({
       });
       return booking;
     }),
-})
+
+  addPreorder: publicProcedure
+    .input(
+      z.object({
+        bookingId: z.string(),
+        item: z.string(),
+        quantity: z.number(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { bookingId, item, quantity } = input;
+      const preorder = await ctx.prisma.preorder.create({
+        data: {
+          bookingId,
+          item,
+          quantity,
+        },
+      });
+
+      return preorder;
+    }),
+
+
+});

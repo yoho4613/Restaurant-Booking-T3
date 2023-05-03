@@ -47,7 +47,7 @@ const booking: FC<BookingProps> = ({ days, closedDays }) => {
       if (withPreOrder === true) {
         localStorage.setItem(
           "bookingWithPreorder",
-          JSON.stringify({ ...form, dateTime: date.dateTime, preoder: true })
+          JSON.stringify({ ...form, dateTime: date.dateTime, preorder: true })
         );
         router.push("/menu");
       } else if (withPreOrder === false) {

@@ -1,5 +1,6 @@
 import React, { FC, useEffect, useState } from "react";
 import { api } from "~/utils/api";
+import { now } from "~/constants/config";
 
 interface BookingProps {}
 
@@ -13,13 +14,25 @@ interface Booking {
   preorder: boolean;
   dateTime: Date;
 }
+interface Preorder {
+  id: string;
+  bookingId: string;
+  item: string;
+  quantity: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 const booking: FC<BookingProps> = ({}) => {
   const [booking, setBooking] = useState<Booking[] | null | false>(null);
+  const [preorders, setPreorders] = useState<Preorder[] | null>(null);
   const [filteredBooking, setFilteredBooking] = useState<
     Booking[] | null | false | undefined
   >(null);
-  const { data: bookings } = api.admin.getBookings.useQuery(booking || []);
+  const { data: bookings } = api.admin.getBookings.useQuery();
+  const { data: findPreorders } = api.admin.getPreorders.useQuery(
+    bookings?.map((booking) => booking.id) || []
+  );
 
   useEffect(() => {
     if (bookings && bookings.length) {
@@ -29,9 +42,34 @@ const booking: FC<BookingProps> = ({}) => {
 
   useEffect(() => {
     if (booking) {
-      setFilteredBooking([...booking]);
+      setFilteredBooking(
+        [...booking].sort((a, b) => a.dateTime.getTime() - b.dateTime.getTime())
+      );
+
+      console.log(findPreorders);
     }
   }, [booking]);
+
+  function compareDate(date: Date): string {
+    const today = new Date();
+    const tomorrow = new Date();
+    tomorrow.setDate(today.getDate() + 1);
+
+    if (date < today) {
+      return "before";
+    } else if (date >= today && date < tomorrow) {
+      return "today";
+    } else {
+      return "after";
+    }
+  }
+
+  const toggleHidden = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const button = event.target as HTMLButtonElement;
+    
+    const hiddenTag = button.nextElementSibling as HTMLElement;
+    hiddenTag.classList.toggle("hidden");
+  };
 
   return (
     <div>
@@ -67,7 +105,9 @@ const booking: FC<BookingProps> = ({}) => {
                   booking &&
                     booking.filter(
                       (book) =>
-                        book.name.toLowerCase().includes(e.target.value.toLowerCase()) ||
+                        book.name
+                          .toLowerCase()
+                          .includes(e.target.value.toLowerCase()) ||
                         book.id.includes(e.target.value) ||
                         book.dateTime.toString().includes(e.target.value) ||
                         book.mobile.includes(e.target.value) ||
@@ -110,23 +150,56 @@ const booking: FC<BookingProps> = ({}) => {
               filteredBooking.map((booking) => (
                 <tr
                   key={booking.id}
-                  className="border-b bg-white dark:border-gray-700 dark:bg-gray-800"
+                  className={`${
+                    compareDate(booking.dateTime) === "today" &&
+                    "text-green-600"
+                  }
+                  ${
+                    compareDate(booking.dateTime) === "before" && "text-red-600"
+                  }
+                  ${
+                    compareDate(booking.dateTime) === "after" && "text-gray-700"
+                  }
+                  border-b bg-white dark:border-gray-700 dark:bg-gray-800`}
                 >
                   <th
                     scope="row"
-                    className="whitespace-nowrap px-6 py-4 font-medium text-gray-900 dark:text-white"
+                    className="whitespace-nowrap px-6 py-4 font-medium dark:text-white"
                   >
                     {booking.id}
                   </th>
                   <td className="px-6 py-4">{booking.name}</td>
                   <td className="px-6 py-4">{booking.people}</td>
-                  <td className="px-6 py-4">
-                    {booking.dateTime.toString().slice(0, 24)}
+                  <td className="px-6 py-4 font-bold">
+                    {booking.dateTime.toLocaleDateString("en-GB")}{" "}
+                    {booking.dateTime.getHours()}:
+                    {booking.dateTime.getMinutes() < 10 ? "0" : ""}
+                    {booking.dateTime.getMinutes()}
                   </td>
                   <td className="px-6 py-4">{booking.mobile}</td>
                   <td className="px-6 py-4">{booking.email}</td>
                   <td className="px-6 py-4">
-                    {booking.preorder ? "Yes" : "No"}
+                    {booking.preorder ? (
+                      <div>
+                        <button onClick={toggleHidden}>View Detail</button>
+                        <div className="hidden absolute top-1/2 left-1/2 bg-opacity-60 bg-slate-600 p-6">
+                          <button className=" p-2 font-extrabold text-xl text-white" onClick={(e: any) => (e.target as HTMLButtonElement).parentElement?.classList.add('hidden')}>X</button>
+                          <ul className=" text-white">
+                            {findPreorders?.map((preorder) => {
+                              if (preorder.bookingId === booking.id) {
+                                return (
+                                  <li className=" mb-4 text-lg font-bold" key={preorder.id}>
+                                    {preorder.item} - {preorder.quantity}
+                                  </li>
+                                );
+                              }
+                            })}
+                          </ul>
+                        </div>
+                      </div>
+                    ) : (
+                      "No"
+                    )}
                   </td>
                 </tr>
               ))}
