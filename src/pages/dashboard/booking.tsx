@@ -1,6 +1,9 @@
 import React, { FC, useEffect, useState } from "react";
 import { api } from "~/utils/api";
 import { now } from "~/constants/config";
+import { isBefore } from "date-fns";
+import { isAfter } from "date-fns";
+import { isToday } from "date-fns";
 
 interface BookingProps {}
 
@@ -45,28 +48,13 @@ const booking: FC<BookingProps> = ({}) => {
       setFilteredBooking(
         [...booking].sort((a, b) => a.dateTime.getTime() - b.dateTime.getTime())
       );
-
       console.log(findPreorders);
     }
   }, [booking]);
 
-  function compareDate(date: Date): string {
-    const today = new Date();
-    const tomorrow = new Date();
-    tomorrow.setDate(today.getDate() + 1);
-
-    if (date < today) {
-      return "before";
-    } else if (date >= today && date < tomorrow) {
-      return "today";
-    } else {
-      return "after";
-    }
-  }
-
   const toggleHidden = (event: React.MouseEvent<HTMLButtonElement>) => {
     const button = event.target as HTMLButtonElement;
-    
+
     const hiddenTag = button.nextElementSibling as HTMLElement;
     hiddenTag.classList.toggle("hidden");
   };
@@ -74,6 +62,7 @@ const booking: FC<BookingProps> = ({}) => {
   return (
     <div>
       <div className="relative overflow-x-auto">
+        <div></div>
         <div className="mb-2 mt-6 flex items-center justify-end">
           <label htmlFor="simple-search" className="sr-only">
             Search
@@ -150,17 +139,21 @@ const booking: FC<BookingProps> = ({}) => {
               filteredBooking.map((booking) => (
                 <tr
                   key={booking.id}
-                  className={`${
-                    compareDate(booking.dateTime) === "today" &&
-                    "text-green-600"
-                  }
+                  className={`border-b bg-white  dark:border-gray-700 dark:bg-gray-800
                   ${
-                    compareDate(booking.dateTime) === "before" && "text-red-600"
+                    isBefore(
+                      booking.dateTime,
+                      now.setHours(0, 0, 0, 0)
+                    ) && "text-red-600"
                   }
+                  ${isToday(booking.dateTime) && "text-green-600"}
                   ${
-                    compareDate(booking.dateTime) === "after" && "text-gray-700"
+                    isAfter(
+                      booking.dateTime,
+                      now.setHours(0, 0, 0, 0)
+                    ) && "text-gray-700"
                   }
-                  border-b bg-white dark:border-gray-700 dark:bg-gray-800`}
+                  `}
                 >
                   <th
                     scope="row"
@@ -172,9 +165,12 @@ const booking: FC<BookingProps> = ({}) => {
                   <td className="px-6 py-4">{booking.people}</td>
                   <td className="px-6 py-4 font-bold">
                     {booking.dateTime.toLocaleDateString("en-GB")}{" "}
-                    {booking.dateTime.getHours()}:
-                    {booking.dateTime.getMinutes() < 10 ? "0" : ""}
+                    {booking.dateTime.getHours() % 12 === 0
+                      ? 12
+                      : booking.dateTime.getHours() % 12}
+                    :{booking.dateTime.getMinutes() < 10 ? "0" : ""}
                     {booking.dateTime.getMinutes()}
+                    {booking.dateTime.getHours() >= 12 ? "PM" : "AM"}
                   </td>
                   <td className="px-6 py-4">{booking.mobile}</td>
                   <td className="px-6 py-4">{booking.email}</td>
@@ -182,13 +178,25 @@ const booking: FC<BookingProps> = ({}) => {
                     {booking.preorder ? (
                       <div>
                         <button onClick={toggleHidden}>View Detail</button>
-                        <div className="hidden absolute top-1/2 left-1/2 bg-opacity-60 bg-slate-600 p-6">
-                          <button className=" p-2 font-extrabold text-xl text-white" onClick={(e: any) => (e.target as HTMLButtonElement).parentElement?.classList.add('hidden')}>X</button>
+                        <div className="absolute left-1/2 top-1/2 hidden bg-slate-600 bg-opacity-60 p-6">
+                          <button
+                            className=" p-2 text-xl font-extrabold text-white"
+                            onClick={(e: any) =>
+                              (
+                                e.target as HTMLButtonElement
+                              ).parentElement?.classList.add("hidden")
+                            }
+                          >
+                            X
+                          </button>
                           <ul className=" text-white">
                             {findPreorders?.map((preorder) => {
                               if (preorder.bookingId === booking.id) {
                                 return (
-                                  <li className=" mb-4 text-lg font-bold" key={preorder.id}>
+                                  <li
+                                    className=" mb-4 text-lg font-bold"
+                                    key={preorder.id}
+                                  >
                                     {preorder.item} - {preorder.quantity}
                                   </li>
                                 );

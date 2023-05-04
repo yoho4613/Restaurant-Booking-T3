@@ -61,7 +61,6 @@ export const getOpeningTimes = (startDate: Date, dbDays: Day[]) => {
     const tooLate = !isBefore(rounded, closing);
 
     if (tooLate) throw new Error("No more bookings today");
-    console.log("rounded", rounded);
 
     const isBeforeOpening = isBefore(rounded, opening);
 

@@ -30,11 +30,6 @@ const Cart: FC<CartProps> = ({ open, setOpen, products, removeFromCart }) => {
     error,
   } = api.checkout.checkoutSession.useMutation({
     onSuccess: ({ url }) => {
-      // const booking = addBooking({
-      //   ...customerDetail,
-      //   dateTime: new Date(customerDetail.dateTime)
-      // })
-      // console.log(booking)
       router.push(url);
     },
     onMutate: ({ products }) => {

@@ -200,7 +200,7 @@ const opening: FC<OpeningProps> = ({ days }) => {
 export async function getServerSideProps() {
   const days = await prisma.day.findMany();
 
-  if (!(days.length === 7)) throw new Error("Insert all days into database");
+  if (!days.length) throw new Error("Insert all days into database");
 
   return { props: { days } };
 }

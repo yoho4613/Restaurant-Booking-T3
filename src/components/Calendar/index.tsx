@@ -29,7 +29,7 @@ const CalendarComponent: FC<CalendarProps> = ({
   if (tooLate) closedDays.push(formatISO(new Date().setHours(0, 0, 0, 0)));
 
   const times = date.justDate && getOpeningTimes(date.justDate, days);
-
+  console.log(times)
   return (
     <div className="flex h-screen flex-col items-center justify-center">
       {date?.justDate ? (

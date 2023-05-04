@@ -31,7 +31,6 @@ const CustomerDetail: FC<CustomerDetailProps> = ({
     } else {
       setIsMissing(true);
     }
-    console.log(form);
   };
 
   return (

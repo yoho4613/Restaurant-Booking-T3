@@ -111,7 +111,7 @@ const Menu: FC<MenuProps> = ({}) => {
 
   return (
     <>
-      <div className="">
+      <div className="p-6">
         <div className="mx-auto flex max-w-xl flex-col gap-2">
           <input
             name="name"
@@ -185,7 +185,7 @@ const Menu: FC<MenuProps> = ({}) => {
 
         <div className="mx-auto mt-12 max-w-7xl">
           <p className="text-lg font-medium">Your menu items:</p>
-          <div className="mb-12 mt-6 grid grid-cols-4 gap-8">
+          <div className=" mb-12 mt-6 grid md:grid-cols-4 md:gap-8 grid-cols-2 gap-4 ">
             {menuItems?.map((menuItem: any) => (
               <div key={menuItem.id}>
                 <p>{menuItem.name}</p>
