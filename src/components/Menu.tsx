@@ -74,14 +74,14 @@ function Menu({ selectedTime, addToCart }: MenuProps) {
                 </p>
               </div>
 
-              <Button
+              <button
                 className="mt-4"
                 onClick={() => {
                   addToCart(menuItem.id, 1);
                 }}
               >
                 Add to cart
-              </Button>
+              </button>
             </div>
           ))}
         </div>

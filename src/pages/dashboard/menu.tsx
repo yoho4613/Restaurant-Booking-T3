@@ -9,7 +9,7 @@ import { api } from "~/utils/api";
 
 const DynamicSelect = dynamic(() => import("react-select"), { ssr: false });
 
-interface MenuProps {}
+
 
 type Input = {
   name: string;
@@ -25,7 +25,7 @@ const initialInput = {
   file: undefined,
 };
 
-const Menu: FC<MenuProps> = ({}) => {
+const Menu: FC = ({}) => {
   const [input, setInput] = useState<Input>(initialInput);
   const [preview, setPreview] = useState<string>("");
   const [error, setError] = useState<string>("");

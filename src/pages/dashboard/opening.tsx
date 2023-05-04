@@ -16,7 +16,7 @@ interface OpeningProps {
 }
 
 const opening: FC<OpeningProps> = ({ days }) => {
-  const [enabled, setEnabled] = useState<Boolean>(false);
+  const [enabled, setEnabled] = useState<boolean>(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [openingHrs, setOpeningHrs] = useState([
     {
@@ -167,7 +167,7 @@ const opening: FC<OpeningProps> = ({ days }) => {
             );
           })}
 
-          <Button
+          <button
             onClick={() => {
               const withId = openingHrs.map((day) => ({
                 ...day,
@@ -175,12 +175,12 @@ const opening: FC<OpeningProps> = ({ days }) => {
               }));
               saveOpeningHrs(withId);
             }}
-            isLoading={isLoading}
-            colorScheme="green"
-            variant="solid"
+            // isLoading={isLoading}
+            // colorScheme="green"
+            // variant="solid"
           >
             Save
-          </Button>
+          </button>
         </div>
       ) : (
         <div className="mt-6 flex flex-col items-center gap-6">
@@ -196,17 +196,17 @@ const opening: FC<OpeningProps> = ({ days }) => {
             }}
           />
 
-          <Button
+          <button
             onClick={() => {
               if (dayIsClosed) openDay({ date: selectedDate });
               else if (selectedDate) closeDay({ date: selectedDate });
             }}
             disabled={!selectedDate}
-            isLoading={isLoading}
-            variant="solid"
+            // isLoading={isLoading}
+            // variant="solid"
           >
             {dayIsClosed ? "Open shop this day" : "Close shop this day"}
-          </Button>
+          </button>
         </div>
       )}
     </div>

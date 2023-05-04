@@ -1,12 +1,11 @@
-import { Spinner } from "@chakra-ui/react";
+// import { Spinner } from "@chakra-ui/react";
 import Link from "next/link";
 import React, { FC, useEffect, useState } from "react";
+import Spinner from "~/components/Spinner";
 import { api } from "~/utils/api";
 import { capitalize } from "~/utils/helpers";
 
-interface SuccessProps {}
-
-const success: FC<SuccessProps> = ({}) => {
+const success: FC = ({}) => {
   const [products, setProducts] = useState<
     { id: string; quantity: number }[] | null | false
   >(null);
@@ -30,13 +29,13 @@ const success: FC<SuccessProps> = ({}) => {
   if (products === null) {
     return (
       <div className="flex h-screen w-full items-center justify-center">
-        <Spinner color="indigo" size={"xl"} />
+        <Spinner />
       </div>
     );
   }
 
   if (products === false)
-    return <div>You don't have any successfull data here.</div>;
+    return <div>You don&apos;t have any successfull data here.</div>;
 
   return (
     <main className="relative lg:min-h-full">

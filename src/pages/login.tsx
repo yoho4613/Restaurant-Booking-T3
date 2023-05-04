@@ -3,9 +3,9 @@ import React, { FC, useState } from "react";
 import { HiLockClosed } from "react-icons/hi";
 import { api } from "~/utils/api";
 
-interface loginProps {}
 
-const login: FC<loginProps> = ({}) => {
+
+const login: FC = ({}) => {
   const router = useRouter()
   const [input, setInput] = useState({
     email: "",
@@ -19,7 +19,7 @@ const login: FC<loginProps> = ({}) => {
 
   const { mutate: login, isError } = api.admin.login.useMutation({
     onSuccess: () => {
-      router.push('/dashboard')
+      router.push('/dashboard').then(res => res).catch(err => console.log(err))
     }
   });
 

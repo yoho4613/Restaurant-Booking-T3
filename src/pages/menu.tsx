@@ -8,14 +8,14 @@ import { api } from "~/utils/api";
 import { BsCart } from "react-icons/bs";
 import Cart from "~/components/Cart";
 
-interface MenuProps {}
 
-const menu: FC<MenuProps> = ({}) => {
+
+const menu: FC = ({}) => {
   const router = useRouter();
 
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const { isFetchedAfterMount } = api.menu.checkMenuStatus.useQuery(undefined, {
-    onError: () => {},
+
   });
   const { mutate: addBooking } = api.booking.addBooking.useMutation({});
   

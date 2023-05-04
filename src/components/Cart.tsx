@@ -1,4 +1,4 @@
-import { Spinner } from "@chakra-ui/react";
+// import { Spinner } from "@chakra-ui/react";
 import { Dialog, Transition } from "@headlessui/react";
 import { useRouter } from "next/router";
 import {
@@ -12,6 +12,7 @@ import {
 import { HiX } from "react-icons/hi";
 import { capitalize } from "~/utils/helpers";
 import { api } from "src/utils/api";
+import Spinner from "./Spinner";
 
 interface CartProps {
   open: boolean;
@@ -180,7 +181,7 @@ const Cart: FC<CartProps> = ({ open, setOpen, products, removeFromCart }) => {
                           className="flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
                         >
                           {isLoading ? (
-                            <Spinner color="indigo" size={"xl"} />
+                            <Spinner />
                           ) : (
                             "Checkout"
                           )}

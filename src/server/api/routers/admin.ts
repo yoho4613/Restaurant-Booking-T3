@@ -45,7 +45,7 @@ export const adminRouter = createTRPCRouter({
       });
     }),
 
-  logout: adminProcedure.mutation(async ({ ctx }) => {
+  logout: adminProcedure.mutation( ({ ctx }) => {
     const { res } = ctx;
 
     res.setHeader(
@@ -84,7 +84,7 @@ export const adminRouter = createTRPCRouter({
             resolve(data);
           }
         );
-      })) as any as { url: string; fields: any };
+      })) as any as { url: string; fields: string[] };
 
       return { url, fields, key };
     }),

@@ -10,7 +10,7 @@ export const menuRouter = createTRPCRouter({
     const menuItems = await ctx.prisma.menuItem.findMany();
     // Each menu item only contains its AWS key. Extend all items with their actual img url
     const withUrls = await Promise.all(
-      menuItems.map(async (menuItem: any) => ({
+      menuItems.map(async (menuItem) => ({
         ...menuItem,
         url: await s3.getSignedUrlPromise("getObject", {
           Bucket: "restaurant-booking-app",
@@ -18,7 +18,6 @@ export const menuRouter = createTRPCRouter({
         }),
       }))
     );
-
     return withUrls;
   }),
 
