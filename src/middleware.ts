@@ -10,7 +10,7 @@ export async function middleware(req: NextRequest) {
   // validate the user is authenticated
   const verifiedToken =
     token &&
-    (await verifyAuth(token).catch((err) => {
+    (await verifyAuth(token).catch((err: Error) => {
       console.error(err.message);
     }));
 

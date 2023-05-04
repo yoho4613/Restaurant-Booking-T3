@@ -13,6 +13,7 @@ import { HiX } from "react-icons/hi";
 import { capitalize } from "~/utils/helpers";
 import { api } from "src/utils/api";
 import Spinner from "./Spinner";
+import { CustomerDetail } from "@types";
 
 interface CartProps {
   open: boolean;
@@ -30,17 +31,22 @@ const Cart: FC<CartProps> = ({ open, setOpen, products, removeFromCart }) => {
     isLoading,
     error,
   } = api.checkout.checkoutSession.useMutation({
-    onSuccess: ({ url }) => {
-      router.push(url);
+    onSuccess: ({ url }: { url: string }) => {
+      router.push(url).then(res => res).catch((err:Error) => console.log(err))
+
     },
     onMutate: ({ products }) => {
       localStorage.setItem("products", JSON.stringify(products));
     },
   });
-  const [customerDetail, setCustomerDetail] = useState<any>({});
+  const [customerDetail, setCustomerDetail] = useState<CustomerDetail | null>(
+    null
+  );
 
   useEffect(() => {
-    setCustomerDetail(JSON.parse(localStorage.getItem("bookingWithPreorder")!));
+    setCustomerDetail(
+      JSON.parse(localStorage.getItem("bookingWithPreorder")!) as CustomerDetail
+    );
   }, []);
 
   const subtotal = (
@@ -173,18 +179,16 @@ const Cart: FC<CartProps> = ({ open, setOpen, products, removeFromCart }) => {
                             checkout({
                               products,
                               customerDetail: {
-                                ...customerDetail,
-                                dateTime: new Date(customerDetail.dateTime),
+                                ...customerDetail!,
+                                dateTime: customerDetail?.dateTime
+                                  ? new Date(customerDetail.dateTime)
+                                  : new Date(),
                               },
                             });
                           }}
                           className="flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
                         >
-                          {isLoading ? (
-                            <Spinner />
-                          ) : (
-                            "Checkout"
-                          )}
+                          {isLoading ? <Spinner /> : "Checkout"}
                         </button>
                       </div>
                       <div className="mt-6 flex justify-center text-center text-sm text-gray-500">

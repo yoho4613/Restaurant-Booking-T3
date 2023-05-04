@@ -8,7 +8,17 @@ import {
   isEqual,
   parse,
 } from "date-fns";
+import { useRouter } from "next/router";
 import { OPENING_HOURS_INTERVAL, categories, now } from "~/constants/config";
+
+export const NavigateTo = (url: string) => {
+  const router = useRouter();
+
+  router
+    .push(url)
+    .then((res) => res)
+    .catch((err: Error) => console.log(err));
+};
 
 export const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
@@ -68,11 +78,14 @@ export const getOpeningTimes = (startDate: Date, dbDays: Day[]) => {
     minutes = getMinutes(isBeforeOpening ? opening : rounded);
   } else {
     hours = getHours(opening);
-    minutes = getMinutes(opening); 
+    minutes = getMinutes(opening);
   }
 
   const beginning = add(startDate, { hours, minutes });
-  const end = add(startDate, { hours: getHours(closing), minutes: getMinutes(closing) });
+  const end = add(startDate, {
+    hours: getHours(closing),
+    minutes: getMinutes(closing),
+  });
   const interval = OPENING_HOURS_INTERVAL;
 
   const times = [];

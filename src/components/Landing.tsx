@@ -5,9 +5,9 @@ import { IoMdTimer } from "react-icons/io";
 import { GoLocation } from 'react-icons/go'
 import { BiPhoneCall } from 'react-icons/bi'
 
-interface LandingProps {}
 
-const Landing: FC<LandingProps> = ({}) => {
+
+const Landing: FC = ({}) => {
   return (
     <>
       <div className="relative mt-8 flex w-full flex-col items-center justify-center md:flex-row md:justify-evenly">

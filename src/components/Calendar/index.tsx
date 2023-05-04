@@ -65,7 +65,7 @@ const CalendarComponent: FC<CalendarProps> = ({
                   type="button"
                   className="bg-gray-200 p-2"
                   onClick={() => {
-                    setDate((prev: DateType | any) => ({
+                    setDate((prev: DateType) => ({
                       ...prev,
                       dateTime: time,
                     }));
@@ -85,7 +85,7 @@ const CalendarComponent: FC<CalendarProps> = ({
           view="month"
           tileDisabled={({ date }) => closedDays.includes(formatISO(date))}
           onClickDay={(date) =>
-            setDate((prev: DateType | any) => ({ ...prev, justDate: date }))
+            setDate((prev: DateType) => ({ ...prev, justDate: date }))
           }
         />
       )}

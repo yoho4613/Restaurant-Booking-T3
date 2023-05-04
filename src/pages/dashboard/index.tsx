@@ -3,9 +3,9 @@ import Link from "next/link";
 import React, { FC } from "react";
 
 
-interface dashboardProps {}
 
-const dashboard: FC<dashboardProps> = ({}) => {
+
+const dashboard: FC = ({}) => {
   
   // return (
   //   <div className="flex h-screen w-full items-center justify-center gap-8 font-medium">

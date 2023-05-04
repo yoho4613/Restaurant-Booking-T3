@@ -9,13 +9,23 @@ import { api } from "~/utils/api";
 
 const DynamicSelect = dynamic(() => import("react-select"), { ssr: false });
 
-
-
 type Input = {
   name: string;
   price: number;
   categories: MultiValue<{ value: string; label: string }>;
   file: undefined | File;
+};
+
+type MenuItems = {
+  url: string;
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  name: string;
+  price: number;
+  categories: string[];
+  imageKey: string;
+  active: boolean;
 };
 
 const initialInput = {
@@ -60,9 +70,12 @@ const Menu: FC = ({}) => {
     const { file } = input;
     if (!file) return;
 
-    const { fields, key, url } = await createPresignedUrl({
+    // const { fields, key, url } = await createPresignedUrl({
+    //   fileType: file.type,
+    // });
+    const { fields, key, url } = (await createPresignedUrl({
       fileType: file.type,
-    });
+    })) as { fields: string[]; key: string; url: string };
 
     const data = {
       ...fields,
@@ -73,7 +86,7 @@ const Menu: FC = ({}) => {
     const formData = new FormData();
 
     Object.entries(data).forEach(([key, value]) => {
-      formData.append(key, value as any);
+      formData.append(key, value as string | Blob);
     });
 
     await fetch(url, {
@@ -91,13 +104,16 @@ const Menu: FC = ({}) => {
     await addItem({
       name: input.name,
       imageKey: key,
-      categories: input.categories.map(
-        (c) => c.value as Exclude<Categories, "all">
-      ),
+      categories: input.categories.map((c) => c.value) as Exclude<
+        ["breakfast", "lunch", "dinner"],
+        "all"
+      >,
       price: input.price,
     });
 
-    refetch();
+    refetch()
+      .then((res) => res)
+      .catch((err: Error) => console.log(err));
 
     // Reset input
     setInput(initialInput);
@@ -106,7 +122,9 @@ const Menu: FC = ({}) => {
 
   const handleDelete = async (imageKey: string, id: string) => {
     await deleteMenuItem({ id, imageKey });
-    refetch();
+    refetch()
+      .then((res) => res)
+      .catch((err: Error) => console.log(err));
   };
 
   return (
@@ -137,8 +155,9 @@ const Menu: FC = ({}) => {
 
           <DynamicSelect
             value={input.categories}
-            // @ts-ignore - when using dynamic import, typescript doesn't know about the onChange prop
-            onChange={(e) => setInput((prev) => ({ ...prev, categories: e }))}
+            onChange={(e) =>
+              setInput((prev) => ({ ...prev, categories: e } as Input))
+            }
             isMulti
             className="h-12"
             options={selectOptions}
@@ -176,7 +195,11 @@ const Menu: FC = ({}) => {
           <button
             className="h-12 rounded-sm bg-gray-200 disabled:cursor-not-allowed"
             disabled={!input.file || !input.name}
-            onClick={addMenuItem}
+            onClick={() => {
+              addMenuItem()
+                .then((res) => res)
+                .catch((err: Error) => console.log(err));
+            }}
           >
             Add menu item
           </button>
@@ -185,15 +208,19 @@ const Menu: FC = ({}) => {
 
         <div className="mx-auto mt-12 max-w-7xl">
           <p className="text-lg font-medium">Your menu items:</p>
-          <div className=" mb-12 mt-6 grid md:grid-cols-4 md:gap-8 grid-cols-2 gap-4 ">
-            {menuItems?.map((menuItem: any) => (
+          <div className=" mb-12 mt-6 grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-8 ">
+            {menuItems?.map((menuItem: MenuItems) => (
               <div key={menuItem.id}>
                 <p>{menuItem.name}</p>
                 <div className="relative h-40 w-40">
                   <Image priority fill alt="" src={menuItem.url} />
                 </div>
                 <button
-                  onClick={() => handleDelete(menuItem.imageKey, menuItem.id)}
+                  onClick={() => {
+                    handleDelete(menuItem.imageKey, menuItem.id)
+                      .then((res) => res)
+                      .catch((err: Error) => console.log(err));
+                  }}
                   className="text-xs text-red-500"
                 >
                   delete

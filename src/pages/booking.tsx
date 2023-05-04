@@ -23,7 +23,7 @@ export interface Form {
   preorder: boolean;
 }
 
-const booking: FC<BookingProps> = ({ days, closedDays }) => {
+const Booking: FC<BookingProps> = ({ days, closedDays }) => {
   const router = useRouter();
   const [customerDetail, setCustomerDetail] = useState(false);
   const [orderConfirmed, setOrderConfirmed] = useState(false);
@@ -49,21 +49,28 @@ const booking: FC<BookingProps> = ({ days, closedDays }) => {
           "bookingWithPreorder",
           JSON.stringify({ ...form, dateTime: date.dateTime, preorder: true })
         );
-        router.push("/menu");
+        router
+          .push("/menu")
+          .then((res) => res)
+          .catch((err: Error) => console.log(err));
       } else if (withPreOrder === false) {
         sendForm(form);
-        router.push("/");
+
+        router
+          .push("/")
+          .then((res) => res)
+          .catch((err: Error) => console.log(err));
       }
     }
   }, [date.dateTime, router, withPreOrder]);
 
-  const sendForm = async (form: Form) => {
+  const sendForm = (form: Form) => {
     function isValidEmail(email: string): boolean {
-      const emailRegex: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       return emailRegex.test(email);
     }
     if (isValidEmail(form.email)) {
-      await addBooking({
+      addBooking({
         ...form,
         dateTime: date.dateTime!,
       });
@@ -110,4 +117,4 @@ export async function getServerSideProps() {
   return { props: { days, closedDays } };
 }
 
-export default booking;
+export default Booking;

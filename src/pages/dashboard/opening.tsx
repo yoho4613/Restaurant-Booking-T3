@@ -15,7 +15,7 @@ interface OpeningProps {
   days: Day[];
 }
 
-const opening: FC<OpeningProps> = ({ days }) => {
+const Opening: FC<OpeningProps> = ({ days }) => {
   const [enabled, setEnabled] = useState<boolean>(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [openingHrs, setOpeningHrs] = useState([
@@ -221,4 +221,4 @@ export async function getServerSideProps() {
   return { props: { days } };
 }
 
-export default opening;
+export default Opening;

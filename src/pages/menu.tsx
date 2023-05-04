@@ -7,23 +7,23 @@ import { now } from "~/constants/config";
 import { api } from "~/utils/api";
 import { BsCart } from "react-icons/bs";
 import Cart from "~/components/Cart";
+import { NavigateTo } from "~/utils/helpers";
+import { CustomerDetail } from "@types";
 
-
-
-const menu: FC = ({}) => {
-  const router = useRouter();
-
+const MenuPage: FC = ({}) => {
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
-  const { isFetchedAfterMount } = api.menu.checkMenuStatus.useQuery(undefined, {
-
-  });
+  const { isFetchedAfterMount } = api.menu.checkMenuStatus.useQuery(
+    undefined,
+    {}
+  );
   const { mutate: addBooking } = api.booking.addBooking.useMutation({});
-  
-  const [customerDetail, setCustomerDetail] = useState<any>({});
+
+  const [customerDetail, setCustomerDetail] = useState<CustomerDetail | null>(
+    null
+  );
 
   useEffect(() => {
-    setCustomerDetail(JSON.parse(localStorage.getItem("bookingWithPreorder")!));
-
+    setCustomerDetail(JSON.parse(localStorage.getItem("bookingWithPreorder")!) as CustomerDetail);
   }, []);
 
   const [showCart, setShowCart] = useState<boolean>(false);
@@ -31,30 +31,30 @@ const menu: FC = ({}) => {
     { id: string; quantity: number }[]
   >([]);
 
-
   const addToCart = (id: string, quantity: number) => {
     setProductsInCart((prev) => {
-      const existing = prev.find((item) => item.id === id)
+      const existing = prev.find((item) => item.id === id);
       if (existing) {
         return prev.map((item) => {
-          if (item.id === id) return { ...item, quantity: item.quantity + quantity}
-          return item
-        })
+          if (item.id === id)
+            return { ...item, quantity: item.quantity + quantity };
+          return item;
+        });
       }
-      return [...prev, {id, quantity}]
-    })
-  }
+      return [...prev, { id, quantity }];
+    });
+  };
 
   const removeFromCart = (id: string) => {
-    setProductsInCart((prev) => prev.filter((item) => item.id !==id))
-  }
+    setProductsInCart((prev) => prev.filter((item) => item.id !== id));
+  };
 
   useEffect(() => {
     const selectedTime = localStorage.getItem("selectedTime");
-    if (!selectedTime) router.push("/").then(res => res).catch();
+    if (!selectedTime) NavigateTo("/");
     else {
       const date = parseISO(selectedTime);
-      if (date < now) router.push("/").then(res => res).catch();
+      if (date < now) NavigateTo("/");
 
       // Date is valied
       setSelectedTime(selectedTime);
@@ -94,4 +94,4 @@ const menu: FC = ({}) => {
   );
 };
 
-export default menu;
+export default MenuPage;

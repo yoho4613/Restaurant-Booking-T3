@@ -1,21 +1,23 @@
 import { useRouter } from "next/router";
 import React, { FC, useEffect, useState } from "react";
 import { api } from "~/utils/api";
-import { Fragment } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import Link from "next/link";
+
 
 function classNames(...classes: any[]) {
   return classes.filter(Boolean).join(" ");
 }
 
-interface AdminNavBarProps {}
-
-const AdminNavBar: FC<AdminNavBarProps> = ({}) => {
+const AdminNavBar: FC = ({}) => {
   const router = useRouter();
   const { mutate: logout } = api.admin.logout.useMutation({
     onSuccess: () => {
-      router.push("/dashboard");
+      router
+        .push("/dashboard")
+        .then((res) => res)
+        .catch((err: Error) => console.log(err));
     },
   });
 
@@ -56,7 +58,7 @@ const AdminNavBar: FC<AdminNavBarProps> = ({}) => {
               </div>
               <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
                 <div className="flex flex-shrink-0 items-center">
-                  <a href="/dashboard">
+                  <Link href="/dashboard">
                     <img
                       className="block h-8 w-auto lg:hidden"
                       src="/assets/logo.jpg"
@@ -67,12 +69,12 @@ const AdminNavBar: FC<AdminNavBarProps> = ({}) => {
                       src="/assets/logo.jpg"
                       alt="Your Company"
                     />
-                  </a>
+                  </Link>
                 </div>
                 <div className="hidden sm:ml-6 sm:block">
                   <div className="flex space-x-4">
                     {navigation.map((item) => (
-                      <a
+                      <Link
                         key={item.name}
                         href={item.href}
                         className={classNames(
@@ -84,7 +86,7 @@ const AdminNavBar: FC<AdminNavBarProps> = ({}) => {
                         aria-current={item.current ? "page" : undefined}
                       >
                         {item.name}
-                      </a>
+                      </Link>
                     ))}
                   </div>
                 </div>
@@ -92,12 +94,12 @@ const AdminNavBar: FC<AdminNavBarProps> = ({}) => {
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
                 {/* Profile dropdown */}
                 <Menu as="div" className="relative ml-3 flex">
-                  <a
+                  <Link
                     href="/dashboard/setting"
                     className="flex rounded-md bg-gray-800 px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white focus:outline-none"
                   >
                     Setting
-                  </a>
+                  </Link>
                   <Menu.Button
                     onClick={() => logout()}
                     className="flex rounded-md bg-gray-800 px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white focus:outline-none"

@@ -5,9 +5,9 @@ import { isBefore } from "date-fns";
 import { isAfter } from "date-fns";
 import { isToday } from "date-fns";
 
-interface BookingProps {}
 
-interface Booking {
+
+interface booking {
   id: string;
   createdAt: Date;
   name: string;
@@ -26,11 +26,11 @@ interface Preorder {
   updatedAt: Date;
 }
 
-const booking: FC<BookingProps> = ({}) => {
-  const [booking, setBooking] = useState<Booking[] | null | false>(null);
+const Booking: FC = ({}) => {
+  const [booking, setBooking] = useState<booking[] | null | false>(null);
   const [preorders, setPreorders] = useState<Preorder[] | null>(null);
   const [filteredBooking, setFilteredBooking] = useState<
-    Booking[] | null | false | undefined
+    booking[] | null | false | undefined
   >(null);
   const { data: bookings } = api.admin.getBookings.useQuery();
   const { data: findPreorders } = api.admin.getPreorders.useQuery(
@@ -144,14 +144,14 @@ const booking: FC<BookingProps> = ({}) => {
                     isBefore(
                       booking.dateTime,
                       now.setHours(0, 0, 0, 0)
-                    ) && "text-red-600"
+                    ) ? "text-red-600" : ""
                   }
-                  ${isToday(booking.dateTime) && "text-green-600"}
+                  ${isToday(booking.dateTime) ? "text-green-600" : ""}
                   ${
                     isAfter(
                       booking.dateTime,
                       now.setHours(0, 0, 0, 0)
-                    ) && "text-gray-700"
+                    ) ? "text-gray-700" : ""
                   }
                   `}
                 >
@@ -181,7 +181,7 @@ const booking: FC<BookingProps> = ({}) => {
                         <div className="fixed left-1/2 top-1/2 hidden bg-slate-600 bg-opacity-60 p-6">
                           <button
                             className=" p-2 text-xl font-extrabold text-white"
-                            onClick={(e: any) =>
+                            onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
                               (
                                 e.target as HTMLButtonElement
                               ).parentElement?.classList.add("hidden")
@@ -218,4 +218,4 @@ const booking: FC<BookingProps> = ({}) => {
   );
 };
 
-export default booking;
+export default Booking;

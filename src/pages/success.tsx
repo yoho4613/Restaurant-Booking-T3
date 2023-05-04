@@ -5,10 +5,13 @@ import Spinner from "~/components/Spinner";
 import { api } from "~/utils/api";
 import { capitalize } from "~/utils/helpers";
 
-const success: FC = ({}) => {
-  const [products, setProducts] = useState<
-    { id: string; quantity: number }[] | null | false
-  >(null);
+interface Product {
+  id: string;
+  quantity: number;
+}
+
+const Success: FC = ({}) => {
+  const [products, setProducts] = useState<Product[] | null | false>(null);
 
   // trpc
   const { data: itemsInCart } = api.menu.getCartItems.useQuery(products || []);
@@ -23,7 +26,7 @@ const success: FC = ({}) => {
   useEffect(() => {
     const products = localStorage.getItem("products");
     if (!products) setProducts(false);
-    else setProducts(JSON.parse(products));
+    else setProducts(JSON.parse(products) as Product[]);
   }, []);
 
   if (products === null) {
@@ -113,4 +116,4 @@ const success: FC = ({}) => {
   );
 };
 
-export default success;
+export default Success;

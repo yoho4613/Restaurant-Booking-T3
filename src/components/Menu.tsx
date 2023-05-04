@@ -6,7 +6,7 @@ import Image from "next/image";
 import { HiArrowLeft } from "react-icons/hi";
 import { useRouter } from "next/router";
 import { format, parseISO } from "date-fns";
-import { Button } from "@chakra-ui/react";
+// import { Button } from "@chakra-ui/react";
 
 interface MenuProps {
   selectedTime: string; //as ISO string
@@ -30,7 +30,12 @@ function Menu({ selectedTime, addToCart }: MenuProps) {
           <h2 className="flex items-center gap-4 text-2xl font-bold tracking-tight text-gray-900">
             <HiArrowLeft
               className="cursor-pointer"
-              onClick={() => router.push("/")}
+              onClick={() => {
+                router
+                  .push("/")
+                  .then((res) => res)
+                  .catch((err: Error) => console.log(err));
+              }}
             />
             On our menu for {format(parseISO(selectedTime), "MMM do, yyyy")}
           </h2>

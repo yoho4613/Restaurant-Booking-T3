@@ -2,9 +2,9 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { FC, useState } from "react";
 
-interface NavbarProps {}
 
-const Navbar: FC<NavbarProps> = ({}) => {
+
+const Navbar: FC = ({}) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
 
   const toggleMobileMenu = () => {

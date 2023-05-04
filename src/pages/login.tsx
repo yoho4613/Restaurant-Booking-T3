@@ -5,8 +5,9 @@ import { api } from "~/utils/api";
 
 
 
-const login: FC = ({}) => {
-  const router = useRouter()
+
+const Login: FC = ({}) => {
+  const router = useRouter();
   const [input, setInput] = useState({
     email: "",
     password: "",
@@ -19,7 +20,7 @@ const login: FC = ({}) => {
 
   const { mutate: login, isError } = api.admin.login.useMutation({
     onSuccess: () => {
-      router.push('/dashboard').then(res => res).catch(err => console.log(err))
+      router.push('/dashboard').then(res => res).catch((err:Error) => console.log(err))
     }
   });
 
@@ -136,4 +137,4 @@ const login: FC = ({}) => {
   );
 };
 
-export default login;
+export default Login;

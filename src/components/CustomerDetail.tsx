@@ -21,11 +21,12 @@ const CustomerDetail: FC<CustomerDetailProps> = ({
 
   const handleNext = () => {
     function isValidEmail(email: string): boolean {
-      const emailRegex: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
       return emailRegex.test(email);
     }
 
-    if (form.name.length && isValidEmail(form.email!) && form.people) {
+    if (form.name.length && isValidEmail(form.email) && form.people) {
       //confirmation
       setOrderConfirmed(true);
     } else {
