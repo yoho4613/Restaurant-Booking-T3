@@ -116,37 +116,53 @@ const opening: FC<OpeningProps> = ({ days }) => {
           {days.map((day) => {
             const changeTime = _changeTime(day);
             return (
-              <div className="grid grid-cols-3 place-items-center" key={day.id}>
-                <h3 className="font-semibold">
-                  {capitalize(weekdayIndexToName(day.dayOfWeek)!)}
-                </h3>
-                <div className="mx-4">
-                  <TimeSelector
-                    type="openTime"
-                    changeTime={changeTime}
-                    selected={
-                      openingHrs[
-                        openingHrs.findIndex(
-                          (x) => x.name === weekdayIndexToName(day.dayOfWeek)
-                        )
-                      ]?.openTime
-                    }
-                  />
-                </div>
+              <div className="flex items-center" key={day.id}>
+                <div className="grid grid-cols-1 sm:grid-cols-3 place-items-center">
+                  <h3 className="font-semibold">
+                    {capitalize(weekdayIndexToName(day.dayOfWeek)!)}
+                  </h3>
+                  <div className="mx-4">
+                    <TimeSelector
+                      type="openTime"
+                      changeTime={changeTime}
+                      selected={
+                        openingHrs[
+                          openingHrs.findIndex(
+                            (x) => x.name === weekdayIndexToName(day.dayOfWeek)
+                          )
+                        ]?.openTime
+                      }
+                    />
+                  </div>
 
-                <div className="mx-4">
-                  <TimeSelector
-                    type="closeTime"
-                    changeTime={changeTime}
-                    selected={
-                      openingHrs[
-                        openingHrs.findIndex(
-                          (x) => x.name === weekdayIndexToName(day.dayOfWeek)
-                        )
-                      ]?.closeTime
-                    }
-                  />
+                  <div className="mx-4">
+                    <TimeSelector
+                      type="closeTime"
+                      changeTime={changeTime}
+                      selected={
+                        openingHrs[
+                          openingHrs.findIndex(
+                            (x) => x.name === weekdayIndexToName(day.dayOfWeek)
+                          )
+                        ]?.closeTime
+                      }
+                    />
+                  </div>
                 </div>
+                  <div className=" ml-6 flex items-center">
+                    <input
+                      id="default-checkbox"
+                      type="checkbox"
+                      value=""
+                      className="h-4 w-4 rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600"
+                    />
+                    <label
+                      htmlFor="default-checkbox"
+                      className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                    >
+                      Close this date
+                    </label>
+                  </div>
               </div>
             );
           })}

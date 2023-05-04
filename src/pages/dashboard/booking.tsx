@@ -178,7 +178,7 @@ const booking: FC<BookingProps> = ({}) => {
                     {booking.preorder ? (
                       <div>
                         <button onClick={toggleHidden}>View Detail</button>
-                        <div className="absolute left-1/2 top-1/2 hidden bg-slate-600 bg-opacity-60 p-6">
+                        <div className="fixed left-1/2 top-1/2 hidden bg-slate-600 bg-opacity-60 p-6">
                           <button
                             className=" p-2 text-xl font-extrabold text-white"
                             onClick={(e: any) =>
