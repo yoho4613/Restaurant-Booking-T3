@@ -51,10 +51,10 @@ const menu: FC = ({}) => {
 
   useEffect(() => {
     const selectedTime = localStorage.getItem("selectedTime");
-    if (!selectedTime) router.push("/");
+    if (!selectedTime) router.push("/").then(res => res).catch();
     else {
       const date = parseISO(selectedTime);
-      if (date < now) router.push("/");
+      if (date < now) router.push("/").then(res => res).catch();
 
       // Date is valied
       setSelectedTime(selectedTime);
