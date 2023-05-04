@@ -1,5 +1,4 @@
 import { type NextPage } from "next";
-import Head from "next/head";
 import { formatISO } from "date-fns";
 import { prisma } from "~/server/db";
 import { Day } from "@prisma/client";
@@ -14,14 +13,7 @@ interface HomeProps {
 const Home: NextPage<HomeProps> = ({ days, closedDays }) => {
   return (
     <>
-      <Head>
-        <title>FC Restaurant</title>
-        <meta
-          name="description"
-          content="FC Restaurant Booking Online Order App"
-        />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+     
       <main>
         <Landing />
         {/* <Calendar days={days} closedDays={closedDays} /> */}

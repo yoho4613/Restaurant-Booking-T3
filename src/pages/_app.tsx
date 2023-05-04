@@ -12,6 +12,7 @@ import Navbar from "~/components/Navbar";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import AdminNavBar from "~/components/AdminNavbar";
+import Head from "next/head";
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   const [isAdmin, setIsAdmin] = useState(false);
@@ -23,12 +24,22 @@ const MyApp: AppType = ({ Component, pageProps }) => {
   }, [router]);
 
   return (
-    <ChakraProvider>
-      <header>{isAdmin ? <AdminNavBar /> : <Navbar />}</header>
-      <main>
-        <Component {...pageProps} />
-      </main>
-    </ChakraProvider>
+    <>
+      <Head>
+        <title>FC Restaurant</title>
+        <meta
+          name="description"
+          content="FC Restaurant Booking Online Order App"
+        />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+      <ChakraProvider>
+        <header>{isAdmin ? <AdminNavBar /> : <Navbar />}</header>
+        <main>
+          <Component {...pageProps} />
+        </main>
+      </ChakraProvider>
+    </>
   );
 };
 
