@@ -4,6 +4,7 @@ import { now } from "~/constants/config";
 import { isBefore } from "date-fns";
 import { isAfter } from "date-fns";
 import { isToday } from "date-fns";
+import { tomorrow } from "~/constants/config";
 
 interface booking {
   id: string;
@@ -30,6 +31,7 @@ const Booking: FC = ({}) => {
   const [filteredBooking, setFilteredBooking] = useState<
     booking[] | null | false | undefined
   >(null);
+  const [filter, setFilter] = useState<string>("");
   const { data: bookings } = api.admin.getBookings.useQuery();
   const { data: findPreorders } = api.admin.getPreorders.useQuery(
     bookings?.map((booking) => booking.id) || []
@@ -46,9 +48,38 @@ const Booking: FC = ({}) => {
       setFilteredBooking(
         [...booking].sort((a, b) => a.dateTime.getTime() - b.dateTime.getTime())
       );
-      console.log(findPreorders);
     }
   }, [booking]);
+
+  useEffect(() => {
+    switch (filter) {
+      case "all":
+        setBooking(bookings!);
+        break;
+      case "passed":
+        setBooking(
+          bookings?.filter(
+            (booking) =>
+              isBefore(booking.dateTime, now.setHours(0, 0, 0, 0)) &&
+              !isToday(booking.dateTime)
+          )!
+        );
+        break;
+      case "today":
+        setBooking(bookings?.filter((booking) => isToday(booking.dateTime))!);
+        break;
+      case "upcoming":
+        setBooking(
+          bookings?.filter((booking) =>
+            isAfter(booking.dateTime, now.setHours(0, 0, 0, 0))
+          )!
+        );
+        break;
+      default:
+        setBooking(bookings!);
+        break;
+    }
+  }, [filter]);
 
   const toggleHidden = (event: React.MouseEvent<HTMLButtonElement>) => {
     const button = event.target as HTMLButtonElement;
@@ -57,21 +88,32 @@ const Booking: FC = ({}) => {
     hiddenTag.classList.toggle("hidden");
   };
 
+  const checkDatePassed = (date: Date) => {
+    if (isToday(date)) {
+      return "today";
+    } else if (isBefore(date, now.setHours(0, 0, 0, 0))) {
+      return "passed";
+    } else {
+      return "upcoming";
+    }
+  };
+
   return (
     <div>
       <div className="relative overflow-x-auto">
-
-        <div className="mb-2 mt-6 p-4 flex items-center justify-between">
-          <div className="w-full flex items-center ju">
-            <label className="mr-2" htmlFor="filter">Filter</label>
+        <div className="mb-2 mt-6 flex items-center justify-between p-4">
+          <div className="ju flex w-full items-center">
+            <label className="mr-2" htmlFor="filter">
+              Filter
+            </label>
             <select
               id="filter"
               name="filter"
               className=" block h-full w-1/3 appearance-none rounded-r border border-gray-400 bg-white px-4 py-2 pr-8 leading-tight text-gray-700 focus:border-2 focus:border-gray-500 focus:bg-white focus:outline-none sm:rounded-r-none"
-              onChange={(e) => console.log(e.target.value)}
-           >
+              onChange={(e) => setFilter(e.target.value)}
+            >
               <option value="all">All</option>
-              <option value="past">Past</option>
+              <option value="passed">Past</option>
               <option value="today">Today</option>
               <option value="upcoming">Upcoming</option>
             </select>
@@ -153,16 +195,13 @@ const Booking: FC = ({}) => {
                   key={booking.id}
                   className={`border-b bg-white  dark:border-gray-700 dark:bg-gray-800
                   ${
-                    isBefore(booking.dateTime, now.setHours(0, 0, 0, 0))
+                    checkDatePassed(booking.dateTime) === "today"
+                      ? "text-green-600"
+                      : checkDatePassed(booking.dateTime) === "passed"
                       ? "text-red-600"
-                      : ""
+                      : "text-gray-700"
                   }
-                  ${isToday(booking.dateTime) ? "text-green-600" : ""}
-                  ${
-                    isAfter(booking.dateTime, now.setHours(0, 0, 0, 0))
-                      ? "text-gray-700"
-                      : ""
-                  }
+
                   `}
                 >
                   <th
