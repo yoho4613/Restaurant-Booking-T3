@@ -5,8 +5,6 @@ import { isBefore } from "date-fns";
 import { isAfter } from "date-fns";
 import { isToday } from "date-fns";
 
-
-
 interface booking {
   id: string;
   createdAt: Date;
@@ -62,8 +60,22 @@ const Booking: FC = ({}) => {
   return (
     <div>
       <div className="relative overflow-x-auto">
-        <div></div>
-        <div className="mb-2 mt-6 flex items-center justify-end">
+
+        <div className="mb-2 mt-6 p-4 flex items-center justify-between">
+          <div className="w-full flex items-center ju">
+            <label className="mr-2" htmlFor="filter">Filter</label>
+            <select
+              id="filter"
+              name="filter"
+              className=" block h-full w-1/3 appearance-none rounded-r border border-gray-400 bg-white px-4 py-2 pr-8 leading-tight text-gray-700 focus:border-2 focus:border-gray-500 focus:bg-white focus:outline-none sm:rounded-r-none"
+              onChange={(e) => console.log(e.target.value)}
+           >
+              <option value="all">All</option>
+              <option value="past">Past</option>
+              <option value="today">Today</option>
+              <option value="upcoming">Upcoming</option>
+            </select>
+          </div>
           <label htmlFor="simple-search" className="sr-only">
             Search
           </label>
@@ -141,17 +153,15 @@ const Booking: FC = ({}) => {
                   key={booking.id}
                   className={`border-b bg-white  dark:border-gray-700 dark:bg-gray-800
                   ${
-                    isBefore(
-                      booking.dateTime,
-                      now.setHours(0, 0, 0, 0)
-                    ) ? "text-red-600" : ""
+                    isBefore(booking.dateTime, now.setHours(0, 0, 0, 0))
+                      ? "text-red-600"
+                      : ""
                   }
                   ${isToday(booking.dateTime) ? "text-green-600" : ""}
                   ${
-                    isAfter(
-                      booking.dateTime,
-                      now.setHours(0, 0, 0, 0)
-                    ) ? "text-gray-700" : ""
+                    isAfter(booking.dateTime, now.setHours(0, 0, 0, 0))
+                      ? "text-gray-700"
+                      : ""
                   }
                   `}
                 >
