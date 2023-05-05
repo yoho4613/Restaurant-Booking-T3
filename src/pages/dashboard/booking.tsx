@@ -52,32 +52,34 @@ const Booking: FC = ({}) => {
   }, [booking]);
 
   useEffect(() => {
-    switch (filter) {
-      case "all":
-        setBooking(bookings!);
-        break;
-      case "passed":
-        setBooking(
-          bookings?.filter(
-            (booking) =>
-              isBefore(booking.dateTime, now.setHours(0, 0, 0, 0)) &&
-              !isToday(booking.dateTime)
-          )!
-        );
-        break;
-      case "today":
-        setBooking(bookings?.filter((booking) => isToday(booking.dateTime))!);
-        break;
-      case "upcoming":
-        setBooking(
-          bookings?.filter((booking) =>
-            isAfter(booking.dateTime, now.setHours(0, 0, 0, 0))
-          )!
-        );
-        break;
-      default:
-        setBooking(bookings!);
-        break;
+    if (bookings && bookings.length) {
+      switch (filter) {
+        case "all":
+          setBooking(bookings);
+          break;
+        case "passed":
+          setBooking(
+            bookings.filter(
+              (booking) =>
+                isBefore(booking.dateTime, now.setHours(0, 0, 0, 0)) &&
+                !isToday(booking.dateTime)
+            )
+          );
+          break;
+        case "today":
+          setBooking(bookings.filter((booking) => isToday(booking.dateTime)));
+          break;
+        case "upcoming":
+          setBooking(
+            bookings.filter((booking) =>
+              isAfter(booking.dateTime, now.setHours(0, 0, 0, 0))
+            )
+          );
+          break;
+        default:
+          setBooking(bookings);
+          break;
+      }
     }
   }, [filter]);
 
@@ -226,7 +228,12 @@ const Booking: FC = ({}) => {
                   <td className="px-6 py-4">
                     {booking.preorder ? (
                       <div>
-                        <button onClick={toggleHidden}>View Detail</button>
+                        <button
+                          className=" rounded-lg bg-slate-200 p-2"
+                          onClick={toggleHidden}
+                        >
+                          View Detail
+                        </button>
                         <div className="fixed left-1/2 top-1/2 hidden bg-slate-600 bg-opacity-60 p-6">
                           <button
                             className=" p-2 text-xl font-extrabold text-white"
