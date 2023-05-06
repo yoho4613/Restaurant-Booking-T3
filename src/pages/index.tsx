@@ -13,8 +13,7 @@ interface HomeProps {
 const Home: NextPage<HomeProps> = ({ days, closedDays }) => {
   return (
     <>
-     
-      <main>
+      <main className="banner">
         <Landing />
         {/* <Calendar days={days} closedDays={closedDays} /> */}
       </main>

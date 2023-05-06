@@ -8,6 +8,3 @@ export const categories = ["all", "breakfast", "lunch", "dinner"] as const;
 
 export const now = new Date();
 export const tomorrow = new Date(now.setDate(now.getDate() + 1));
-
-
-export const PRIMARY_COLOR_THEME = "#3493EC"
