@@ -82,8 +82,8 @@ export const checkoutRouter = createTRPCRouter({
             name: input.customerDetail.name,
             bookingTime: input.customerDetail.dateTime.toISOString(),
           },
-          success_url: "http://localhost:3000/success",
-          cancel_url: "https://localhost:3000/",
+          success_url: `http://${window.location.origin}/success`,
+          cancel_url: `https://${window.location.origin}/`,
         });
 
         return {
