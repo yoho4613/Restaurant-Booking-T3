@@ -1,22 +1,16 @@
 import Link from "next/link";
 
 import React, { FC } from "react";
+import Booking from "~/components/Admin/Booking";
+import DayOfWeekRatio from "~/components/Admin/DayOfWeekRatio";
 
 
 
 
 const dashboard: FC = ({}) => {
   
-  // return (
-  //   <div className="flex h-screen w-full items-center justify-center gap-8 font-medium">
-  //     <Link className="rounded-md bg-gray-100 p-2" href="/dashboard/opening">
-  //       Opening Hours
-  //     </Link>
-  //     <Link className="rounded-md bg-gray-100 p-2" href="/dashboard/menu">
-  //       Menu
-  //     </Link>
-  //   </div>
-  // );
+
+  // Booking Rate by date
 
   return (
     <div className="flex h-screen flex-col">
@@ -26,9 +20,9 @@ const dashboard: FC = ({}) => {
           <div className="mt-4 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             <div className="overflow-hidden rounded-lg bg-white shadow">
               <div className="px-4 py-5 sm:p-6">
-                <h2 className="text-lg font-medium text-gray-900">Booking</h2>
+                <h2 className="text-lg font-medium text-gray-900">This Week</h2>
                 <div className="mt-2 text-sm text-gray-600">
-                  <p>You have 1234 registered bookings.</p>
+                  <Booking />
                 </div>
               </div>
             </div>
@@ -49,6 +43,9 @@ const dashboard: FC = ({}) => {
               </div>
             </div>
           </div>
+        </div>
+        <div>
+          <DayOfWeekRatio />
         </div>
       </main>
       <footer className="bg-gray-800 py-2 text-white">

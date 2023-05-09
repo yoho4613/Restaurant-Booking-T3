@@ -3,7 +3,7 @@ export interface DateType {
   dateTime: Date | null;
 }
 
-interface CustomerDetail {
+export interface CustomerDetail {
   dateTime: string;
   email: string;
   mobile: string;
@@ -13,3 +13,14 @@ interface CustomerDetail {
 }
 
 type Categories = typeof categories[number]
+
+export interface Booking {
+  id: string,
+  email: string,
+  createdAt: Date,
+  dateTime: Date,
+  mobile: string,
+  name: string,
+  people: string,
+  preorder: boolean
+}
