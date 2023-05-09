@@ -3,6 +3,7 @@ import React, { FC } from "react";
 import { IoMdTimer } from "react-icons/io";
 import { GoLocation } from "react-icons/go";
 import { BiPhoneCall } from "react-icons/bi";
+import Link from "next/link";
 
 const Landing: FC = ({}) => {
   return (
@@ -19,9 +20,9 @@ const Landing: FC = ({}) => {
             Lorem ipsum dolor sit amet consectetur, adipisicing elit. Officia
             saepe explicabo expedita modi
           </p>
-          <button className="rounded-full bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700">
+          <Link href="/booking" className="rounded-full bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700">
             Book Now!
-          </button>
+          </Link>
         </div>
         <div className="mt-8 flex flex-col items-center justify-evenly gap-4 md:mt-32 md:flex-row md:w-full md:gap-0">
           <div className="flex w-32 flex-col items-center border-2 p-3 ">
