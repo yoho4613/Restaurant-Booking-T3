@@ -25,6 +25,7 @@ export const checkoutRouter = createTRPCRouter({
           dateTime: z.date(),
           preorder: z.boolean(),
         }),
+        url: z.string()
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -82,8 +83,8 @@ export const checkoutRouter = createTRPCRouter({
             name: input.customerDetail.name,
             bookingTime: input.customerDetail.dateTime.toISOString(),
           },
-          success_url: `http://${window.location.origin}/success`,
-          cancel_url: `https://${window.location.origin}/`,
+          success_url: `http://${input.url}/success`,
+          cancel_url: `https://${input.url}/`,
         });
 
         return {
