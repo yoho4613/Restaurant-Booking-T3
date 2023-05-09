@@ -81,6 +81,7 @@ export const adminRouter = createTRPCRouter({
             ],
           },
           (err, data) => {
+            console.log(err)
             if (err) return reject(err);
             resolve(data);
           }
