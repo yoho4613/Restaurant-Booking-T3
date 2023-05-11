@@ -69,7 +69,6 @@ const TimeSelector: FC<TimeSelectorProps> = ({
                 {timeOptions.map((time) => {
                   return (
                     <Listbox.Option
-                      onClick={() => console.log(timeOptions)}
                       key={time}
                       className={({ active }) =>
                         classNames(

@@ -143,7 +143,6 @@ export const adminRouter = createTRPCRouter({
   getPreorders: adminProcedure
     .input(z.array(z.string()))
     .query(async ({ ctx, input }) => {
-      console.log(input)
       const preorders = await ctx.prisma.preorder.findMany({
         where: {
           bookingId: {
