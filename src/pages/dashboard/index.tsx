@@ -7,7 +7,7 @@ import Bookings from "~/components/Admin/Booking";
 import DayOfWeekRatio from "~/components/Admin/DayOfWeekRatio";
 import { api } from "~/utils/api";
 
-const dashboard: FC = ({}) => {
+const Dashboard: FC = ({}) => {
   const { data: bookings } = api.admin.getBookings.useQuery<Booking | []>();
   const [thisWeekBooking, setThisWeekBooking] = useState<Booking[] | []>([]);
   const [chartName, setChartName] = useState("weekly");
@@ -379,4 +379,4 @@ const dashboard: FC = ({}) => {
   );
 };
 
-export default dashboard;
+export default Dashboard;
