@@ -59,15 +59,17 @@ export const bookingRouter = createTRPCRouter({
         bookingId: z.string(),
         item: z.string(),
         quantity: z.number(),
+        price: z.number()
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { bookingId, item, quantity } = input;
+      const { bookingId, item, quantity, price } = input;
       const preorder = await ctx.prisma.preorder.create({
         data: {
           bookingId,
           item,
           quantity,
+          price
         },
       });
 
