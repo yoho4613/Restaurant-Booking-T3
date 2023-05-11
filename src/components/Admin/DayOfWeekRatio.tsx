@@ -1,69 +1,156 @@
 import React, { FC, useEffect, useState, useRef } from "react";
-import { Chart, ChartData, registerables} from 'chart.js'
-Chart.register(...registerables)
+import { Chart, ChartData, registerables } from "chart.js";
+
+import {
+  isFriday,
+  isMonday,
+  isSaturday,
+  isSunday,
+  isThursday,
+  isTuesday,
+  isWednesday,
+} from "date-fns";
+import { Booking } from "@types";
+Chart.register(...registerables);
 
 interface DayOfWeekRatioProps {
-
+  bookings: Booking[] | [];
 }
 
-const DayOfWeekRatio: FC<DayOfWeekRatioProps> = ({}) => {
+const DayOfWeekRatio: FC<DayOfWeekRatioProps> = ({ bookings }) => {
   // const [chart, setChart] = useState<Chart | null>(null);
+  const [bookingData, setBookingData] = useState<number[] | []>([]);
+  const [preorderData, setPreorderData] = useState<number[] | []>([]);
 
-  const formatData = (data: number[]): ChartData => ({
-    labels: ["a", "b", "c", "d", "e", "f", "g", "h"],
-    datasets: [{ data }]
-  });
+  useEffect(() => {
+    if (bookings.length) {
+      console.log(bookings);
+      let dataArray: number[] = [];
+      let preorderArray: number[] = [];
+      for (let i = 0; i < 7; i++) {
+        switch (i) {
+          case 0:
+            dataArray.push(
+              bookings.filter((booking) => isMonday(new Date(booking.dateTime)))
+                .length
+            );
+            preorderArray.push(
+              bookings.filter(
+                (booking) =>
+                  isMonday(new Date(booking.dateTime)) && booking.preorder
+              ).length
+            );
+            break;
+          case 1:
+            dataArray.push(
+              bookings.filter((booking) =>
+                isTuesday(new Date(booking.dateTime))
+              ).length
+            );
+            preorderArray.push(
+              bookings.filter(
+                (booking) =>
+                  isTuesday(new Date(booking.dateTime)) && booking.preorder
+              ).length
+            );
+            break;
+          case 2:
+            dataArray.push(
+              bookings.filter((booking) =>
+                isWednesday(new Date(booking.dateTime))
+              ).length
+            );
+            preorderArray.push(
+              bookings.filter(
+                (booking) =>
+                  isWednesday(new Date(booking.dateTime)) && booking.preorder
+              ).length
+            );
+            break;
+          case 3:
+            dataArray.push(
+              bookings.filter((booking) =>
+                isThursday(new Date(booking.dateTime))
+              ).length
+            );
+            preorderArray.push(
+              bookings.filter(
+                (booking) =>
+                  isThursday(new Date(booking.dateTime)) && booking.preorder
+              ).length
+            );
+            break;
+          case 4:
+            dataArray.push(
+              bookings.filter((booking) => isFriday(new Date(booking.dateTime)))
+                .length
+            );
+            preorderArray.push(
+              bookings.filter(
+                (booking) =>
+                  isFriday(new Date(booking.dateTime)) && booking.preorder
+              ).length
+            );
+            break;
+          case 5:
+            dataArray.push(
+              bookings.filter((booking) =>
+                isSaturday(new Date(booking.dateTime))
+              ).length
+            );
+            preorderArray.push(
+              bookings.filter(
+                (booking) =>
+                  isSaturday(new Date(booking.dateTime)) && booking.preorder
+              ).length
+            );
+            break;
+          case 6:
+            dataArray.push(
+              bookings.filter((booking) => isSunday(new Date(booking.dateTime)))
+                .length
+            );
+            preorderArray.push(
+              bookings.filter(
+                (booking) =>
+                  isSunday(new Date(booking.dateTime)) && booking.preorder
+              ).length
+            );
+            break;
+          default:
+            break;
+        }
+      }
 
+      setBookingData(dataArray);
+      setPreorderData(preorderArray);
+    }
+  }, [bookings]);
 
-  // const data = {
-  //   labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-  //   datasets: [
-  //     {
-  //       label: 'My First Dataset',
-  //       data: [65, 59, 80, 81, 56, 55, 40],
-  //       fill: false,
-  //       backgroundColor: 'rgb(255, 99, 132)',
-  //       borderColor: 'rgba(255, 99, 132, 0.2)',
-  //     },
-  //     {
-  //       label: 'My Second Dataset',
-  //       data: [28, 48, 40, 19, 86, 27, 90],
-  //       fill: false,
-  //       backgroundColor: 'rgb(54, 162, 235)',
-  //       borderColor: 'rgba(54, 162, 235, 0.2)',
-  //     },
-  //   ],
-  // };
-  
-  // const options = {
-  //   scales: {
-  //     yAxes: [
-  //       {
-  //         ticks: {
-  //           beginAtZero: true,
-  //         },
-  //       },
-  //     ],
-  //   },
-  // };
-  const chartData = [1,2,3,4,5,6,7, 8]
   const chartRef = useRef<Chart | null>(null);
 
   const canvasCallback = (canvas: HTMLCanvasElement | null) => {
+    chartRef.current?.destroy();
+
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (ctx) {
       chartRef.current = new Chart(ctx, {
         type: "bar",
-        data: formatData(chartData),
-        options: { responsive: true }
+        data: {
+          labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+          datasets: [
+            { data: bookingData, label: "Bookings" },
+            { data: preorderData, label: "With Preorder" },
+          ],
+        },
+        options: { responsive: true },
       });
     }
   };
 
-
   return (
-    <div>
+    <div className="mb-6 mt-0 w-full max-w-full px-3 lg:mb-0 lg:flex-none">
       <canvas ref={canvasCallback}></canvas>
     </div>
   );
