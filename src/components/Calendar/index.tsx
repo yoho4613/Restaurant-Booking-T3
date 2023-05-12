@@ -1,6 +1,6 @@
 import React, { FC } from "react";
 import ReactCalendar from "react-calendar";
-import { format, formatISO, isBefore, parse } from "date-fns";
+import { format, formatISO, getDay, isBefore, parse } from "date-fns";
 import { DateType } from "@types";
 import { getOpeningTimes, roundToNearestMinutes } from "~/utils/helpers";
 import { Day } from "@prisma/client";
@@ -12,6 +12,7 @@ interface CalendarProps {
   date: DateType;
   setDate: (date: any) => void;
   setCustomerDetail: React.Dispatch<React.SetStateAction<boolean>>;
+  dayOff: number[];
 }
 
 const CalendarComponent: FC<CalendarProps> = ({
@@ -20,6 +21,7 @@ const CalendarComponent: FC<CalendarProps> = ({
   days,
   closedDays,
   setCustomerDetail,
+  dayOff,
 }) => {
   // Determine if today is closed
   const today = days.find((day) => day.dayOfWeek === now.getDay());
@@ -29,6 +31,7 @@ const CalendarComponent: FC<CalendarProps> = ({
   if (tooLate) closedDays.push(formatISO(new Date().setHours(0, 0, 0, 0)));
 
   const times = date.justDate && getOpeningTimes(date.justDate, days);
+
   return (
     <div className="flex h-screen flex-col items-center justify-center">
       {date?.justDate ? (
@@ -79,10 +82,13 @@ const CalendarComponent: FC<CalendarProps> = ({
         </>
       ) : (
         <ReactCalendar
-          minDate={now}
+          minDate={new Date()}
           className="REACT-CALENDAR p-2"
           view="month"
-          tileDisabled={({ date }) => closedDays.includes(formatISO(date))}
+          tileDisabled={({ date }) => {
+            const dayOfWeek = getDay(date);
+            return closedDays.includes(formatISO(date)) || dayOff.includes(dayOfWeek)
+          }}
           onClickDay={(date) =>
             setDate((prev: DateType) => ({ ...prev, justDate: date }))
           }

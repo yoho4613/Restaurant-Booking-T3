@@ -7,10 +7,11 @@ import { now } from "~/constants/config";
 import { api } from "~/utils/api";
 import { BsCart } from "react-icons/bs";
 import Cart from "~/components/Cart";
-import { NavigateTo } from "~/utils/helpers";
+
 import { CustomerDetail } from "@types";
 
 const MenuPage: FC = ({}) => {
+  const router = useRouter()
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const { isFetchedAfterMount } = api.menu.checkMenuStatus.useQuery(
     undefined,
@@ -51,10 +52,11 @@ const MenuPage: FC = ({}) => {
 
   useEffect(() => {
     const selectedTime = localStorage.getItem("selectedTime");
-    if (!selectedTime) NavigateTo("/");
+    if (!selectedTime) router.push("/").then(res => res).catch((err:Error) => console.log(err))
     else {
       const date = parseISO(selectedTime);
-      if (date < now) NavigateTo("/");
+      console.log("now",now)
+      if (date < new Date()) router.push("/").then(res => res).catch((err:Error) => console.log(err))
 
       // Date is valied
       setSelectedTime(selectedTime);

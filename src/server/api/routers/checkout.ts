@@ -101,6 +101,7 @@ export const checkoutRouter = createTRPCRouter({
                   bookingId: res.id,
                   item: product.name,
                   quantity: product.quantity,
+                  price: product.price
                 })),
               })
             ),

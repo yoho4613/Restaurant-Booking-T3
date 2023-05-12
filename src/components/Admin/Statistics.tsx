@@ -34,7 +34,7 @@ const Statistics: FC<StatisticsProps> = ({ bookings }) => {
   }
 
   const checkActiveBooking = () => {
-    let rate:number = ((prevWeek.length - thisWeek.length) / prevWeek.length) * 100;
+    const rate:number = ((prevWeek.length - thisWeek.length) / prevWeek.length) * 100;
     if(prevWeek.length === thisWeek.length) {
       return <span>0%</span>
     } else if (prevWeek.length >= thisWeek.length) {

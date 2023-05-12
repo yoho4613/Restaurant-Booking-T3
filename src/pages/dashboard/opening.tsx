@@ -2,7 +2,7 @@ import TimeSelector from "@components/TimeSelector";
 import { Switch } from "@headlessui/react";
 import { Day } from "@prisma/client";
 import { formatISO } from "date-fns";
-import { type FC, useState } from "react";
+import { type FC, useState, ChangeEvent } from "react";
 import { Calendar } from "react-calendar";
 import toast, { Toaster } from "react-hot-toast";
 import { now } from "~/constants/config";
@@ -23,36 +23,43 @@ const Opening: FC<OpeningProps> = ({ days }) => {
       name: "sunday",
       openTime: days[0]!.openTime,
       closeTime: days[0]!.closeTime,
+      open: days[0]!.open,
     },
     {
       name: "monday",
       openTime: days[1]!.openTime,
       closeTime: days[1]!.closeTime,
+      open: days[1]!.open,
     },
     {
       name: "tuesday",
       openTime: days[2]!.openTime,
       closeTime: days[2]!.closeTime,
+      open: days[2]!.open,
     },
     {
       name: "wednesday",
       openTime: days[3]!.openTime,
       closeTime: days[3]!.closeTime,
+      open: days[3]!.open,
     },
     {
       name: "thursday",
       openTime: days[4]!.openTime,
       closeTime: days[4]!.closeTime,
+      open: days[4]!.open,
     },
     {
       name: "friday",
       openTime: days[5]!.openTime,
       closeTime: days[5]!.closeTime,
+      open: days[5]!.open,
     },
     {
       name: "saturday",
       openTime: days[6]!.openTime,
       closeTime: days[6]!.closeTime,
+      open: days[6]!.open,
     },
   ]);
 
@@ -84,6 +91,23 @@ const Opening: FC<OpeningProps> = ({ days }) => {
       setOpeningHrs(newOpeningHrs);
     };
   }
+
+  const changeDayOff = (e: ChangeEvent<HTMLInputElement>, day: Day) => {
+    const index = openingHrs.findIndex(
+      (x) => x.name === weekdayIndexToName(day.dayOfWeek)
+    );
+    let newOpeningHrs;
+    if (e.target.checked) {
+      newOpeningHrs = openingHrs.map((day, i) =>
+      i === index ? { ...day, open: false } : day
+      );
+    } else {
+      newOpeningHrs = openingHrs.map((day, i) =>
+        i === index ? { ...day, open: true } : day
+      );
+    }
+    setOpeningHrs(newOpeningHrs)
+  };
 
   return (
     <div className="mx-auto max-w-xl">
@@ -117,7 +141,7 @@ const Opening: FC<OpeningProps> = ({ days }) => {
             const changeTime = _changeTime(day);
             return (
               <div className="flex items-center" key={day.id}>
-                <div className="grid grid-cols-1 sm:grid-cols-3 place-items-center">
+                <div className="grid grid-cols-1 place-items-center sm:grid-cols-3">
                   <h3 className="font-semibold">
                     {capitalize(weekdayIndexToName(day.dayOfWeek)!)}
                   </h3>
@@ -149,20 +173,21 @@ const Opening: FC<OpeningProps> = ({ days }) => {
                     />
                   </div>
                 </div>
-                  <div className=" ml-6 flex items-center">
-                    <input
-                      id="default-checkbox"
-                      type="checkbox"
-                      value=""
-                      className="h-4 w-4 rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600"
-                    />
-                    <label
-                      htmlFor="default-checkbox"
-                      className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                    >
-                      Close this date
-                    </label>
-                  </div>
+                <div className=" ml-6 flex items-center">
+                  <input
+                    id="default-checkbox"
+                    type="checkbox"
+                    defaultChecked={!day.open}
+                    onChange={(e) => changeDayOff(e, day)}
+                    className="h-4 w-4 rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600"
+                  />
+                  <label
+                    htmlFor="default-checkbox"
+                    className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                  >
+                    Close this date
+                  </label>
+                </div>
               </div>
             );
           })}
