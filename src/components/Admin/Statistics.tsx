@@ -22,11 +22,6 @@ const Statistics: FC<StatisticsProps> = ({ bookings }) => {
     }
   }, [bookings]);
 
-  useEffect(() => {
-    console.log(thisWeek);
-    console.log(prevWeek);
-  }, [thisWeek, prevWeek]);
-
   function getLastWeeksDate() {
     const now = new Date();
 

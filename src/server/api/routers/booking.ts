@@ -27,30 +27,26 @@ export const bookingRouter = createTRPCRouter({
       });
       return booking;
     }),
-    cancelBooking: publicProcedure
+
+  cancelBooking: publicProcedure
     .input(
       z.object({
-        name: z.string(),
-        people: z.string(),
-        mobile: z.string(),
+        id: z.string(),
         email: z.string(),
-        preorder: z.boolean(),
-        dateTime: z.date(),
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { name, people, mobile, email, preorder, dateTime } = input;
-      const booking = await ctx.prisma.booking.create({
-        data: {
-          name,
-          people,
-          mobile,
-          email,
-          preorder,
-          dateTime,
-        },
-      });
-      return booking;
+      const { id } = input;
+   
+
+        const booking = await ctx.prisma.booking.delete({
+          where: {
+            id,
+          },
+        });
+        return booking;
+     
+
     }),
 
   addPreorder: publicProcedure
@@ -59,7 +55,7 @@ export const bookingRouter = createTRPCRouter({
         bookingId: z.string(),
         item: z.string(),
         quantity: z.number(),
-        price: z.number()
+        price: z.number(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -69,12 +65,10 @@ export const bookingRouter = createTRPCRouter({
           bookingId,
           item,
           quantity,
-          price
+          price,
         },
       });
 
       return preorder;
     }),
-
-
 });

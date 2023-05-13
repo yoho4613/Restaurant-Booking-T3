@@ -24,7 +24,6 @@ const DayOfWeekRatio: FC<DayOfWeekRatioProps> = ({ bookings }) => {
 
   useEffect(() => {
     if (bookings.length) {
-      console.log(bookings);
       const dataArray: number[] = [];
       const preorderArray: number[] = [];
       for (let i = 0; i < 7; i++) {

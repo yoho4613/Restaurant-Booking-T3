@@ -1,5 +1,5 @@
 import { s3 } from "~/lib/s3";
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { adminProcedure, createTRPCRouter, publicProcedure } from "../trpc";
 import { z } from "zod";
 
 export const sleep = (ms: number) =>

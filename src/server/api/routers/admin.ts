@@ -136,7 +136,6 @@ export const adminRouter = createTRPCRouter({
   getBookings: adminProcedure
     .query(async ({ ctx, input }) => {
       const bookings = await ctx.prisma.booking.findMany();
-
       return bookings;
     }),
 

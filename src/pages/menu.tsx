@@ -55,7 +55,7 @@ const MenuPage: FC = ({}) => {
     if (!selectedTime) router.push("/").then(res => res).catch((err:Error) => console.log(err))
     else {
       const date = parseISO(selectedTime);
-      console.log("now",now)
+
       if (date < new Date()) router.push("/").then(res => res).catch((err:Error) => console.log(err))
 
       // Date is valied

@@ -42,6 +42,7 @@ model Booking {
   email     String
   preorder  Boolean
   dateTime  DateTime
+  canceled  Boolean @default(false)
 }
 
 model Preorder {

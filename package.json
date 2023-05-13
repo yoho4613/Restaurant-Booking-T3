@@ -9,6 +9,9 @@
     "lint": "next lint",
     "start": "next start"
   },
+  "prisma": {
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+  },
   "dependencies": {
     "@chakra-ui/react": "^1.8.9",
     "@emotion/react": "^11.10.8",
@@ -44,6 +47,7 @@
   "devDependencies": {
     "@types/cookie": "^0.5.1",
     "@types/eslint": "^8.21.3",
+    "@types/faker": "^6.6.9",
     "@types/node": "^18.15.5",
     "@types/prettier": "^2.7.2",
     "@types/react": "^18.0.28",
@@ -53,11 +57,13 @@
     "autoprefixer": "^10.4.14",
     "eslint": "^8.36.0",
     "eslint-config-next": "^13.2.4",
+    "faker": "^5.5.3",
     "postcss": "^8.4.21",
     "prettier": "^2.8.6",
     "prettier-plugin-tailwindcss": "^0.2.6",
     "prisma": "^4.11.0",
-    "tailwindcss": "^3.3.0"
+    "tailwindcss": "^3.3.0",
+    "ts-node": "^10.9.1"
   },
   "ct3aMetadata": {
     "initVersion": "7.11.0"

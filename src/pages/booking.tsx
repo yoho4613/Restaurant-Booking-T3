@@ -115,7 +115,6 @@ export async function getServerSideProps() {
   const closedDays = (await prisma.closedDay.findMany())?.map((day) =>
     formatISO(day.date)
   );
-
   return { props: { days, closedDays } };
 }
 
