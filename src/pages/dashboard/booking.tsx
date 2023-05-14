@@ -1,10 +1,12 @@
 import React, { FC, useEffect, useState } from "react";
 import { api } from "~/utils/api";
 import { now } from "~/constants/config";
-import { isBefore } from "date-fns";
+import { formatISO, getDay, isBefore, isSameDay } from "date-fns";
 import { isAfter } from "date-fns";
 import { isToday } from "date-fns";
-import { prisma } from "~/server/db";
+import ReactCalendar from "react-calendar";
+import { prisma } from "../../server/db";
+import { Day } from "@prisma/client";
 
 interface booking {
   id: string;
@@ -17,16 +19,15 @@ interface booking {
   dateTime: Date;
   canceled: boolean;
 }
-interface Preorder {
-  id: string;
-  bookingId: string;
-  item: string;
-  quantity: string;
-  createdAt: Date;
-  updatedAt: Date;
+
+interface BookingProps {
+  days: Day[];
+  closedDays: string[];
 }
 
-const Booking: FC = ({}) => {
+const Booking: FC<BookingProps> = ({ days, closedDays }) => {
+  const [date, setDate] = useState<Date>();
+  const [openCalendar, setOpenCalendar] = useState<boolean>(false);
   const [booking, setBooking] = useState<booking[] | null | false>(null);
   const [filteredBooking, setFilteredBooking] = useState<
     booking[] | null | false | undefined
@@ -36,9 +37,9 @@ const Booking: FC = ({}) => {
   const { data: findPreorders } = api.admin.getPreorders.useQuery(
     bookings?.map((booking) => booking.id) || []
   );
-  const { mutate: cancel, isLoading } = api.booking.cancelBooking.useMutation({
+  const { mutate: cancel } = api.booking.cancelBooking.useMutation({
     onSuccess: (data) => {
-      setBooking(data)
+      setBooking(data);
     },
   });
 
@@ -120,6 +121,38 @@ const Booking: FC = ({}) => {
 
   return (
     <div>
+      {openCalendar && (
+        <div className="absolute left-0 top-0 z-10 sm:left-1/3 sm:top-24">
+          <button
+            onClick={() => setOpenCalendar(false)}
+            type="button"
+            className="right-0 mb-2 mr-2 rounded-full bg-red-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+          >
+            X
+          </button>
+          <ReactCalendar
+            className="REACT-CALENDAR w-full p-2"
+            view="month"
+            tileDisabled={({ date }) => {
+              const dayOfWeek = getDay(date);
+              return (
+                closedDays.includes(formatISO(date)) ||
+                days
+                  .filter((day) => !day.open)
+                  .map((day) => day.dayOfWeek)
+                  .includes(dayOfWeek)
+              );
+            }}
+            onClickDay={(date) =>
+              bookings &&
+              setFilteredBooking(
+                bookings.filter((book) => isSameDay(book.dateTime, date))
+              )
+            }
+          />
+        </div>
+      )}
+      
       <div className="relative overflow-x-auto">
         <div className="mb-2 mt-6 flex items-center justify-between p-4">
           <div className="ju flex w-full items-center">
@@ -138,6 +171,18 @@ const Booking: FC = ({}) => {
               <option value="today">Today</option>
               <option value="upcoming">Upcoming</option>
             </select>
+            <button
+              onClick={() => setOpenCalendar(true)}
+              type="button"
+              className="w-12 "
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path
+                  d="M9 1V3H15V1H17V3H21C21.5523 3 22 3.44772 22 4V20C22 20.5523 21.5523 21 21 21H3C2.44772 21 2 20.5523 2 20V4C2 3.44772 2.44772 3 3 3H7V1H9ZM20 11H4V19H20V11ZM7 5H4V9H20V5H17V7H15V5H9V7H7V5Z"
+                  fill="rgba(70,146,221,1)"
+                ></path>
+              </svg>
+            </button>
           </div>
 
           <div className="relative flex w-1/3 ">
@@ -310,3 +355,11 @@ const Booking: FC = ({}) => {
 };
 
 export default Booking;
+
+export async function getServerSideProps() {
+  const days = await prisma.day.findMany();
+  const closedDays = (await prisma.closedDay.findMany())?.map((day) =>
+    formatISO(day.date)
+  );
+  return { props: { days, closedDays } };
+}
