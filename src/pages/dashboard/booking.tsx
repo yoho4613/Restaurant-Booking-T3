@@ -7,6 +7,8 @@ import { isToday } from "date-fns";
 import ReactCalendar from "react-calendar";
 import { prisma } from "../../server/db";
 import { Day } from "@prisma/client";
+import toast, { Toaster } from "react-hot-toast";
+import { useRouter } from "next/router";
 
 interface booking {
   id: string;
@@ -26,50 +28,88 @@ interface BookingProps {
 }
 
 const Booking: FC<BookingProps> = ({ days, closedDays }) => {
-  const [date, setDate] = useState<Date>();
+  const router = useRouter();
+  const [pageCount, setPageCount] = useState(1);
+  const [bookingCopy, setBookingCopy] = useState<booking[] | undefined>();
   const [openCalendar, setOpenCalendar] = useState<boolean>(false);
-  const [booking, setBooking] = useState<booking[] | null | false>(null);
   const [filteredBooking, setFilteredBooking] = useState<
     booking[] | null | false | undefined
   >(null);
   const [filter, setFilter] = useState<string>("today");
-  const { data: bookings } = api.admin.getBookings.useQuery();
+  const { data: bookings, refetch } = api.admin.getBookings.useQuery();
   const { data: findPreorders } = api.admin.getPreorders.useQuery(
     bookings?.map((booking) => booking.id) || []
   );
   const { mutate: cancel } = api.booking.cancelBooking.useMutation({
-    onSuccess: (data) => {
-      setBooking(data);
+    onSuccess: () => {
+      refetch();
     },
   });
 
-  useEffect(() => {
-    if (bookings && bookings.length) {
-      setBooking([...bookings]);
-      filterBookings();
-    }
-  }, [bookings]);
+  const song = "notification.mp3";
+  const icon = "https://via.placeholder.com/50x50";
+  const title = "New Booking";
+  const msg = "There's a new booking!";
 
   useEffect(() => {
-    if (booking) {
-      setFilteredBooking(
-        [...booking].sort((a, b) => a.dateTime.getTime() - b.dateTime.getTime())
-      );
+    setInterval(() => {
+      refetch();
+    }, 10000);
+  }, []);
+
+  useEffect(() => {
+    console.log("fetch");
+    if (bookings && bookings.length) {
+      if (bookingCopy) {
+        if (bookingCopy.length < bookings.length) {
+          const newBookings = findNewBooking(bookingCopy, bookings);
+          console.log(newBookings);
+          notifyMe(newBookings);
+          // if (newBookings.length) {
+          //   console.log(newBookings);
+          //   const tags: HTMLTableCellElement[] = []
+          //   document.querySelectorAll("th").forEach((el) =>{
+          //     console.log(el.textContent)
+          //     if(newBookings.includes(el.textContent)) {
+          //       tags.push(el)
+          //     }
+          //   }
+          //   );
+          //   console.log(tags)
+          //   tags.map((tag) => {
+          //     tag?.parentElement?.classList.add("blink_me");
+          //     setTimeout(() => {
+          //       tag?.parentElement?.classList.remove("blink_me");
+          //     }, 3000);
+          //   });
+          // }
+        }
+      }
+      filterBookings();
+      setBookingCopy(bookings);
     }
-  }, [booking]);
+  }, [bookings]);
 
   useEffect(() => {
     filterBookings();
   }, [filter]);
 
+  const findNewBooking = (oldArr: booking[], newArr: booking[]) => {
+    const oldArrIds = oldArr.map((el) => el.id);
+    const newArrIds = newArr.map((el) => el.id);
+    const bookingIds = newArrIds.filter((id) => !oldArrIds.includes(id));
+
+    return newArr.filter((booking) => bookingIds.includes(booking.id));
+  };
+
   const filterBookings = () => {
     if (bookings && bookings.length) {
       switch (filter) {
         case "all":
-          setBooking(bookings);
+          setFilteredBooking(bookings);
           break;
         case "passed":
-          setBooking(
+          setFilteredBooking(
             bookings.filter(
               (booking) =>
                 isBefore(booking.dateTime, now.setHours(0, 0, 0, 0)) &&
@@ -78,17 +118,28 @@ const Booking: FC<BookingProps> = ({ days, closedDays }) => {
           );
           break;
         case "today":
-          setBooking(bookings.filter((booking) => isToday(booking.dateTime)));
+          setFilteredBooking(
+            bookings.filter((booking) => isToday(booking.dateTime))
+          );
           break;
         case "upcoming":
-          setBooking(
+          setFilteredBooking(
             bookings.filter((booking) =>
               isAfter(booking.dateTime, now.setHours(0, 0, 0, 0))
             )
           );
           break;
         default:
-          setBooking(bookings);
+          setFilteredBooking(
+            bookings.filter(
+              (book) =>
+                book.name.toLowerCase().includes(filter.toLowerCase()) ||
+                book.id.includes(filter) ||
+                book.dateTime.toString().includes(filter) ||
+                book.mobile.includes(filter) ||
+                book.email.includes(filter)
+            )
+          );
           break;
       }
     }
@@ -113,16 +164,68 @@ const Booking: FC<BookingProps> = ({ days, closedDays }) => {
 
   const cancelBooking = (id: string) => {
     cancel({ id });
-    if (bookings) {
-      setBooking([...bookings]);
-      filterBookings();
-    }
   };
+
+  function notifyMe(bookings: booking[]) {
+    if (!("Notification" in window)) {
+      alert("This browser does not support Desktop notifications");
+    }
+    if (Notification.permission === "granted") {
+      callNotify(title, msg, icon, bookings);
+      return;
+    }
+    if (Notification.permission !== "denied") {
+      Notification.requestPermission((permission) => {
+        if (permission === "granted") {
+          callNotify(title, msg, icon, bookings);
+        }
+      });
+      return;
+    }
+  }
+
+  function callNotify(
+    title: string,
+    msg: string,
+    icone: string,
+    bookings: booking[]
+  ) {
+    new Notification(title, { body: msg, icon: icone });
+    new Audio(`/assets/${song}`).play();
+    toast((t) => (
+      <div>
+        <button
+          onClick={() => toast.dismiss(t.id)}
+          type="button"
+          className="right-0 mb-2 mr-2 rounded-full bg-red-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+        >
+          X
+        </button>
+        <br />
+        <p className="font-bold">{msg}</p>
+        {bookings.map((booking) => (
+          <button
+            type="button"
+            onClick={() =>
+              router
+                .push("/dashboard/booking")
+                .then((res) => res)
+                .catch((err: Error) => console.log(err))
+            }
+          >
+            <span>{booking.dateTime.toLocaleString()}</span>
+            <span>{booking.name}</span>
+            <span>{booking.people} people</span>
+          </button>
+        ))}
+      </div>
+    ));
+  }
 
   return (
     <div>
       {openCalendar && (
-        <div className="absolute left-0 top-0 z-10 sm:left-1/3 sm:top-24">
+        <div className="absolute left-0 top-0 z-10 rounded-md bg-gray-600 p-6 sm:left-1/3 sm:top-24">
           <button
             onClick={() => setOpenCalendar(false)}
             type="button"
@@ -143,18 +246,23 @@ const Booking: FC<BookingProps> = ({ days, closedDays }) => {
                   .includes(dayOfWeek)
               );
             }}
-            onClickDay={(date) =>
-              bookings &&
-              setFilteredBooking(
-                bookings.filter((book) => isSameDay(book.dateTime, date))
-              )
-            }
+            onClickDay={(date) => {
+              const time =
+                bookings &&
+                bookings
+                  .find((book) => isSameDay(book.dateTime, date))
+                  ?.dateTime.toString()
+                  .slice(0, 15);
+              setFilter(time || "");
+              setOpenCalendar(false);
+            }}
           />
         </div>
       )}
-      
+
       <div className="relative overflow-x-auto">
         <div className="mb-2 mt-6 flex items-center justify-between p-4">
+          <Toaster />
           <div className="ju flex w-full items-center">
             <label className="mr-2" htmlFor="filter">
               Filter
@@ -207,19 +315,7 @@ const Booking: FC<BookingProps> = ({ days, closedDays }) => {
               className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 pl-10 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500  dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
               placeholder="Search"
               onChange={(e) => {
-                setFilteredBooking(
-                  booking &&
-                    booking.filter(
-                      (book) =>
-                        book.name
-                          .toLowerCase()
-                          .includes(e.target.value.toLowerCase()) ||
-                        book.id.includes(e.target.value) ||
-                        book.dateTime.toString().includes(e.target.value) ||
-                        book.mobile.includes(e.target.value) ||
-                        book.email.includes(e.target.value)
-                    )
-                );
+                setFilter(e.target.value);
               }}
             />
             <button className="w-32 rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700">
