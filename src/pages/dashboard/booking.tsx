@@ -223,9 +223,9 @@ const Booking: FC<BookingProps> = ({ days, closedDays }) => {
                 .catch((err: Error) => console.log(err));
             }}
           >
-            <span>{booking.dateTime.toLocaleString()}</span>
-            <span>{booking.name}</span>
-            <span>{booking.people} people</span>
+            <p>{booking.dateTime.toLocaleString()}</p>
+            <p>{booking.name}</p>
+            <p>{booking.people} people</p>
           </button>
         ))}
       </div>
