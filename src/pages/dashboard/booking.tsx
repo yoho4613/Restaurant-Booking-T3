@@ -42,7 +42,9 @@ const Booking: FC<BookingProps> = ({ days, closedDays }) => {
   );
   const { mutate: cancel } = api.booking.cancelBooking.useMutation({
     onSuccess: () => {
-      refetch();
+      refetch()
+        .then((res) => res)
+        .catch((err: Error) => console.log(err));
     },
   });
 
@@ -53,7 +55,9 @@ const Booking: FC<BookingProps> = ({ days, closedDays }) => {
 
   useEffect(() => {
     setInterval(() => {
-      refetch();
+      refetch()
+        .then((res) => res)
+        .catch((err: Error) => console.log(err));
     }, 10000);
   }, []);
 
@@ -179,7 +183,9 @@ const Booking: FC<BookingProps> = ({ days, closedDays }) => {
         if (permission === "granted") {
           callNotify(title, msg, icon, bookings);
         }
-      });
+      })
+        .then((res) => res)
+        .catch((err: Error) => console.log(err));
       return;
     }
   }
@@ -191,7 +197,10 @@ const Booking: FC<BookingProps> = ({ days, closedDays }) => {
     bookings: booking[]
   ) {
     new Notification(title, { body: msg, icon: icone });
-    new Audio(`/assets/${song}`).play();
+    new Audio(`/assets/${song}`)
+      .play()
+      .then((res) => res)
+      .catch((err: Error) => console.log(err));
     toast((t) => (
       <div>
         <button
@@ -205,13 +214,14 @@ const Booking: FC<BookingProps> = ({ days, closedDays }) => {
         <p className="font-bold">{msg}</p>
         {bookings.map((booking) => (
           <button
+            key={booking.id}
             type="button"
-            onClick={() =>
+            onClick={() => {
               router
                 .push("/dashboard/booking")
                 .then((res) => res)
-                .catch((err: Error) => console.log(err))
-            }
+                .catch((err: Error) => console.log(err));
+            }}
           >
             <span>{booking.dateTime.toLocaleString()}</span>
             <span>{booking.name}</span>
