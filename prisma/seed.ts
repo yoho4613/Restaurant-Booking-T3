@@ -135,7 +135,7 @@ async function main() {
   }
 
   const bookings = [];
-  for (let i = 0; i < 50; i++) {
+  for (let i = 0; i < 100; i++) {
     const dateTime = faker.date.between(
       "2023-05-01T08:00:00.000Z",
       "2023-05-31T20:00:00.000Z"
@@ -150,7 +150,7 @@ async function main() {
       email: faker.internet.email(),
       preorder: faker.random.boolean(),
       dateTime: roundedDateTime,
-      canceled: faker.random.boolean(),
+      canceled: false,
     };
     bookings.push(booking);
   }

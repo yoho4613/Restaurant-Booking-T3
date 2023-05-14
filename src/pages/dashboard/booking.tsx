@@ -4,7 +4,7 @@ import { now } from "~/constants/config";
 import { isBefore } from "date-fns";
 import { isAfter } from "date-fns";
 import { isToday } from "date-fns";
-import { tomorrow } from "~/constants/config";
+import { prisma } from "~/server/db";
 
 interface booking {
   id: string;
@@ -15,6 +15,7 @@ interface booking {
   email: string;
   preorder: boolean;
   dateTime: Date;
+  canceled: boolean;
 }
 interface Preorder {
   id: string;
@@ -27,19 +28,24 @@ interface Preorder {
 
 const Booking: FC = ({}) => {
   const [booking, setBooking] = useState<booking[] | null | false>(null);
-  const [preorders, setPreorders] = useState<Preorder[] | null>(null);
   const [filteredBooking, setFilteredBooking] = useState<
     booking[] | null | false | undefined
   >(null);
-  const [filter, setFilter] = useState<string>("");
+  const [filter, setFilter] = useState<string>("today");
   const { data: bookings } = api.admin.getBookings.useQuery();
   const { data: findPreorders } = api.admin.getPreorders.useQuery(
     bookings?.map((booking) => booking.id) || []
   );
+  const { mutate: cancel, isLoading } = api.booking.cancelBooking.useMutation({
+    onSuccess: (data) => {
+      setBooking(data)
+    },
+  });
 
   useEffect(() => {
     if (bookings && bookings.length) {
       setBooking([...bookings]);
+      filterBookings();
     }
   }, [bookings]);
 
@@ -52,6 +58,10 @@ const Booking: FC = ({}) => {
   }, [booking]);
 
   useEffect(() => {
+    filterBookings();
+  }, [filter]);
+
+  const filterBookings = () => {
     if (bookings && bookings.length) {
       switch (filter) {
         case "all":
@@ -81,7 +91,7 @@ const Booking: FC = ({}) => {
           break;
       }
     }
-  }, [filter]);
+  };
 
   const toggleHidden = (event: React.MouseEvent<HTMLButtonElement>) => {
     const button = event.target as HTMLButtonElement;
@@ -100,6 +110,14 @@ const Booking: FC = ({}) => {
     }
   };
 
+  const cancelBooking = (id: string) => {
+    cancel({ id });
+    if (bookings) {
+      setBooking([...bookings]);
+      filterBookings();
+    }
+  };
+
   return (
     <div>
       <div className="relative overflow-x-auto">
@@ -111,6 +129,7 @@ const Booking: FC = ({}) => {
             <select
               id="filter"
               name="filter"
+              defaultValue="today"
               className=" block h-full w-1/3 appearance-none rounded-r border border-gray-400 bg-white px-4 py-2 pr-8 leading-tight text-gray-700 focus:border-2 focus:border-gray-500 focus:bg-white focus:outline-none sm:rounded-r-none"
               onChange={(e) => setFilter(e.target.value)}
             >
@@ -120,10 +139,8 @@ const Booking: FC = ({}) => {
               <option value="upcoming">Upcoming</option>
             </select>
           </div>
-          <label htmlFor="simple-search" className="sr-only">
-            Search
-          </label>
-          <div className="relative w-1/3 ">
+
+          <div className="relative flex w-1/3 ">
             <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
               <svg
                 aria-hidden="true"
@@ -160,6 +177,9 @@ const Booking: FC = ({}) => {
                 );
               }}
             />
+            <button className="w-32 rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700">
+              Add
+            </button>
           </div>
         </div>
 
@@ -186,6 +206,9 @@ const Booking: FC = ({}) => {
               </th>
               <th scope="col" className="px-6 py-3">
                 Preorder
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Cancel
               </th>
             </tr>
           </thead>
@@ -262,6 +285,19 @@ const Booking: FC = ({}) => {
                       </div>
                     ) : (
                       "No"
+                    )}
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    {booking.canceled ? (
+                      <span>Canceled</span>
+                    ) : (
+                      <button
+                        onClick={() => cancelBooking(booking.id)}
+                        type="button"
+                        className="rounded-lg bg-red-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300  dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+                      >
+                        Cancel
+                      </button>
                     )}
                   </td>
                 </tr>

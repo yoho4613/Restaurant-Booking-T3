@@ -32,21 +32,19 @@ export const bookingRouter = createTRPCRouter({
     .input(
       z.object({
         id: z.string(),
-        email: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
       const { id } = input;
-   
-
-        const booking = await ctx.prisma.booking.delete({
-          where: {
-            id,
-          },
-        });
-        return booking;
-     
-
+      await ctx.prisma.booking.update({
+        where: {
+          id,
+        },
+        data: {
+          canceled: true,
+        },
+      });
+      return await ctx.prisma.booking.findMany();
     }),
 
   addPreorder: publicProcedure

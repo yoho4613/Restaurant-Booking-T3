@@ -33,9 +33,9 @@ const Statistics: FC<StatisticsProps> = ({ bookings }) => {
     if(prevWeek.length === thisWeek.length) {
       return <span>0%</span>
     } else if (prevWeek.length >= thisWeek.length) {
-      return <span className="text-red-600">+{rate.toString().slice(0, 5)}%</span>
+      return <span className="text-green-500">+{rate.toString().slice(0, 5)}%</span>
     } else if (prevWeek.length <= thisWeek.length) {
-      return <span className="text-green-500">-{rate.toString().slice(0, 5)}%</span>
+      return <span className="text-red-600">{rate.toString().slice(0, 5)}%</span>
     }
   }
 
@@ -95,7 +95,7 @@ const Statistics: FC<StatisticsProps> = ({ bookings }) => {
                   </svg>
                 </div>
                 <p className="mb-0 mt-1 text-xs font-semibold leading-tight dark:opacity-60">
-                  Users
+                  Bookings
                 </p>
               </div>
               <h4 className="font-bold dark:text-white">36K</h4>
@@ -159,7 +159,7 @@ const Statistics: FC<StatisticsProps> = ({ bookings }) => {
                   </svg>
                 </div>
                 <p className="mb-0 mt-1 text-xs font-semibold leading-tight dark:opacity-60">
-                  Clicks
+                  People
                 </p>
               </div>
               <h4 className="font-bold dark:text-white">2m</h4>
