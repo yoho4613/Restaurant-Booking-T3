@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import AdminNavBar from "~/components/AdminNavbar";
 import Head from "next/head";
+import Script from "next/script";
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   const [isAdmin, setIsAdmin] = useState(false);
@@ -46,6 +47,22 @@ const MyApp: AppType = ({ Component, pageProps }) => {
 
   return (
     <>
+      <Script
+        async
+        src="https://www.googletagmanager.com/gtag/js?id=G-KNV715P46P"
+      />
+      <Script
+        id="google-analytics"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{
+          __html: `
+window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-KNV715P46P');
+`,
+        }}
+      ></Script>
       <Head>
         <title>FC Restaurant</title>
         <meta

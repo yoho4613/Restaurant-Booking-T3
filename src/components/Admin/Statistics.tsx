@@ -10,6 +10,7 @@ interface StatisticsProps {
 const Statistics: FC<StatisticsProps> = ({ bookings, filteredBooking }) => {
   const [prevWeek, setPrevWeek] = useState<Booking[] | []>([]);
   const [thisWeek, setThisWeek] = useState<Booking[] | []>([]);
+  const [totalPeople, setTotalPeople] = useState(0);
 
   useEffect(() => {
     if (bookings.length) {
@@ -21,6 +22,16 @@ const Statistics: FC<StatisticsProps> = ({ bookings, filteredBooking }) => {
       );
     }
   }, [bookings]);
+
+  useEffect(() => {
+    let totalNumber = 0;
+    if (filteredBooking && filteredBooking.length) {
+      filteredBooking.map((booking: Booking) => {
+        totalNumber += Number(booking.people);
+      });
+    }
+    setTotalPeople(totalNumber);
+  }, [filteredBooking]);
 
   function getLastWeeksDate() {
     const now = new Date();
@@ -156,7 +167,12 @@ const Statistics: FC<StatisticsProps> = ({ bookings, filteredBooking }) => {
                   Preorder Booking
                 </p>
               </div>
-              <h4 className="font-bold dark:text-white">{filteredBooking.filter((booking: Booking) => booking.preorder).length}</h4>
+              <h4 className="font-bold dark:text-white">
+                {
+                  filteredBooking.filter((booking: Booking) => booking.preorder)
+                    .length
+                }
+              </h4>
               <div className="h-0.75 flex w-3/4 overflow-visible rounded-lg bg-gray-200 text-xs">
                 <div
                   className="duration-600 ease-soft -mt-0.4 w-3/10 -ml-px flex h-1.5 flex-col justify-center overflow-hidden whitespace-nowrap rounded-lg bg-slate-700 text-center text-white transition-all"
@@ -222,14 +238,7 @@ const Statistics: FC<StatisticsProps> = ({ bookings, filteredBooking }) => {
                 </p>
               </div>
 
-              <h4 className="font-bold dark:text-white">
-                {filteredBooking &&
-                  filteredBooking.reduce(
-                    (acc: number, next: Booking, i: number) =>
-                      acc + Number(next.people),
-                    0
-                  )}
-              </h4>
+              <h4 className="font-bold dark:text-white">{totalPeople}</h4>
               <div className="h-0.75 flex w-3/4 overflow-visible rounded-lg bg-gray-200 text-xs">
                 <div
                   className="duration-600 ease-soft -mt-0.4 w-9/10 -ml-px flex h-1.5 flex-col justify-center overflow-hidden whitespace-nowrap rounded-lg bg-slate-700 text-center text-white transition-all"
@@ -240,7 +249,7 @@ const Statistics: FC<StatisticsProps> = ({ bookings, filteredBooking }) => {
                 ></div>
               </div>
             </div>
-         
+
             {/* <div className="mt-0 w-1/4 max-w-full flex-none py-4 pl-0 pr-3">
               <div className="mb-2 flex">
                 <div className="shadow-soft-2xl mr-2 flex h-5 w-5 items-center justify-center rounded bg-gradient-to-tl from-red-600 to-rose-400 bg-center fill-current text-center text-neutral-900">

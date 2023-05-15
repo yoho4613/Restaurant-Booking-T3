@@ -246,7 +246,11 @@ const Booking: FC<BookingProps> = ({ days, closedDays }) => {
               X
             </button>
           </div> */}
-          <AddBookingForm setOpenForm={setOpenForm} days={days} closedDays={closedDays} />
+          <AddBookingForm
+            setOpenForm={setOpenForm}
+            days={days}
+            closedDays={closedDays}
+          />
         </div>
       )}
       {openCalendar && (
@@ -427,7 +431,7 @@ const Booking: FC<BookingProps> = ({ days, closedDays }) => {
                         </button>
                         <div className="fixed left-1/2 top-1/2 hidden bg-slate-600 bg-opacity-60 p-6">
                           <button
-                            className=" p-2 text-xl font-extrabold text-white"
+                            className="mb-2 mr-2 rounded-full bg-red-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
                             onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
                               (
                                 e.target as HTMLButtonElement
