@@ -65,13 +65,17 @@ const CalendarComponent: FC<CalendarProps> = ({
               <div key={`tim-${i}`} className=" bg-gray-1090 rounded-sm p-2">
                 <button
                   type="button"
-                  className="bg-gray-200 p-2"
-                  onClick={() => {
+                  className={`border-2 bg-gray-200 p-2 ${
+                    date.dateTime?.toString() === time.toString() &&
+                    "border-red-600"
+                  }`}
+                  onClick={(e) => {
                     setDate((prev: DateType) => ({
                       ...prev,
                       dateTime: time,
                     }));
                     setCustomerDetail(true);
+                    // e.currentTarget.classList.toggle("border-red-600")
                   }}
                 >
                   {format(time, "kk:mm")}
@@ -87,7 +91,9 @@ const CalendarComponent: FC<CalendarProps> = ({
           view="month"
           tileDisabled={({ date }) => {
             const dayOfWeek = getDay(date);
-            return closedDays.includes(formatISO(date)) || dayOff.includes(dayOfWeek)
+            return (
+              closedDays.includes(formatISO(date)) || dayOff.includes(dayOfWeek)
+            );
           }}
           onClickDay={(date) =>
             setDate((prev: DateType) => ({ ...prev, justDate: date }))

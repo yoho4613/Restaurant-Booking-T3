@@ -9,6 +9,7 @@ import { prisma } from "../../server/db";
 import { Day } from "@prisma/client";
 import toast, { Toaster } from "react-hot-toast";
 import { useRouter } from "next/router";
+import AddBookingForm from "~/components/Admin/AddBookingForm";
 
 interface booking {
   id: string;
@@ -29,7 +30,7 @@ interface BookingProps {
 
 const Booking: FC<BookingProps> = ({ days, closedDays }) => {
   const router = useRouter();
-  const [pageCount, setPageCount] = useState(1);
+  const [openForm, setOpenForm] = useState(false);
   const [bookingCopy, setBookingCopy] = useState<booking[] | undefined>();
   const [openCalendar, setOpenCalendar] = useState<boolean>(false);
   const [filteredBooking, setFilteredBooking] = useState<
@@ -234,6 +235,20 @@ const Booking: FC<BookingProps> = ({ days, closedDays }) => {
 
   return (
     <div>
+      {openForm && (
+        <div className="absolute left-0 top-0 z-10 rounded-md bg-gray-200 md:left-24 md:top-24">
+          {/* <div className="text-right">
+            <button
+              onClick={() => setOpenForm(false)}
+              type="button"
+              className="right-0 mb-2 mr-2 rounded-full bg-red-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+            >
+              X
+            </button>
+          </div> */}
+          <AddBookingForm setOpenForm={setOpenForm} days={days} closedDays={closedDays} />
+        </div>
+      )}
       {openCalendar && (
         <div className="absolute left-0 top-0 z-10 rounded-md bg-gray-600 p-6 sm:left-1/3 sm:top-24">
           <button
@@ -328,7 +343,10 @@ const Booking: FC<BookingProps> = ({ days, closedDays }) => {
                 setFilter(e.target.value);
               }}
             />
-            <button className="w-32 rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700">
+            <button
+              onClick={() => setOpenForm(true)}
+              className="w-32 rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
+            >
               Add
             </button>
           </div>
