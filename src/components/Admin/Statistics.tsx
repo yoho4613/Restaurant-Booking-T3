@@ -4,12 +4,12 @@ import React, { FC, useEffect, useState } from "react";
 
 interface StatisticsProps {
   bookings: Booking[] | [];
+  filteredBooking: Booking[] | [];
 }
 
-const Statistics: FC<StatisticsProps> = ({ bookings }) => {
+const Statistics: FC<StatisticsProps> = ({ bookings, filteredBooking }) => {
   const [prevWeek, setPrevWeek] = useState<Booking[] | []>([]);
   const [thisWeek, setThisWeek] = useState<Booking[] | []>([]);
-  
 
   useEffect(() => {
     if (bookings.length) {
@@ -29,28 +29,29 @@ const Statistics: FC<StatisticsProps> = ({ bookings }) => {
   }
 
   const checkActiveBooking = () => {
-    const rate:number = ((prevWeek.length - thisWeek.length) / prevWeek.length) * 100;
-    if(prevWeek.length === thisWeek.length) {
-      return <span>0%</span>
+    const rate: number =
+      ((prevWeek.length - thisWeek.length) / prevWeek.length) * 100;
+    if (prevWeek.length === thisWeek.length) {
+      return <span>0%</span>;
     } else if (prevWeek.length >= thisWeek.length) {
-      return <span className="text-green-500">+{rate.toString().slice(0, 5)}%</span>
+      return (
+        <span className="text-green-500">+{rate.toString().slice(0, 5)}%</span>
+      );
     } else if (prevWeek.length <= thisWeek.length) {
-      return <span className="text-red-600">{rate.toString().slice(0, 5)}%</span>
+      return (
+        <span className="text-red-600">{rate.toString().slice(0, 5)}%</span>
+      );
     }
-  }
+  };
 
   return (
     <div className="border-black-125 shadow-soft-xl relative z-20 flex min-w-0 flex-col break-words rounded-2xl border-0 border-solid bg-white bg-clip-border">
       <div className="flex-auto p-4">
-        <div className="rounded-xl bg-gradient-to-tl py-4 pr-1">
-        </div>
+        <div className="rounded-xl bg-gradient-to-tl py-4 pr-1"></div>
         <h6 className="mb-0 ml-2 dark:text-white">Active Bookings</h6>
         <p className="ml-2 text-sm leading-normal ">
-          (
-          <span className="font-bold ">
-            {checkActiveBooking()}
-          </span>
-          ) than last week
+          (<span className="font-bold ">{checkActiveBooking()}</span>) than last
+          week
         </p>
         <div className="mx-auto w-full max-w-screen-2xl rounded-xl px-6">
           <div className="-mx-3 mt-0 flex flex-wrap">
@@ -98,7 +99,9 @@ const Statistics: FC<StatisticsProps> = ({ bookings }) => {
                   Bookings
                 </p>
               </div>
-              <h4 className="font-bold dark:text-white">36K</h4>
+              <h4 className="font-bold dark:text-white">
+                {filteredBooking.length}
+              </h4>
               <div className="h-0.75 flex w-3/4 overflow-visible rounded-lg bg-gray-200 text-xs">
                 <div
                   className="duration-600 ease-soft -mt-0.4 -ml-px flex h-1.5 w-3/5 flex-col justify-center overflow-hidden whitespace-nowrap rounded-lg bg-slate-700 text-center text-white transition-all"
@@ -109,6 +112,62 @@ const Statistics: FC<StatisticsProps> = ({ bookings }) => {
                 ></div>
               </div>
             </div>
+            <div className="mt-0 w-1/4 max-w-full flex-none py-4 pl-0 pr-3">
+              <div className="mb-2 flex">
+                <div className="shadow-soft-2xl mr-2 flex h-5 w-5 items-center justify-center rounded bg-gradient-to-tl from-red-500 to-yellow-400 bg-center fill-current text-center text-neutral-900">
+                  <svg
+                    width="10px"
+                    height="10px"
+                    viewBox="0 0 43 36"
+                    version="1.1"
+                    xmlns="http://www.w3.org/2000/svg"
+                    xmlnsXlink="http://www.w3.org/1999/xlink"
+                  >
+                    <title>credit-card</title>
+                    <g
+                      stroke="none"
+                      strokeWidth="1"
+                      fill="none"
+                      fillRule="evenodd"
+                    >
+                      <g
+                        transform="translate(-2169.000000, -745.000000)"
+                        fill="#FFFFFF"
+                        fillRule="nonzero"
+                      >
+                        <g transform="translate(1716.000000, 291.000000)">
+                          <g transform="translate(453.000000, 454.000000)">
+                            <path
+                              className="color-background"
+                              d="M43,10.7482083 L43,3.58333333 C43,1.60354167 41.3964583,0 39.4166667,0 L3.58333333,0 C1.60354167,0 0,1.60354167 0,3.58333333 L0,10.7482083 L43,10.7482083 Z"
+                              opacity="0.593633743"
+                            ></path>
+                            <path
+                              className="color-background"
+                              d="M0,16.125 L0,32.25 C0,34.2297917 1.60354167,35.8333333 3.58333333,35.8333333 L39.4166667,35.8333333 C41.3964583,35.8333333 43,34.2297917 43,32.25 L43,16.125 L0,16.125 Z M19.7083333,26.875 L7.16666667,26.875 L7.16666667,23.2916667 L19.7083333,23.2916667 L19.7083333,26.875 Z M35.8333333,26.875 L28.6666667,26.875 L28.6666667,23.2916667 L35.8333333,23.2916667 L35.8333333,26.875 Z"
+                            ></path>
+                          </g>
+                        </g>
+                      </g>
+                    </g>
+                  </svg>
+                </div>
+                <p className="mb-0 mt-1 text-xs font-semibold leading-tight dark:opacity-60">
+                  Preorder Booking
+                </p>
+              </div>
+              <h4 className="font-bold dark:text-white">{filteredBooking.filter((booking: Booking) => booking.preorder).length}</h4>
+              <div className="h-0.75 flex w-3/4 overflow-visible rounded-lg bg-gray-200 text-xs">
+                <div
+                  className="duration-600 ease-soft -mt-0.4 w-3/10 -ml-px flex h-1.5 flex-col justify-center overflow-hidden whitespace-nowrap rounded-lg bg-slate-700 text-center text-white transition-all"
+                  role="progressbar"
+                  aria-valuenow={50}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                ></div>
+              </div>
+            </div>
+
             <div className="mt-0 w-1/4 max-w-full flex-none py-4 pl-0 pr-3">
               <div className="mb-2 flex">
                 <div className="shadow-soft-2xl mr-2 flex h-5 w-5 items-center justify-center rounded bg-gradient-to-tl from-blue-600 to-cyan-400 bg-center fill-current text-center text-neutral-900">
@@ -162,7 +221,15 @@ const Statistics: FC<StatisticsProps> = ({ bookings }) => {
                   People
                 </p>
               </div>
-              <h4 className="font-bold dark:text-white">2m</h4>
+
+              <h4 className="font-bold dark:text-white">
+                {filteredBooking &&
+                  filteredBooking.reduce(
+                    (acc: number, next: Booking, i: number) =>
+                      acc + Number(next.people),
+                    0
+                  )}
+              </h4>
               <div className="h-0.75 flex w-3/4 overflow-visible rounded-lg bg-gray-200 text-xs">
                 <div
                   className="duration-600 ease-soft -mt-0.4 w-9/10 -ml-px flex h-1.5 flex-col justify-center overflow-hidden whitespace-nowrap rounded-lg bg-slate-700 text-center text-white transition-all"
@@ -173,62 +240,8 @@ const Statistics: FC<StatisticsProps> = ({ bookings }) => {
                 ></div>
               </div>
             </div>
-            <div className="mt-0 w-1/4 max-w-full flex-none py-4 pl-0 pr-3">
-              <div className="mb-2 flex">
-                <div className="shadow-soft-2xl mr-2 flex h-5 w-5 items-center justify-center rounded bg-gradient-to-tl from-red-500 to-yellow-400 bg-center fill-current text-center text-neutral-900">
-                  <svg
-                    width="10px"
-                    height="10px"
-                    viewBox="0 0 43 36"
-                    version="1.1"
-                    xmlns="http://www.w3.org/2000/svg"
-                    xmlnsXlink="http://www.w3.org/1999/xlink"
-                  >
-                    <title>credit-card</title>
-                    <g
-                      stroke="none"
-                      strokeWidth="1"
-                      fill="none"
-                      fillRule="evenodd"
-                    >
-                      <g
-                        transform="translate(-2169.000000, -745.000000)"
-                        fill="#FFFFFF"
-                        fillRule="nonzero"
-                      >
-                        <g transform="translate(1716.000000, 291.000000)">
-                          <g transform="translate(453.000000, 454.000000)">
-                            <path
-                              className="color-background"
-                              d="M43,10.7482083 L43,3.58333333 C43,1.60354167 41.3964583,0 39.4166667,0 L3.58333333,0 C1.60354167,0 0,1.60354167 0,3.58333333 L0,10.7482083 L43,10.7482083 Z"
-                              opacity="0.593633743"
-                            ></path>
-                            <path
-                              className="color-background"
-                              d="M0,16.125 L0,32.25 C0,34.2297917 1.60354167,35.8333333 3.58333333,35.8333333 L39.4166667,35.8333333 C41.3964583,35.8333333 43,34.2297917 43,32.25 L43,16.125 L0,16.125 Z M19.7083333,26.875 L7.16666667,26.875 L7.16666667,23.2916667 L19.7083333,23.2916667 L19.7083333,26.875 Z M35.8333333,26.875 L28.6666667,26.875 L28.6666667,23.2916667 L35.8333333,23.2916667 L35.8333333,26.875 Z"
-                            ></path>
-                          </g>
-                        </g>
-                      </g>
-                    </g>
-                  </svg>
-                </div>
-                <p className="mb-0 mt-1 text-xs font-semibold leading-tight dark:opacity-60">
-                  Sales
-                </p>
-              </div>
-              <h4 className="font-bold dark:text-white">435$</h4>
-              <div className="h-0.75 flex w-3/4 overflow-visible rounded-lg bg-gray-200 text-xs">
-                <div
-                  className="duration-600 ease-soft -mt-0.4 w-3/10 -ml-px flex h-1.5 flex-col justify-center overflow-hidden whitespace-nowrap rounded-lg bg-slate-700 text-center text-white transition-all"
-                  role="progressbar"
-                  aria-valuenow={50}
-                  aria-valuemin={0}
-                  aria-valuemax={100}
-                ></div>
-              </div>
-            </div>
-            <div className="mt-0 w-1/4 max-w-full flex-none py-4 pl-0 pr-3">
+         
+            {/* <div className="mt-0 w-1/4 max-w-full flex-none py-4 pl-0 pr-3">
               <div className="mb-2 flex">
                 <div className="shadow-soft-2xl mr-2 flex h-5 w-5 items-center justify-center rounded bg-gradient-to-tl from-red-600 to-rose-400 bg-center fill-current text-center text-neutral-900">
                   <svg
@@ -287,7 +300,7 @@ const Statistics: FC<StatisticsProps> = ({ bookings }) => {
                   aria-valuemax={100}
                 ></div>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

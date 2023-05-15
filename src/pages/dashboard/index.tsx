@@ -95,7 +95,7 @@ const Dashboard: FC = ({}) => {
       </div>
 
       <div>
-        <Statistics bookings={bookings || []} />
+        <Statistics bookings={bookings || []} filteredBooking={filteredBooking || []} />
       </div>
       
       <div>
