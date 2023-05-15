@@ -66,8 +66,9 @@ const CalendarComponent: FC<CalendarProps> = ({
                 <button
                   type="button"
                   className={`border-2 bg-gray-200 p-2 ${
-                    date.dateTime?.toString() === time.toString() &&
-                    "border-red-600"
+                    date.dateTime?.toString() === time.toString()
+                      ? "border-red-600"
+                      : ""
                   }`}
                   onClick={(e) => {
                     setDate((prev: DateType) => ({

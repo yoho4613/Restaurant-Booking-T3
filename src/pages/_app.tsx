@@ -14,12 +14,6 @@ import { useRouter } from "next/router";
 import AdminNavBar from "~/components/AdminNavbar";
 import Head from "next/head";
 
-declare global {
-  interface Window {
-    OneSignal: string
-  }
-}
-
 const MyApp: AppType = ({ Component, pageProps }) => {
   const [isAdmin, setIsAdmin] = useState(false);
   const router = useRouter();
@@ -29,24 +23,26 @@ const MyApp: AppType = ({ Component, pageProps }) => {
       : setIsAdmin(false);
   }, [router]);
 
-  useEffect(() => {
-    if (typeof window !== undefined) {
-
-      window.OneSignal = window.OneSignal || [];
-      OneSignal.push(function () {
-        OneSignal.init({
-          appId: process.env.NEXT_PUBLIC_ONESIGNAL_API_KEY,
-          allowLocalhostAsSecureOrigin: true,
-          notifyButton: {
-            enable: true,
-          },
-        });
-      });
-    }
-    return () => {
-      window.OneSignal = undefined;
-    };
-  }, []);
+  // useEffect(() => {
+  //   if (typeof window !== undefined) {
+  //     // eslint-disable-next-line
+  //     window.OneSignal = window.OneSignal || [];
+  //     // eslint-disable-next-line
+  //     OneSignal.push(function () {
+  //     // eslint-disable-next-line
+  //     OneSignal.init({
+  //         appId: process.env.NEXT_PUBLIC_ONESIGNAL_API_KEY,
+  //         allowLocalhostAsSecureOrigin: true,
+  //         notifyButton: {
+  //           enable: true,
+  //         },
+  //       });
+  //     });
+  //   }
+  //   return () => {
+  //     window.OneSignal = undefined;
+  //   };
+  // }, []);
 
   return (
     <>

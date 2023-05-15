@@ -48,7 +48,7 @@ const AddBookingForm: FC<AddBookingFormProps> = ({
     }
   };
   return (
-    <div className={`p-6 ${warning && "border-2 border-red-500"}`}>
+    <div className={`p-6 ${warning ? "border-2 border-red-500" : ""}`}>
       <form>
         <div className="space-y-12">
           <div className="border-b border-gray-900/10 pb-12">
@@ -158,7 +158,7 @@ const AddBookingForm: FC<AddBookingFormProps> = ({
             </div>
           </div>
         </div>
-          {warning && <p className="text-red-500">Something's wrong. Please check the form and try again.</p>}
+          {warning && <p className="text-red-500">Something&apos;s wrong. Please check the form and try again.</p>}
         <div className="mt-6 flex items-center justify-end gap-x-6">
           <button
             type="button"
