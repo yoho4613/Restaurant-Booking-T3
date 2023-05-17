@@ -21,6 +21,7 @@ interface booking {
   preorder: boolean;
   dateTime: Date;
   canceled: boolean;
+  tableId: string;
 }
 
 interface BookingProps {
@@ -48,6 +49,7 @@ const Booking: FC<BookingProps> = ({ days, closedDays }) => {
         .catch((err: Error) => console.log(err));
     },
   });
+  const { data: tables } = api.table.getTables.useQuery();
 
   const song = "notification.mp3";
   const icon = "https://via.placeholder.com/50x50";
@@ -369,6 +371,9 @@ const Booking: FC<BookingProps> = ({ days, closedDays }) => {
                 Table People
               </th>
               <th scope="col" className="px-6 py-3">
+                Table Name
+              </th>
+              <th scope="col" className="px-6 py-3">
                 Date & Time
               </th>
               <th scope="col" className="px-6 py-3">
@@ -386,7 +391,7 @@ const Booking: FC<BookingProps> = ({ days, closedDays }) => {
             </tr>
           </thead>
           <tbody>
-            {filteredBooking &&
+            {filteredBooking && tables &&
               filteredBooking.map((booking) => (
                 <tr
                   key={booking.id}
@@ -409,6 +414,7 @@ const Booking: FC<BookingProps> = ({ days, closedDays }) => {
                   </th>
                   <td className="px-6 py-4">{booking.name}</td>
                   <td className="px-6 py-4">{booking.people}</td>
+                  <td className="px-6 py-4">{tables.find((table) => table.id === booking.tableId)?.name}</td>
                   <td className="px-6 py-4 font-bold">
                     {booking.dateTime.toLocaleDateString("en-GB")}{" "}
                     {booking.dateTime.getHours() % 12 === 0

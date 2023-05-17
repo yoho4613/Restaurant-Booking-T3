@@ -21,6 +21,7 @@ export interface Form {
   email: string;
   people: string;
   preorder: boolean;
+  tableId: string;
 }
 
 const Booking: FC<BookingProps> = ({ days, closedDays }) => {
@@ -33,6 +34,8 @@ const Booking: FC<BookingProps> = ({ days, closedDays }) => {
     email: "",
     people: "",
     preorder: false,
+    // Table Id hard coded
+    tableId: "clhkg2kho406w03qor8m18nqi"
   });
   const [withPreOrder, setWithPreOrder] = useState<boolean | null>(null);
   const [date, setDate] = useState<DateType>({

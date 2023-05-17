@@ -180,6 +180,8 @@ const Cart: FC<CartProps> = ({ open, setOpen, products, removeFromCart }) => {
                               products,
                               customerDetail: {
                                 ...customerDetail!,
+                                // hard coded. Should be fixed later
+                                tableId: "clhkg2kho406w03qor8m18nqi",
                                 dateTime: customerDetail?.dateTime
                                   ? new Date(customerDetail.dateTime)
                                   : new Date(),

@@ -10,6 +10,7 @@ export interface CustomerDetail {
   name: string;
   people: string;
   preorder: boolean;
+  tableId: string;
 }
 
 type Categories = typeof categories[number]
@@ -23,4 +24,5 @@ export interface Booking {
   name: string,
   people: string,
   preorder: boolean
+  tableId: string
 }

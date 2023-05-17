@@ -1,8 +1,8 @@
 import React, { FC } from "react";
 
-interface SettingProps {}
 
-const Setting: FC<SettingProps> = ({}) => {
+
+const Setting: FC = ({}) => {
   return (
     <div className="w-screen h-screen flex items-center">
       <div className="flex justify-around w-full">

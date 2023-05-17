@@ -27,6 +27,8 @@ const AddBookingForm: FC<AddBookingFormProps> = ({
     email: "",
     people: "",
     preorder: false,
+    // tableId hard coded
+    tableId: 'clhkg2kho406w03qor8m18nqi',
   });
   const [date, setDate] = useState<DateType>({
     justDate: null,
