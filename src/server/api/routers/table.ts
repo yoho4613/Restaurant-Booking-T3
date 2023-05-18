@@ -20,4 +20,40 @@ export const tableRouter = createTRPCRouter({
         },
       });
     }),
+  findAvilableTable: publicProcedure
+    .input(
+      z.object({
+        dateTime: z.date(),
+        people: z.number(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { dateTime, people } = input;
+
+      const tables = await ctx.prisma.tables.findMany({
+        where: {
+          capacity: {
+            gte: people,
+          },
+        },
+      });
+      console.log(tables);
+
+      const availableTables = tables.filter(
+        async (table) =>
+          await ctx.prisma.booking.findFirst({
+            where: {
+              tableId: table.id,
+              NOT: {
+                dateTime: dateTime,
+              },
+            },
+          })
+      );
+
+      let selectedTable = "";
+      console.log(availableTables);
+
+      return availableTables;
+    }),
 });

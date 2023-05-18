@@ -1,6 +1,7 @@
 import { DateType } from "@types";
 import React, { FC, useState } from "react";
 import { Form } from "~/pages/booking";
+import { api } from "~/utils/api";
 
 interface CustomerDetailProps {
   form: Form;

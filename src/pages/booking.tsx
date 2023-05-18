@@ -35,7 +35,7 @@ const Booking: FC<BookingProps> = ({ days, closedDays }) => {
     people: "",
     preorder: false,
     // Table Id hard coded
-    tableId: "clhkg2kho406w03qor8m18nqi"
+    tableId: "clhkg2kho406w03qor8m18nqi",
   });
   const [withPreOrder, setWithPreOrder] = useState<boolean | null>(null);
   const [date, setDate] = useState<DateType>({
@@ -43,6 +43,22 @@ const Booking: FC<BookingProps> = ({ days, closedDays }) => {
     dateTime: null,
   });
   const { mutate: addBooking } = api.booking.addBooking.useMutation({});
+  const { mutate: checkTable } = api.table.findAvilableTable.useMutation({
+    onSuccess: (res) => console.log("success", res),
+    onError: () => console.log("Error"),
+  });
+
+  useEffect(() => {
+    if (orderConfirmed && date.dateTime) {
+      console.log(date.dateTime);
+      const availableTables = checkTable({
+        people: Number(form.people),
+        dateTime: date.dateTime,
+      })
+
+      console.log(availableTables);
+    }
+  }, [orderConfirmed]);
 
   useEffect(() => {
     if (date.dateTime) {
@@ -100,6 +116,7 @@ const Booking: FC<BookingProps> = ({ days, closedDays }) => {
           dayOff={days.filter((day) => !day.open).map((day) => day.dayOfWeek)}
         />
       )}
+
       {orderConfirmed && (
         <Confirmation
           onCancel={() => {
