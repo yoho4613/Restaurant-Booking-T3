@@ -9,6 +9,7 @@ interface CustomerDetailProps {
   setOrderConfirmed: React.Dispatch<React.SetStateAction<boolean>>;
   setDate: React.Dispatch<React.SetStateAction<DateType>>;
   setCustomerDetail: React.Dispatch<React.SetStateAction<boolean>>;
+  date: DateType;
 }
 
 const CustomerDetail: FC<CustomerDetailProps> = ({
@@ -17,8 +18,21 @@ const CustomerDetail: FC<CustomerDetailProps> = ({
   setOrderConfirmed,
   setDate,
   setCustomerDetail,
+  date,
 }) => {
   const [isMissing, setIsMissing] = useState(false);
+  const { mutate: checkTable } = api.table.findAvilableTable.useMutation({
+    onSuccess: (res) => {
+      setForm({ ...form, tableId: res[0]!.id });
+      setOrderConfirmed(true);
+      console.log("success", res);
+    },
+    onError: (err) => {
+      alert(`Sorry, ${err.message}`);
+      setDate({ ...date, dateTime: null });
+      setCustomerDetail(false);
+    },
+  });
 
   const handleNext = () => {
     function isValidEmail(email: string): boolean {
@@ -29,7 +43,7 @@ const CustomerDetail: FC<CustomerDetailProps> = ({
 
     if (form.name.length && isValidEmail(form.email) && form.people) {
       //confirmation
-      setOrderConfirmed(true);
+      checkTable({ dateTime: date.dateTime!, people: Number(form.people) });
     } else {
       setIsMissing(true);
     }

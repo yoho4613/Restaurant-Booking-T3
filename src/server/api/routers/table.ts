@@ -37,22 +37,19 @@ export const tableRouter = createTRPCRouter({
           },
         },
       });
-      console.log(tables);
+      const bookings = await ctx.prisma.booking.findMany({
+        where: {
+          dateTime,
+        },
+      });
 
       const availableTables = tables.filter(
-        async (table) =>
-          await ctx.prisma.booking.findFirst({
-            where: {
-              tableId: table.id,
-              NOT: {
-                dateTime: dateTime,
-              },
-            },
-          })
+        (table) => !bookings.some((booking) => booking.tableId === table.id)
       );
 
-      let selectedTable = "";
-      console.log(availableTables);
+      if (!availableTables.length) {
+        throw Error("There is no table available at this time");
+      }
 
       return availableTables;
     }),

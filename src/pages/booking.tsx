@@ -34,8 +34,7 @@ const Booking: FC<BookingProps> = ({ days, closedDays }) => {
     email: "",
     people: "",
     preorder: false,
-    // Table Id hard coded
-    tableId: "clhkg2kho406w03qor8m18nqi",
+    tableId: "",
   });
   const [withPreOrder, setWithPreOrder] = useState<boolean | null>(null);
   const [date, setDate] = useState<DateType>({
@@ -43,22 +42,7 @@ const Booking: FC<BookingProps> = ({ days, closedDays }) => {
     dateTime: null,
   });
   const { mutate: addBooking } = api.booking.addBooking.useMutation({});
-  const { mutate: checkTable } = api.table.findAvilableTable.useMutation({
-    onSuccess: (res) => console.log("success", res),
-    onError: () => console.log("Error"),
-  });
-
-  useEffect(() => {
-    if (orderConfirmed && date.dateTime) {
-      console.log(date.dateTime);
-      const availableTables = checkTable({
-        people: Number(form.people),
-        dateTime: date.dateTime,
-      })
-
-      console.log(availableTables);
-    }
-  }, [orderConfirmed]);
+  
 
   useEffect(() => {
     if (date.dateTime) {
@@ -76,7 +60,7 @@ const Booking: FC<BookingProps> = ({ days, closedDays }) => {
         sendForm(form);
 
         router
-          .push("/")
+          .push("/success")
           .then((res) => res)
           .catch((err: Error) => console.log(err));
       }
@@ -88,10 +72,10 @@ const Booking: FC<BookingProps> = ({ days, closedDays }) => {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       return emailRegex.test(email);
     }
-    if (isValidEmail(form.email)) {
+    if (isValidEmail(form.email) && date.dateTime) {
       addBooking({
         ...form,
-        dateTime: date.dateTime!,
+        dateTime: date.dateTime,
       });
     }
   };
@@ -103,6 +87,7 @@ const Booking: FC<BookingProps> = ({ days, closedDays }) => {
           setOrderConfirmed={setOrderConfirmed}
           setForm={setForm}
           form={form}
+          date={date}
           setDate={setDate}
           setCustomerDetail={setCustomerDetail}
         />
