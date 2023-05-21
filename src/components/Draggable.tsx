@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode, useState } from "react";
 
 export interface DraggableItem {
   id: string;
@@ -7,16 +7,22 @@ export interface DraggableItem {
 
 interface DropTargetProps {
   onDrop: (item: DraggableItem) => void;
-  children: ReactNode
+  children: ReactNode;
 }
 
 export const DropTarget: React.FC<DropTargetProps> = ({ onDrop, children }) => {
   const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
-    console.log(event.target)
-    const itemId = event.dataTransfer.getData('text/plain');
-    const itemContent = event.dataTransfer.getData('text/html');
-    const item: DraggableItem = { id: itemId, content: itemContent };
+    const itemId = event.dataTransfer.getData("text/plain");
+    const itemContent = event.dataTransfer.getData("text/html");
+
+    const parser = new DOMParser();
+    const parsedContent = parser.parseFromString(itemContent, "text/html")
+      .documentElement.textContent;
+
+    const item: DraggableItem = { id: itemId, content: parsedContent! };
+    const dropIndex = Array.from(event.currentTarget.children).indexOf(event.target as HTMLElement);
+  
     onDrop(item);
   };
 
@@ -25,7 +31,7 @@ export const DropTarget: React.FC<DropTargetProps> = ({ onDrop, children }) => {
   };
 
   return (
-    <div onDrop={handleDrop} onDragOver={handleDragOver}>
+    <div className="w-full h-full" onDrop={handleDrop} onDragOver={handleDragOver}>
       {children}
     </div>
   );
@@ -37,14 +43,14 @@ interface DraggableProps {
 
 export const Draggable: React.FC<DraggableProps> = ({ item }) => {
   const handleDragStart = (event: React.DragEvent<HTMLDivElement>) => {
-    event.dataTransfer.setData('text/plain', item.id);
-    event.dataTransfer.setData('text/html', item.content);
-    event.dataTransfer.effectAllowed = 'move';
+    event.dataTransfer.setData("text/plain", item.id);
+    event.dataTransfer.setData("text/html", item.content);
+    event.dataTransfer.effectAllowed = "move";
   };
 
   return (
-    <div draggable onDragStart={handleDragStart}>
+    <span className="inline-block bg-white px-4 py-2 my-2" draggable onDragStart={handleDragStart}>
       {item.content}
-    </div>
+    </span>
   );
 };
