@@ -26,15 +26,15 @@ const ManageTable: FC = ({}) => {
   }) => {
     const { mutate: addTable } = api.table.addTable.useMutation({
       onSuccess: () => {
-        toast.success("Table successfully added")
-        refetch()
-      }
+        toast.success("Table successfully added");
+        refetch().then(res => res).catch((err:Error) => console.log(err.message));
+      },
     });
     const { mutate: updateTable } = api.table.updateTable.useMutation({
       onSuccess: () => {
-        toast.success("Table successfully updated")
-        refetch()
-      }
+        toast.success("Table successfully updated");
+        refetch().then(res => res).catch((err:Error) => console.log(err.message));
+      },
     });
     const [form, setForm] = useState({
       name: "",
@@ -100,13 +100,13 @@ const ManageTable: FC = ({}) => {
             <select
               id="location"
               className="mb-6 block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-              onChange={(e) => setForm({...form, location: e.target.value})}
-           >
+              onChange={(e) => setForm({ ...form, location: e.target.value })}
+            >
               <option disabled selected>
                 Choose a location
               </option>
               {locations.map((location) => (
-                <option selected={Boolean(form.location)} value={location}>
+                <option key={location} selected={Boolean(form.location)} value={location}>
                   {location}
                 </option>
               ))}
