@@ -21,8 +21,10 @@ export const DropTarget: React.FC<DropTargetProps> = ({ onDrop, children }) => {
       .documentElement.textContent;
 
     const item: DraggableItem = { id: itemId, content: parsedContent! };
-    const dropIndex = Array.from(event.currentTarget.children).indexOf(event.target as HTMLElement);
-  
+    const dropIndex = Array.from(event.currentTarget.children).indexOf(
+      event.target as HTMLElement
+    );
+
     onDrop(item);
   };
 
@@ -31,7 +33,11 @@ export const DropTarget: React.FC<DropTargetProps> = ({ onDrop, children }) => {
   };
 
   return (
-    <div className="w-full h-full" onDrop={handleDrop} onDragOver={handleDragOver}>
+    <div
+      className="h-full w-full"
+      onDrop={handleDrop}
+      onDragOver={handleDragOver}
+    >
       {children}
     </div>
   );
@@ -49,8 +55,12 @@ export const Draggable: React.FC<DraggableProps> = ({ item }) => {
   };
 
   return (
-    <span className="inline-block bg-white px-4 py-2 my-2" draggable onDragStart={handleDragStart}>
-      {item.content}
-    </span>
+  
+      <span 
+      className="inline-block mb-2 mr-2 rounded-full bg-green-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+      draggable onDragStart={handleDragStart}>
+        {item.content}
+      </span>
+
   );
 };

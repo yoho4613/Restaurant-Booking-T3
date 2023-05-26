@@ -1,4 +1,4 @@
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { adminProcedure, createTRPCRouter, publicProcedure } from "../trpc";
 import { z } from "zod";
 
 export const tableRouter = createTRPCRouter({
@@ -52,5 +52,45 @@ export const tableRouter = createTRPCRouter({
       }
 
       return availableTables;
+    }),
+  addTable: adminProcedure
+    .input(
+      z.object({
+        name: z.string(),
+        location: z.string(),
+        capacity: z.number(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { name, location, capacity } = input;
+      return ctx.prisma.tables.create({
+        data: {
+          name,
+          location,
+          capacity,
+        },
+      });
+    }),
+  updateTable: adminProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        name: z.string(),
+        location: z.string(),
+        capacity: z.number(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { id, name, location, capacity } = input;
+      return ctx.prisma.tables.update({
+        where: {
+          id,
+        },
+        data: {
+          name,
+          location,
+          capacity,
+        },
+      });
     }),
 });
