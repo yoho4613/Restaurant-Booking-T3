@@ -56,13 +56,13 @@ const Booking: FC<BookingProps> = ({ days, closedDays }) => {
   const title = "New Booking";
   const msg = "There's a new booking!";
 
-  useEffect(() => {
-    setInterval(() => {
-      refetch()
-        .then((res) => res)
-        .catch((err: Error) => console.log(err));
-    }, 10000);
-  }, []);
+  // useEffect(() => {
+  //   setInterval(() => {
+  //     refetch()
+  //       .then((res) => res)
+  //       .catch((err: Error) => console.log(err));
+  //   }, 10000);
+  // }, []);
 
   useEffect(() => {
     console.log("fetch");
@@ -70,7 +70,6 @@ const Booking: FC<BookingProps> = ({ days, closedDays }) => {
       if (bookingCopy) {
         if (bookingCopy.length < bookings.length) {
           const newBookings = findNewBooking(bookingCopy, bookings);
-          console.log(newBookings);
           notifyMe(newBookings);
           // if (newBookings.length) {
           //   console.log(newBookings);
@@ -391,11 +390,14 @@ const Booking: FC<BookingProps> = ({ days, closedDays }) => {
             </tr>
           </thead>
           <tbody>
-            {filteredBooking && tables &&
+            {filteredBooking &&
+              tables &&
               filteredBooking.map((booking) => (
                 <tr
                   key={booking.id}
-                  className={`border-b bg-white  dark:border-gray-700 dark:bg-gray-800
+                  className={`border-b bg-white  decoration-red-600 dark:border-gray-700 dark:bg-gray-800 ${
+                    booking.canceled && "line-through"
+                  }
                   ${
                     checkDatePassed(booking.dateTime) === "today"
                       ? "text-green-600"
@@ -414,7 +416,9 @@ const Booking: FC<BookingProps> = ({ days, closedDays }) => {
                   </th>
                   <td className="px-6 py-4">{booking.name}</td>
                   <td className="px-6 py-4">{booking.people}</td>
-                  <td className="px-6 py-4">{tables.find((table) => table.id === booking.tableId)?.name}</td>
+                  <td className="px-6 py-4">
+                    {tables.find((table) => table.id === booking.tableId)?.name}
+                  </td>
                   <td className="px-6 py-4 font-bold">
                     {booking.dateTime.toLocaleDateString("en-GB")}{" "}
                     {booking.dateTime.getHours() % 12 === 0
@@ -466,9 +470,9 @@ const Booking: FC<BookingProps> = ({ days, closedDays }) => {
                       "No"
                     )}
                   </td>
-                  <td className="px-6 py-4 text-center">
+                  <td className="px-6 py-4">
                     {booking.canceled ? (
-                      <span>Canceled</span>
+                      <button className="cursor-text">Canceled</button>
                     ) : (
                       <button
                         onClick={() => cancelBooking(booking.id)}

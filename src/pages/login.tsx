@@ -30,22 +30,14 @@ const Login: FC = ({}) => {
         <div>
           {/* If this was a real login screen, you'd want a next/image here */}
           <img
-            className="mx-auto h-12 w-auto"
-            src="https://tailwindui.com/img/logos/workflow-mark-indigo-600.svg"
+            className="mx-auto h-24 rounded-md w-auto"
+            src="/assets/logo.jpg"
             alt="Workflow"
           />
           <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">
             Sign in to your account
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Or{" "}
-            <a
-              href="#"
-              className="font-medium text-indigo-600 hover:text-indigo-500"
-            >
-              start your 14-day free trial
-            </a>
-          </p>
+       
         </div>
         <form className="mt-8 space-y-6">
           <input type="hidden" name="remember" defaultValue="true" />

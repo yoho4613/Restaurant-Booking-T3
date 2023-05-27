@@ -23,8 +23,8 @@ export const adminRouter = createTRPCRouter({
         const token = await new SignJWT({})
           .setProtectedHeader({ alg: "HS256" })
           .setJti(nanoid())
-          .setIssuedAt()
-          .setExpirationTime("1h")
+          .setIssuedAt()  
+          .setExpirationTime("24h")
           .sign(new TextEncoder().encode(getJwtSecretKey()));
 
         res.setHeader(

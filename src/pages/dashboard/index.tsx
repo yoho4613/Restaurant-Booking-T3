@@ -17,7 +17,6 @@ const Dashboard: FC = ({}) => {
   // Booking Rate by date
 
   useEffect(() => {
-    console.log(bookings);
     if (bookings?.length) {
       setThisWeekBooking(
         bookings.filter((booking) => isSameWeek(booking.dateTime, new Date()))
