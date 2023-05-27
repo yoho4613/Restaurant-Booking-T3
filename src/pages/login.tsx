@@ -3,25 +3,34 @@ import React, { FC, useState } from "react";
 import { HiLockClosed } from "react-icons/hi";
 import { api } from "~/utils/api";
 
-
-
-
 const Login: FC = ({}) => {
   const router = useRouter();
   const [input, setInput] = useState({
     email: "",
     password: "",
   });
+  const [isWrong, setIsWrong] = useState(false)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, name } = e.target;
     setInput((prev) => ({ ...prev, [name]: value }));
   };
 
-  const { mutate: login, isError } = api.admin.login.useMutation({
+  const { mutate: login } = api.admin.login.useMutation({
     onSuccess: () => {
-      router.push('/dashboard').then(res => res).catch((err:Error) => console.log(err))
-    }
+      router
+        .push("/dashboard")
+        .then((res) => res)
+        .catch((err: Error) => console.log(err));
+    },
+  });
+  const { mutate: loginUser, isError } = api.user.loginUser.useMutation({
+    onSuccess: () =>
+      router
+        .push("/dashboard")
+        .then((res) => res)
+        .catch((err: Error) => console.log(err)),
+
   });
 
   return (
@@ -30,16 +39,18 @@ const Login: FC = ({}) => {
         <div>
           {/* If this was a real login screen, you'd want a next/image here */}
           <img
-            className="mx-auto h-24 rounded-md w-auto"
+            className="mx-auto h-24 w-auto rounded-md"
             src="/assets/logo.jpg"
             alt="Workflow"
           />
           <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">
             Sign in to your account
           </h2>
-       
         </div>
         <form className="mt-8 space-y-6">
+          {isWrong && (
+            <p className="text-red-600">Invalid email or password. Try again.</p>
+          )}
           <input type="hidden" name="remember" defaultValue="true" />
           <div className="-space-y-px rounded-md shadow-sm">
             <p className="pb-1 text-sm text-red-600">
@@ -110,7 +121,7 @@ const Login: FC = ({}) => {
               type="submit"
               onClick={(e) => {
                 e.preventDefault();
-                login(input);
+                loginUser(input);
               }}
               className="group relative flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
             >

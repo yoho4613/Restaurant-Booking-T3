@@ -4,35 +4,15 @@ import { z } from "zod";
 import { User } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { signJwt } from "~/utils/jwt";
-
+import { SignJWT } from "jose";
+import { nanoid } from "nanoid";
+import { getJwtSecretKey } from "~/lib/auth";
+import cookie from "cookie";
 
 export const userRouter = createTRPCRouter({
   getAllUsers: adminProcedure.query(async ({ ctx, input }) => {
     return await ctx.prisma.user.findMany();
   }),
-
-  createUser: adminProcedure
-    .input(
-      z.object({
-        name: z.string(),
-        email: z.string(),
-        password: z.string(),
-        passwordConfirm: z.string(),
-      })
-    )
-    .mutation(async ({ ctx, input }) => {
-      return (await ctx.prisma.user.create({
-        data: input,
-      })) as User;
-    }),
-
-  findUser: publicProcedure
-    .input(
-      z.object({
-        id: z.string(),
-      })
-    )
-    .mutation(async ({ ctx, input }) => {}),
   signupUser: adminProcedure
     .input(
       z.object({
@@ -68,32 +48,7 @@ export const userRouter = createTRPCRouter({
             role,
           },
         });
-
-        const accessToken = signJwt(
-          { id: user.id, email: user.email },
-          "accessTokenPrivateKey",
-          {
-            algorithm: "RS256",
-            expiresIn: "24h",
-          }
-        );
-
-        const refreshToken = signJwt(
-          { id: user.id, email: user.email },
-          "refreshTokenPrivateKey",
-          {
-            algorithm: "RS256",
-            expiresIn: "24h",
-          }
-        );
-
-        return {
-          message: "Signup Successful, please proceed to login",
-          status: "success",
-          user,
-          accessToken,
-          refreshToken,
-        };
+        return { success: true };
       } catch (error: any) {
         throw new TRPCError(error);
       }
@@ -108,6 +63,7 @@ export const userRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       try {
+        const { res } = ctx;
         const { email, password } = input;
 
         const user = await ctx.prisma.user.findUnique({
@@ -119,7 +75,7 @@ export const userRouter = createTRPCRouter({
           (user as Record<string, any>).password
         );
 
-        if (!user || !passwordMatch) {
+        if (!user || !passwordMatch || !email || !password) {
           throw new TRPCError({
             code: "UNAUTHORIZED",
             message: "Invalid email or password",
@@ -128,33 +84,21 @@ export const userRouter = createTRPCRouter({
 
         const lastLogin = new Date(Date.now());
 
-        // const updatedUser = await ctx.prisma.user.update({
-        //   where: { id: user.id },
-        //   data: { lastLogin },
-        // });
+        const token = await new SignJWT({})
+          .setProtectedHeader({ alg: "HS256" })
+          .setJti(nanoid())
+          .setIssuedAt()
+          .setExpirationTime("24h")
+          .sign(new TextEncoder().encode(getJwtSecretKey()));
 
-        const accessToken = signJwt(
-          { id: user.id, email: user.email },
-          "accessTokenPrivateKey",
-          {
-            expiresIn: "24h",
-          }
+        res.setHeader(
+          "Set-Cookie",
+          cookie.serialize("user-token", token, {
+            httpOnly: true,
+            path: "/",
+            secure: process.env.NODE_ENV === "production",
+          })
         );
-
-        const refreshToken = signJwt(
-          { id: user.id, email: user.email },
-          "refreshTokenPrivateKey",
-          {
-            expiresIn: "24h",
-          }
-        );
-
-        return {
-          accessToken,
-          refreshToken,
-          message: "Login successful",
-          status: "success",
-        };
       } catch (error: any) {
         throw new TRPCError(error);
       }
