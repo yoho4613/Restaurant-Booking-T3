@@ -1,16 +1,16 @@
 import { TRPCError } from "@trpc/server";
 import { adminProcedure, createTRPCRouter, publicProcedure } from "../trpc";
 import { z } from "zod";
-import { Prisma, User } from "@prisma/client";
+import { User } from "@prisma/client";
 import bcrypt from "bcryptjs";
-import { RoleEnumType } from "@prisma/client";
 import { signJwt } from "~/utils/jwt";
 
+
 export const userRouter = createTRPCRouter({
-  getAllUsers: adminProcedure.query(async ({ctx, input}) => {
-    return await ctx.prisma.user.findMany()
+  getAllUsers: adminProcedure.query(async ({ ctx, input }) => {
+    return await ctx.prisma.user.findMany();
   }),
-  
+
   createUser: adminProcedure
     .input(
       z.object({
@@ -73,6 +73,7 @@ export const userRouter = createTRPCRouter({
           { id: user.id, email: user.email },
           "accessTokenPrivateKey",
           {
+            algorithm: "RS256",
             expiresIn: "24h",
           }
         );
@@ -81,6 +82,7 @@ export const userRouter = createTRPCRouter({
           { id: user.id, email: user.email },
           "refreshTokenPrivateKey",
           {
+            algorithm: "RS256",
             expiresIn: "24h",
           }
         );
@@ -131,22 +133,30 @@ export const userRouter = createTRPCRouter({
         //   data: { lastLogin },
         // });
 
-        const accessToken = signJwt({ id: user.id, email: user.email }, "accessTokenPrivateKey", {
-          expiresIn: "24h",
-        });
-  
-        const refreshToken = signJwt({ id: user.id, email: user.email }, "refreshTokenPrivateKey", {
-          expiresIn: "24h",
-        });
+        const accessToken = signJwt(
+          { id: user.id, email: user.email },
+          "accessTokenPrivateKey",
+          {
+            expiresIn: "24h",
+          }
+        );
+
+        const refreshToken = signJwt(
+          { id: user.id, email: user.email },
+          "refreshTokenPrivateKey",
+          {
+            expiresIn: "24h",
+          }
+        );
 
         return {
           accessToken,
           refreshToken,
-          message: 'Login successful',
-          status: 'success'
-        }
-      } catch (error:any) {
-        throw new TRPCError(error)
+          message: "Login successful",
+          status: "success",
+        };
+      } catch (error: any) {
+        throw new TRPCError(error);
       }
     }),
 });

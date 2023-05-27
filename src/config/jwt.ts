@@ -10,7 +10,7 @@ const customConfig: {
   refreshTokenPublicKey: string;
   redisCacheExpiresIn: number;
 } = {
-  port: 8000,
+  port: 5555,
   accessTokenExpiresIn: 15,
   refreshTokenExpiresIn: 60,
   redisCacheExpiresIn: 60,
