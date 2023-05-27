@@ -63,7 +63,7 @@ export const tableRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const { name, location, capacity } = input;
-      return ctx.prisma.tables.create({
+      return await ctx.prisma.tables.create({
         data: {
           name,
           location,
@@ -82,7 +82,7 @@ export const tableRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const { id, name, location, capacity } = input;
-      return ctx.prisma.tables.update({
+      return await ctx.prisma.tables.update({
         where: {
           id,
         },
@@ -90,6 +90,20 @@ export const tableRouter = createTRPCRouter({
           name,
           location,
           capacity,
+        },
+      });
+    }),
+  deleteTable: adminProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { id } = input;
+      return await ctx.prisma.tables.delete({
+        where: {
+          id,
         },
       });
     }),

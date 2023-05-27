@@ -27,13 +27,28 @@ const ManageTable: FC = ({}) => {
     const { mutate: addTable } = api.table.addTable.useMutation({
       onSuccess: () => {
         toast.success("Table successfully added");
-        refetch().then(res => res).catch((err:Error) => console.log(err.message));
+        setPopup(false)
+        refetch()
+          .then((res) => res)
+          .catch((err: Error) => console.log(err.message));
       },
     });
     const { mutate: updateTable } = api.table.updateTable.useMutation({
       onSuccess: () => {
         toast.success("Table successfully updated");
-        refetch().then(res => res).catch((err:Error) => console.log(err.message));
+        setPopup(false)
+        refetch()
+          .then((res) => res)
+          .catch((err: Error) => console.log(err.message));
+      },
+    });
+    const { mutate: deleteTable } = api.table.deleteTable.useMutation({
+      onSuccess: () => {
+        toast.success("Table successfully deleted");
+        setPopup(false)
+        refetch()
+          .then((res) => res)
+          .catch((err: Error) => console.log(err.message));
       },
     });
     const [form, setForm] = useState({
@@ -41,6 +56,10 @@ const ManageTable: FC = ({}) => {
       location: "",
       capacity: 0,
     });
+    useEffect(() => {
+      console.log(form);
+      console.log(Boolean(form.location));
+    }, [form]);
 
     useEffect(() => {
       if (table)
@@ -63,7 +82,6 @@ const ManageTable: FC = ({}) => {
             id: table.id,
           });
       }
-      setPopup(false);
     };
 
     return (
@@ -101,12 +119,17 @@ const ManageTable: FC = ({}) => {
               id="location"
               className="mb-6 block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
               onChange={(e) => setForm({ ...form, location: e.target.value })}
+              defaultValue={form.location}
             >
-              <option disabled selected>
+              <option disabled value={form.location}>
                 Choose a location
               </option>
               {locations.map((location) => (
-                <option key={location} selected={Boolean(form.location)} value={location}>
+                <option
+                  key={location}
+                  selected={Boolean(form.location === location)}
+                  value={location}
+                >
                   {location}
                 </option>
               ))}
@@ -130,21 +153,39 @@ const ManageTable: FC = ({}) => {
                 required
               />
             </div>
-            <button
-              type="submit"
-              className="cursor-pointer rounded-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-              onClick={submitForm}
-            >
-              {label}
-            </button>
-
-            <button
-              type="button"
-              className="rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus:z-10 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:border-gray-500 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-600"
-              onClick={() => setPopup(false)}
-            >
-              Cancel
-            </button>
+            <div className="flex justify-between">
+              <div>
+                <button
+                  type="submit"
+                  className="cursor-pointer rounded-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                  onClick={submitForm}
+                >
+                  {label}
+                </button>
+                <button
+                  type="button"
+                  className="rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus:z-10 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:border-gray-500 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-600"
+                  onClick={() => setPopup(false)}
+                >
+                  Cancel
+                </button>
+              </div>
+              {table && (
+                <div>
+                  <button
+                    type="button"
+                    className="mb-2 mr-2 rounded-lg bg-red-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+                    onClick={() => {
+                      deleteTable({
+                        id: table.id,
+                      });
+                    }}
+                  >
+                    Delete
+                  </button>
+                </div>
+              )}
+            </div>
           </form>
         </div>
       </div>
