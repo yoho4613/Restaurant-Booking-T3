@@ -1,4 +1,5 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, RoleEnumType } from "@prisma/client";
+import bcrypt from "bcryptjs";
 const faker = require("faker");
 const prisma = new PrismaClient();
 
@@ -21,6 +22,35 @@ interface Tables {
 }
 
 async function main() {
+  const users = [
+    {
+      email: "superadmin@email.com",
+      password: "superadmin",
+      name: "superadmin",
+      role: "superadmin",
+    },
+    {
+      email: "admin@email.com",
+      password: "admis",
+      name: "admin",
+      role: "admin",
+    },
+  ];
+
+  await Promise.all(
+    users.map(async (user) =>
+      prisma.user.create({
+        data: {
+          email: user.email,
+          password: await bcrypt.hash(user.password, 10),
+          name: user.name,
+          verified: false,
+          role: user.role as RoleEnumType,
+        },
+      })
+    )
+  );
+
   const days = [
     {
       id: "clhkg2ksn000m035ofzlrmqqg",
@@ -273,7 +303,8 @@ async function main() {
       preorder: faker.random.boolean(),
       dateTime: roundedDateTime,
       canceled: false,
-      tableId: tableIds[faker.random.number({ min: 0, max: tableIds.length - 1})]!
+      tableId:
+        tableIds[faker.random.number({ min: 0, max: tableIds.length - 1 })]!,
     };
     bookings.push(booking);
   }

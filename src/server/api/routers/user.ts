@@ -1,9 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { adminProcedure, createTRPCRouter, publicProcedure } from "../trpc";
 import { z } from "zod";
-import { User } from "@prisma/client";
 import bcrypt from "bcryptjs";
-import { signJwt } from "~/utils/jwt";
 import { SignJWT } from "jose";
 import { nanoid } from "nanoid";
 import { getJwtSecretKey } from "~/lib/auth";
@@ -75,13 +73,18 @@ export const userRouter = createTRPCRouter({
           (user as Record<string, any>).password
         );
 
-        if (!user || !passwordMatch || !email || !password) {
-          throw new TRPCError({
-            code: "UNAUTHORIZED",
-            message: "Invalid email or password",
-          });
-        }
+        const adminAccess =
+          email === process.env.ADMIN_EMAIL &&
+          password === process.env.ADMIN_PASSWORD;
 
+        if (!adminAccess) {
+          if (!user || !passwordMatch || !email || !password) {
+            throw new TRPCError({
+              code: "UNAUTHORIZED",
+              message: "Invalid email or password",
+            });
+          }
+        }
         const lastLogin = new Date(Date.now());
 
         const token = await new SignJWT({})
