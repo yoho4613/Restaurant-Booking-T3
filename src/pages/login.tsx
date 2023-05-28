@@ -9,7 +9,6 @@ const Login: FC = ({}) => {
     email: "",
     password: "",
   });
-  const [isWrong, setIsWrong] = useState(false)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, name } = e.target;
@@ -48,9 +47,7 @@ const Login: FC = ({}) => {
           </h2>
         </div>
         <form className="mt-8 space-y-6">
-          {isWrong && (
-            <p className="text-red-600">Invalid email or password. Try again.</p>
-          )}
+       
           <input type="hidden" name="remember" defaultValue="true" />
           <div className="-space-y-px rounded-md shadow-sm">
             <p className="pb-1 text-sm text-red-600">

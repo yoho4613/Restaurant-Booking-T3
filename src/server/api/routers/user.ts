@@ -24,6 +24,12 @@ export const userRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const { email, password, name, verified, role } = input;
+      if (!email || !password || !name || !role) {
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: "Missing Information",
+        });
+      }
       const hasedPassword = await bcrypt.hash(password, 10);
 
       const user_exist = await ctx.prisma.user.findUnique({
@@ -119,6 +125,39 @@ export const userRouter = createTRPCRouter({
       return await ctx.prisma.user.delete({
         where: {
           id,
+        },
+      });
+    }),
+  updateUser: adminProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        email: z.string(),
+
+        name: z.string(),
+        verified: z.boolean(),
+        role: z.enum(["staff", "manager", "admin", "superadmin"]),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { id, email, name, verified, role } = input;
+
+      if (!email || !name || !role) {
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: "Missing Information",
+        });
+      }
+
+      return await ctx.prisma.user.update({
+        where: {
+          id,
+        },
+        data: {
+          email,
+          name,
+          verified,
+          role,
         },
       });
     }),

@@ -25,7 +25,7 @@ const Accounts: FC = ({}) => {
     user: User | null;
     label: string | boolean;
   }) => {
-    const { mutate: addUser } = api.user.signupUser.useMutation({
+    const { mutate: addUser, isError } = api.user.signupUser.useMutation({
       onSuccess: () => {
         toast.success("User successfully added");
         setPopup(false);
@@ -37,6 +37,15 @@ const Accounts: FC = ({}) => {
     const { mutate: deleteUser } = api.user.deleteUser.useMutation({
       onSuccess: () => {
         toast.success("User successfully deleted");
+        setPopup(false);
+        refetch()
+          .then((res) => res)
+          .catch((err: Error) => console.log(err.message));
+      },
+    });
+    const { mutate: updateUser } = api.user.updateUser.useMutation({
+      onSuccess: () => {
+        toast.success("User successfully updated");
         setPopup(false);
         refetch()
           .then((res) => res)
@@ -67,25 +76,25 @@ const Accounts: FC = ({}) => {
     }, []);
 
     useEffect(() => {
-      if(confirm !== null && user) {
-        if(confirm) {
-          deleteUser({id: user.id})
-          setConfirmPopup(false)
+      if (confirm !== null && user) {
+        if (confirm) {
+          deleteUser({ id: user.id });
+          setConfirmPopup(false);
         }
       }
-    }, [confirm])
+    }, [confirm]);
 
     const submitForm = () => {
-      if (form.email && form.name && form.password && form.role) {
-        if (label === "Add") {
-          addUser({
+      if (label === "Add") {
+        addUser({
+          ...form,
+        });
+      } else if (label === "Update") {
+        if (user)
+          updateUser({
+            id: user.id,
             ...form,
           });
-        } else if (label === "Update") {
-          
-        }
-      } else {
-        alert("Error");
       }
     };
 
@@ -106,6 +115,9 @@ const Accounts: FC = ({}) => {
         <div className="m-auto w-2/3 rounded-md bg-white p-6 ">
           <h2 className="mb-6 text-center text-2xl font-bold">{label} Table</h2>
           <form>
+            <p className="pb-1 text-sm text-red-600">
+              {isError && "Invalid information"}
+            </p>
             <div className="mb-6">
               <label
                 htmlFor="name"
@@ -140,23 +152,27 @@ const Accounts: FC = ({}) => {
                 required
               />
             </div>
-            <div className="mb-6">
-              <label
-                htmlFor="password"
-                className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
-              >
-                Password
-              </label>
-              <input
-                type="password"
-                id="password"
-                className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-                placeholder="*******"
-                onChange={(e) => setForm({ ...form, password: e.target.value })}
-                value={form.password}
-                required
-              />
-            </div>
+            {!user && (
+              <div className="mb-6">
+                <label
+                  htmlFor="password"
+                  className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+                >
+                  Password
+                </label>
+                <input
+                  type="password"
+                  id="password"
+                  className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+                  placeholder="*******"
+                  onChange={(e) =>
+                    setForm({ ...form, password: e.target.value })
+                  }
+                  value={form.password}
+                  required
+                />
+              </div>
+            )}
             <label
               htmlFor="location"
               className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
