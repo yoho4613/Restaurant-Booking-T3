@@ -11,7 +11,7 @@ import { ChakraProvider } from "@chakra-ui/react";
 import Navbar from "~/components/Navbar";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import AdminNavBar from "~/components/AdminNavbar";
+import AdminNavBar from "~/components/Admin/AdminNavbar";
 import Head from "next/head";
 import Script from "next/script";
 
