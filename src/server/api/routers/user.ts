@@ -6,6 +6,7 @@ import { SignJWT } from "jose";
 import { nanoid } from "nanoid";
 import { getJwtSecretKey } from "~/lib/auth";
 import cookie from "cookie";
+import { User } from "@prisma/client";
 
 export const userRouter = createTRPCRouter({
   getAllUsers: adminProcedure.query(async ({ ctx, input }) => {
@@ -22,34 +23,30 @@ export const userRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      try {
-        const { email, password, name, verified, role } = input;
-        const hasedPassword = await bcrypt.hash(password, 10);
+      const { email, password, name, verified, role } = input;
+      const hasedPassword = await bcrypt.hash(password, 10);
 
-        const user_exist = await ctx.prisma.user.findUnique({
-          where: { email },
+      const user_exist = await ctx.prisma.user.findUnique({
+        where: { email },
+      });
+
+      if (user_exist) {
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: "User already exists",
         });
-
-        if (user_exist) {
-          throw new TRPCError({
-            code: "CONFLICT",
-            message: "User already exists",
-          });
-        }
-
-        const user = await ctx.prisma.user.create({
-          data: {
-            email,
-            password: hasedPassword,
-            name,
-            verified,
-            role,
-          },
-        });
-        return { success: true };
-      } catch (error: any) {
-        throw new TRPCError(error);
       }
+
+      const user = await ctx.prisma.user.create({
+        data: {
+          email,
+          password: hasedPassword,
+          name,
+          verified,
+          role,
+        },
+      });
+      return { success: true };
     }),
 
   loginUser: publicProcedure
@@ -60,50 +57,46 @@ export const userRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      try {
-        const { res } = ctx;
-        const { email, password } = input;
+      const { res } = ctx;
+      const { email, password } = input;
 
-        const user = await ctx.prisma.user.findUnique({
-          where: { email: email },
-        });
+      const user = await ctx.prisma.user.findUnique({
+        where: { email: email },
+      });
 
-        const passwordMatch = await bcrypt.compare(
-          password,
-          (user as Record<string, any>).password
-        );
+      const passwordMatch = await bcrypt.compare(
+        password,
+        (user as User).password
+      );
 
-        const adminAccess =
-          email === process.env.ADMIN_EMAIL &&
-          password === process.env.ADMIN_PASSWORD;
+      const adminAccess =
+        email === process.env.ADMIN_EMAIL &&
+        password === process.env.ADMIN_PASSWORD;
 
-        if (!adminAccess) {
-          if (!user || !passwordMatch || !email || !password) {
-            throw new TRPCError({
-              code: "UNAUTHORIZED",
-              message: "Invalid email or password",
-            });
-          }
+      if (!adminAccess) {
+        if (!user || !passwordMatch || !email || !password) {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "Invalid email or password",
+          });
         }
-        const lastLogin = new Date(Date.now());
-
-        const token = await new SignJWT({})
-          .setProtectedHeader({ alg: "HS256" })
-          .setJti(nanoid())
-          .setIssuedAt()
-          .setExpirationTime("24h")
-          .sign(new TextEncoder().encode(getJwtSecretKey()));
-
-        res.setHeader(
-          "Set-Cookie",
-          cookie.serialize("user-token", token, {
-            httpOnly: true,
-            path: "/",
-            secure: process.env.NODE_ENV === "production",
-          })
-        );
-      } catch (error: any) {
-        throw new TRPCError(error);
       }
+      const lastLogin = new Date(Date.now());
+
+      const token = await new SignJWT({})
+        .setProtectedHeader({ alg: "HS256" })
+        .setJti(nanoid())
+        .setIssuedAt()
+        .setExpirationTime("24h")
+        .sign(new TextEncoder().encode(getJwtSecretKey()));
+
+      res.setHeader(
+        "Set-Cookie",
+        cookie.serialize("user-token", token, {
+          httpOnly: true,
+          path: "/",
+          secure: process.env.NODE_ENV === "production",
+        })
+      );
     }),
 });

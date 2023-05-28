@@ -396,7 +396,7 @@ const Booking: FC<BookingProps> = ({ days, closedDays }) => {
                 <tr
                   key={booking.id}
                   className={`border-b bg-white  decoration-red-600 dark:border-gray-700 dark:bg-gray-800 ${
-                    booking.canceled && "line-through"
+                    booking.canceled ? "line-through" : ""
                   }
                   ${
                     checkDatePassed(booking.dateTime) === "today"
