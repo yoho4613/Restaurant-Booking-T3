@@ -51,7 +51,7 @@ const Accounts: FC = ({}) => {
         } else if (label === "Update") {
         }
       } else {
-        alert("Error")
+        alert("Error");
       }
     };
 
@@ -217,7 +217,7 @@ const Accounts: FC = ({}) => {
                     Registered At
                   </th>
                   <th scope="col" className="px-6 py-3">
-                    Approved by
+                    Last Login
                   </th>
                   <th scope="col" className="px-6 py-3">
                     Action
@@ -239,7 +239,25 @@ const Accounts: FC = ({}) => {
                       </th>
                       <td className="px-6 py-4">{user.name}</td>
                       <td className="px-6 py-4">{user.email}</td>
-                      <td className="px-6 py-4">{user.createdAt.toString()}</td>
+                      <td className="px-6 py-4 font-bold">
+                        {user.createdAt.toLocaleDateString("en-GB")}{" "}
+                        {user.createdAt.getHours() % 12 === 0
+                          ? 12
+                          : user.createdAt.getHours() % 12}
+                        :{user.createdAt.getMinutes() < 10 ? "0" : ""}
+                        {user.createdAt.getMinutes()}
+                        {user.createdAt.getHours() >= 12 ? "PM" : "AM"}
+                      </td>
+                      <td className="px-6 py-4 font-bold">
+                        {user.lastLogin.toLocaleDateString("en-GB")}{" "}
+                        {user.lastLogin.getHours() % 12 === 0
+                          ? 12
+                          : user.lastLogin.getHours() % 12}
+                        :{user.lastLogin.getMinutes() < 10 ? "0" : ""}
+                        {user.lastLogin.getMinutes()}
+                        {user.lastLogin.getHours() >= 12 ? "PM" : "AM"}
+                      </td>
+
                       <td className="px-6 py-4">
                         <a
                           href="#"

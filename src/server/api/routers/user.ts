@@ -98,5 +98,15 @@ export const userRouter = createTRPCRouter({
           secure: process.env.NODE_ENV === "production",
         })
       );
+      await ctx.prisma.user.update({
+        where: {
+          id: user?.id
+        }, 
+        data: {
+          ...user,
+          lastLogin: new Date()
+        }
+      })
+      
     }),
 });
