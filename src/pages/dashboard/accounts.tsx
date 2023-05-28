@@ -4,6 +4,7 @@ import { api } from "~/utils/api";
 import { prisma } from "~/server/db";
 import { RoleEnumType } from "@prisma/client";
 import { Toaster, toast } from "react-hot-toast";
+import Confirmation from "~/components/Confirmation";
 
 interface Form {
   email: string;
@@ -15,6 +16,7 @@ interface Form {
 const Accounts: FC = ({}) => {
   const { data: users, refetch } = api.user.getAllUsers.useQuery();
   const [popup, setPopup] = useState<boolean | string>(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   const Popup = ({
     user,
@@ -25,14 +27,22 @@ const Accounts: FC = ({}) => {
   }) => {
     const { mutate: addUser } = api.user.signupUser.useMutation({
       onSuccess: () => {
-        toast.success("Table successfully added");
+        toast.success("User successfully added");
         setPopup(false);
         refetch()
           .then((res) => res)
           .catch((err: Error) => console.log(err.message));
       },
     });
-
+    const { mutate: deleteUser } = api.user.deleteUser.useMutation({
+      onSuccess: () => {
+        toast.success("User successfully deleted");
+        setPopup(false);
+        refetch()
+          .then((res) => res)
+          .catch((err: Error) => console.log(err.message));
+      },
+    });
     const [form, setForm] = useState<Form>({
       email: "",
       password: "",
@@ -41,6 +51,29 @@ const Accounts: FC = ({}) => {
       verified: false,
     });
     const [roles, setRoles] = useState(RoleEnumType);
+    const [confirm, setConfirm] = useState<boolean | null>(null);
+    const [confirmPopup, setConfirmPopup] = useState(false);
+
+    useEffect(() => {
+      if (user) {
+        setForm({
+          ...form,
+          name: user.name,
+          email: user.email,
+          role: user.role as RoleEnumType,
+          verified: false,
+        });
+      }
+    }, []);
+
+    useEffect(() => {
+      if(confirm !== null && user) {
+        if(confirm) {
+          deleteUser({id: user.id})
+          setConfirmPopup(false)
+        }
+      }
+    }, [confirm])
 
     const submitForm = () => {
       if (form.email && form.name && form.password && form.role) {
@@ -49,6 +82,7 @@ const Accounts: FC = ({}) => {
             ...form,
           });
         } else if (label === "Update") {
+          
         }
       } else {
         alert("Error");
@@ -60,6 +94,15 @@ const Accounts: FC = ({}) => {
         className="fixed z-10 h-screen w-screen p-6"
         style={{ background: "rgba(0, 0, 0, 0.4)" }}
       >
+        {confirm && (
+          <Confirmation
+            message="Are you sure you want to delete this user?"
+            optionOne="Confirm"
+            optionTwo="Cancel"
+            onCancel={() => setConfirmPopup(false)}
+            onConfirm={setConfirm}
+          />
+        )}
         <div className="m-auto w-2/3 rounded-md bg-white p-6 ">
           <h2 className="mb-6 text-center text-2xl font-bold">{label} Table</h2>
           <form>
@@ -153,7 +196,10 @@ const Accounts: FC = ({}) => {
                 <button
                   type="button"
                   className="rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus:z-10 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:border-gray-500 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-600"
-                  onClick={() => setPopup(false)}
+                  onClick={() => {
+                    setPopup(false);
+                    setSelectedUser(null);
+                  }}
                 >
                   Cancel
                 </button>
@@ -163,11 +209,9 @@ const Accounts: FC = ({}) => {
                   <button
                     type="button"
                     className="mb-2 mr-2 rounded-lg bg-red-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
-                    // onClick={() => {
-                    //   deleteTable({
-                    //     id: table.id,
-                    //   });
-                    // }}
+                    onClick={() => {
+                      setConfirm(true);
+                    }}
                   >
                     Delete
                   </button>
@@ -182,7 +226,7 @@ const Accounts: FC = ({}) => {
 
   return (
     <>
-      {popup && <Popup user={null} label={popup} />}
+      {popup && <Popup user={selectedUser} label={popup} />}
       <div className="p-6">
         <Toaster />
         <div>
@@ -259,12 +303,15 @@ const Accounts: FC = ({}) => {
                       </td>
 
                       <td className="px-6 py-4">
-                        <a
-                          href="#"
+                        <button
                           className="font-medium text-blue-600 hover:underline dark:text-blue-500"
+                          onClick={() => {
+                            setSelectedUser(user);
+                            setPopup("Update");
+                          }}
                         >
                           Edit
-                        </a>
+                        </button>
                       </td>
                     </tr>
                   ))}

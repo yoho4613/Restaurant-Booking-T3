@@ -4,12 +4,16 @@ type ConfirmationProps = {
   message: string;
   onConfirm: (prev: boolean) => void;
   onCancel: () => void;
+  optionOne: string;
+  optionTwo: string;
 };
 
 const Confirmation: React.FC<ConfirmationProps> = ({
   message,
   onConfirm,
   onCancel,
+  optionOne,
+  optionTwo,
 }) => {
   const handleConfirmOne = () => {
     onConfirm(true);
@@ -43,13 +47,13 @@ const Confirmation: React.FC<ConfirmationProps> = ({
             className="confirmation-button confirm"
             onClick={handleConfirmOne}
           >
-            With Pre-Order
+            {optionOne}
           </button>
           <button
             className="confirmation-button cancel"
             onClick={handleConfirmTwo}
           >
-            Without Pre-Order
+            {optionTwo}
           </button>
         </div>
       </div>

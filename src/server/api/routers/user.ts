@@ -100,13 +100,26 @@ export const userRouter = createTRPCRouter({
       );
       await ctx.prisma.user.update({
         where: {
-          id: user?.id
-        }, 
+          id: user?.id,
+        },
         data: {
           ...user,
-          lastLogin: new Date()
-        }
+          lastLogin: new Date(),
+        },
+      });
+    }),
+  deleteUser: adminProcedure
+    .input(
+      z.object({
+        id: z.string(),
       })
-      
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { id } = input;
+      return await ctx.prisma.user.delete({
+        where: {
+          id,
+        },
+      });
     }),
 });

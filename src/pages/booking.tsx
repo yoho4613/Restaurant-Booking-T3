@@ -42,7 +42,6 @@ const Booking: FC<BookingProps> = ({ days, closedDays }) => {
     dateTime: null,
   });
   const { mutate: addBooking } = api.booking.addBooking.useMutation({});
-  
 
   useEffect(() => {
     if (date.dateTime) {
@@ -107,6 +106,8 @@ const Booking: FC<BookingProps> = ({ days, closedDays }) => {
           onCancel={() => {
             setDate({ ...date, dateTime: null });
           }}
+          optionOne="With Pre-Order"
+          optionTwo="Without Pre-Order"
           onConfirm={setWithPreOrder}
           message="Would you like to pre-order food?"
         />
