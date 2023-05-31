@@ -65,7 +65,6 @@ const Booking: FC<BookingProps> = ({ days, closedDays }) => {
   // }, []);
 
   useEffect(() => {
-    console.log("fetch");
     if (bookings && bookings.length) {
       if (bookingCopy) {
         if (bookingCopy.length < bookings.length) {
