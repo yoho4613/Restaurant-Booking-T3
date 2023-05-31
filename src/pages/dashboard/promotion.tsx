@@ -84,7 +84,30 @@ const Promotion:FC = ({}) => {
       {/* {error && <p className="text-xs text-red-600">{error}</p>} */}
 
       <div className="mx-auto mt-12 max-w-7xl">
-        <p className="text-lg font-medium">Your Promotions:</p>
+        <p className="text-lg font-medium">Avilable Promotions:</p>
+        <div className=" mb-12 mt-6 grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-8 ">
+          {/* {menuItems?.map((menuItem: MenuItems) => (
+            <div key={menuItem.id}>
+              <p>{menuItem.name}</p>
+              <div className="relative h-40 w-40">
+                 <Image priority fill alt="" src={menuItem.url} /> 
+              </div>
+              <button
+                onClick={() => {
+                  // handleDelete(menuItem.imageKey, menuItem.id)
+                  //   .then((res) => res)
+                  //   .catch((err: Error) => console.log(err));
+                }}
+                className="text-xs text-red-500"
+              >
+                delete
+              </button>
+            </div>
+          ))} */}
+        </div>
+      </div>
+      <div className="mx-auto mt-12 max-w-7xl">
+        <p className="text-lg font-medium">Ended Promotions:</p>
         <div className=" mb-12 mt-6 grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-8 ">
           {/* {menuItems?.map((menuItem: MenuItems) => (
             <div key={menuItem.id}>

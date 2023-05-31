@@ -86,4 +86,12 @@ model Tables {
   capacity  Int
 }
 
+model Promotion {
+  id            String  @id @default(cuid())
+  name          String
+  isAvailable   Boolean
+  startDate     DateTime @default(now())
+  endDate       DateTime
+}
+
 
