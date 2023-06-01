@@ -92,6 +92,7 @@ model Promotion {
   isAvailable   Boolean
   startDate     DateTime @default(now())
   endDate       DateTime
+  description   String
 }
 
 

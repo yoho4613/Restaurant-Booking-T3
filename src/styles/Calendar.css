@@ -173,3 +173,11 @@
 .react-calendar--selectRange .react-calendar__tile--hover {
   background-color: rgb(238 242 255);
 }
+
+.react-calendar__tile.highlight {
+  border: 2px solid #76baff;
+}
+
+.react-calendar__tile.selected {
+  color: rgb(249, 92, 92);
+}

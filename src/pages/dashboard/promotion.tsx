@@ -1,137 +1,101 @@
-import React, { FC } from 'react';
+import { isAfter, isBefore, isSameDay } from "date-fns";
+import React, { FC, useEffect, useState } from "react";
+import Calendar from "react-calendar";
 
+interface Form {
+  name: string;
+  description: string;
+  startDate: Date | null;
+  endDate: Date | null;
+}
+const Promotion: FC = ({}) => {
+  const [form, setForm] = useState<Form>({
+    name: "",
+    description: "",
+    startDate: null,
+    endDate: null,
+  });
 
-
-const Promotion:FC = ({}) => {
-  
-  return(
+  return (
     <>
-    <div className="p-6">
-      <div className="mx-auto flex max-w-xl flex-col gap-2">
-        <input
-          name="name"
-          className="h-12 rounded-sm border-none bg-gray-200"
-          type="text"
-          placeholder="name"
-          // onChange={(e) =>
-            // setInput((prev) => ({ ...prev, name: e.target.value }))
-          // }
-          // value={input.name}
-        />
-
-        <input
-          name="price"
-          className="h-12 rounded-sm border-none bg-gray-200"
-          type="number"
-          placeholder="price"
-          // onChange={(e) =>
-            // setInput((prev) => ({ ...prev, price: Number(e.target.value) }))
-          // }
-          // value={input.price}
-        />
-
-        {/* <DynamicSelect
-          value={input.categories}
-          onChange={(e) =>
-            setInput((prev) => ({ ...prev, categories: e } as Input))
-          }
-          isMulti
-          className="h-12"
-          options={selectOptions}
-        /> */}
-
-        <label
-          htmlFor="file"
-          className="relative h-12 cursor-pointer rounded-sm bg-gray-200 font-medium text-indigo-600 focus-within:outline-none"
-        >
-          <span className="sr-only">File input</span>
-          <div className="flex h-full items-center justify-center">
-            {/* {preview ? (
-              <div className="relative h-3/4 w-full">
-                <Image
-                  alt="preview"
-                  style={{ objectFit: "contain" }}
-                  fill
-                  src={preview}
-                />
-              </div>
-            ) : ( */}
-              <span>Select image</span>
-            {/* )} */}
-          </div>
+      <div className="p-6">
+        <h1 className="mb-6 mt-6 text-center text-3xl font-bold">
+          Manage Promotions
+        </h1>
+        <div className="mx-auto flex max-w-xl flex-col gap-2">
           <input
-            name="file"
-            id="file"
-            // onChange={handleFileSelect}
-            accept="image/jpeg image/png image/jpg"
-            type="file"
-            className="sr-only"
+            name="name"
+            className="h-12 rounded-sm border-none bg-gray-200 p-2"
+            type="text"
+            placeholder="promotion name"
+            onChange={(e) =>
+            setForm((prev) => ({ ...prev, name: e.target.value }))
+            }
+            value={form.name}
           />
-        </label>
 
-        <button
-          className="h-12 rounded-sm bg-gray-200 disabled:cursor-not-allowed"
-          // disabled={!input.file || !input.name}
-          onClick={() => {
-            // addMenuItem()
-            //   .then((res) => res)
-            //   .catch((err: Error) => console.log(err));
-          }}
-        >
-          Add Promotion
-        </button>
-      </div>
-      {/* {error && <p className="text-xs text-red-600">{error}</p>} */}
+          <textarea
+            name="description"
+            className=" rounded-sm border-none bg-gray-200 p-2"
+            rows={8}
+            placeholder="promotion description..."
+            onChange={(e) =>
+            setForm((prev) => ({ ...prev, description: e.target.value }))
+            }
+            value={form.description}
+          />
 
-      <div className="mx-auto mt-12 max-w-7xl">
-        <p className="text-lg font-medium">Avilable Promotions:</p>
-        <div className=" mb-12 mt-6 grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-8 ">
-          {/* {menuItems?.map((menuItem: MenuItems) => (
-            <div key={menuItem.id}>
-              <p>{menuItem.name}</p>
-              <div className="relative h-40 w-40">
-                 <Image priority fill alt="" src={menuItem.url} /> 
-              </div>
-              <button
-                onClick={() => {
-                  // handleDelete(menuItem.imageKey, menuItem.id)
-                  //   .then((res) => res)
-                  //   .catch((err: Error) => console.log(err));
+          <div className="mb-6 mt-6 h-full items-center justify-center sm:flex">
+            <div className="text-center ">
+              <span className="font-bold">Period</span>
+              <Calendar
+                className="REACT_CALENDAR"
+                tileClassName={({ date }) => {
+                  if (isSameDay(form.startDate || 0, date) || isSameDay(form.endDate || 0, date)) {
+                    return "highlight selected";
+                  } else if (form.startDate && form.endDate) {
+                    if(isAfter(date, form.startDate) && isBefore(date, form.endDate)) {
+                      return "selected"
+                    }
+                  }
                 }}
-                className="text-xs text-red-500"
-              >
-                delete
-              </button>
+                onClickDay={(date) => {
+                  if (form.endDate !== null || form.startDate === null) {
+                    setForm({ ...form, startDate: date, endDate: null });
+                  } else {
+                    setForm({ ...form, endDate: date });
+                  }
+                }}
+              />
             </div>
-          ))} */}
+          </div>
+
+          <button
+            className="h-12 rounded-sm bg-gray-200 disabled:cursor-not-allowed"
+            disabled={!form.name || !form.description || !form.startDate || !form.endDate}
+            onClick={() => {
+             
+            }}
+          >
+            Add Promotion
+          </button>
+        </div>
+
+        <div className="mx-auto mt-12 max-w-7xl">
+          <p className="text-lg font-medium">Avilable Promotions:</p>
+          <div className=" mb-12 mt-6 grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-8 ">
+            {/* On Live Promotion */}
+          </div>
+        </div>
+        <div className="mx-auto mt-12 max-w-7xl">
+          <p className="text-lg font-medium">Ended Promotions:</p>
+          <div className=" mb-12 mt-6 grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-8 ">
+            {/* Ended Promotion */}
+          </div>
         </div>
       </div>
-      <div className="mx-auto mt-12 max-w-7xl">
-        <p className="text-lg font-medium">Ended Promotions:</p>
-        <div className=" mb-12 mt-6 grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-8 ">
-          {/* {menuItems?.map((menuItem: MenuItems) => (
-            <div key={menuItem.id}>
-              <p>{menuItem.name}</p>
-              <div className="relative h-40 w-40">
-                 <Image priority fill alt="" src={menuItem.url} /> 
-              </div>
-              <button
-                onClick={() => {
-                  // handleDelete(menuItem.imageKey, menuItem.id)
-                  //   .then((res) => res)
-                  //   .catch((err: Error) => console.log(err));
-                }}
-                className="text-xs text-red-500"
-              >
-                delete
-              </button>
-            </div>
-          ))} */}
-        </div>
-      </div>
-    </div>
-  </>
-  )
+    </>
+  );
 };
 
 export default Promotion;
