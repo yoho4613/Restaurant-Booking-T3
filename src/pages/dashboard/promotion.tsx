@@ -1,6 +1,8 @@
 import { isAfter, isBefore, isSameDay } from "date-fns";
 import React, { FC, useEffect, useState } from "react";
 import Calendar from "react-calendar";
+import { toast } from "react-hot-toast";
+import { api } from "~/utils/api";
 
 interface Form {
   name: string;
@@ -9,12 +11,35 @@ interface Form {
   endDate: Date | null;
 }
 const Promotion: FC = ({}) => {
+  const { data: promotions } = api.promotion.getPromotions.useQuery();
+  const { mutate: addPromotion } = api.promotion.addPromotion.useMutation({
+    onSuccess: () => {
+      toast.success("Promotion added successfully");
+      setForm({
+        name: "",
+        description: "",
+        startDate: null,
+        endDate: null,
+      });
+    },
+  });
   const [form, setForm] = useState<Form>({
     name: "",
     description: "",
     startDate: null,
     endDate: null,
   });
+
+  const submitForm = () => {
+    if (form.startDate !== null && form.endDate !== null) {
+      addPromotion({
+        name: form.name,
+        description: form.description,
+        startDate: form.startDate,
+        endDate: form.endDate
+      });
+    }
+  };
 
   return (
     <>
@@ -29,7 +54,7 @@ const Promotion: FC = ({}) => {
             type="text"
             placeholder="promotion name"
             onChange={(e) =>
-            setForm((prev) => ({ ...prev, name: e.target.value }))
+              setForm((prev) => ({ ...prev, name: e.target.value }))
             }
             value={form.name}
           />
@@ -40,7 +65,7 @@ const Promotion: FC = ({}) => {
             rows={8}
             placeholder="promotion description..."
             onChange={(e) =>
-            setForm((prev) => ({ ...prev, description: e.target.value }))
+              setForm((prev) => ({ ...prev, description: e.target.value }))
             }
             value={form.description}
           />
@@ -51,11 +76,17 @@ const Promotion: FC = ({}) => {
               <Calendar
                 className="REACT_CALENDAR"
                 tileClassName={({ date }) => {
-                  if (isSameDay(form.startDate || 0, date) || isSameDay(form.endDate || 0, date)) {
+                  if (
+                    isSameDay(form.startDate || 0, date) ||
+                    isSameDay(form.endDate || 0, date)
+                  ) {
                     return "highlight selected";
                   } else if (form.startDate && form.endDate) {
-                    if(isAfter(date, form.startDate) && isBefore(date, form.endDate)) {
-                      return "selected"
+                    if (
+                      isAfter(date, form.startDate) &&
+                      isBefore(date, form.endDate)
+                    ) {
+                      return "selected";
                     }
                   }
                 }}
@@ -72,10 +103,13 @@ const Promotion: FC = ({}) => {
 
           <button
             className="h-12 rounded-sm bg-gray-200 disabled:cursor-not-allowed"
-            disabled={!form.name || !form.description || !form.startDate || !form.endDate}
-            onClick={() => {
-             
-            }}
+            disabled={
+              !form.name ||
+              !form.description ||
+              !form.startDate ||
+              !form.endDate
+            }
+            onClick={submitForm}
           >
             Add Promotion
           </button>
@@ -85,6 +119,14 @@ const Promotion: FC = ({}) => {
           <p className="text-lg font-medium">Avilable Promotions:</p>
           <div className=" mb-12 mt-6 grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-8 ">
             {/* On Live Promotion */}
+            {promotions &&
+              promotions.map((promotion) => (
+                <div key={promotion.id}>
+                  <h1>{promotion.name}</h1>
+                  <p>{promotion.description}</p>
+                  <p>{promotion.endDate.toString()}</p>
+                </div>
+              ))}
           </div>
         </div>
         <div className="mx-auto mt-12 max-w-7xl">
