@@ -390,7 +390,7 @@ const Booking: FC<BookingProps> = ({ days, closedDays }) => {
           </thead>
           <tbody>
             {filteredBooking &&
-              tables &&
+              tables && filteredBooking.length ?
               filteredBooking.map((booking) => (
                 <tr
                   key={booking.id}
@@ -483,7 +483,7 @@ const Booking: FC<BookingProps> = ({ days, closedDays }) => {
                     )}
                   </td>
                 </tr>
-              ))}
+              )) : <tr><td className="px-6 py-4 font-bold text-lg">No Booking...</td></tr>}
           </tbody>
         </table>
       </div>

@@ -287,10 +287,10 @@ async function main() {
   }
 
   const bookings = [];
-  for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < 1000; i++) {
     const dateTime = faker.date.between(
       "2023-05-01T08:00:00.000Z",
-      "2023-05-31T20:00:00.000Z"
+      "2023-10-31T20:00:00.000Z"
     );
     const roundedDateTime = new Date(
       Math.round(dateTime.getTime() / (30 * 60 * 1000)) * 30 * 60 * 1000
