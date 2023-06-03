@@ -11,12 +11,14 @@ const promotionRouter = createTRPCRouter({
     startDate: z.date(),
     endDate: z.date(),
   })).mutation(async ({ctx, input}) => {
-    const {name, startDate, endDate} = input;
+    const {startDate, endDate} = input;
     const available = isBefore(new Date(), endDate) && isAfter(new Date(), startDate)
+
 
     return await ctx.prisma.promotion.create({
       data: {
         ...input,
+        endDate: new Date(endDate.getTime() + 1000 * 60 * 60 * 24 - 1),
         isAvailable: available
       }
     })

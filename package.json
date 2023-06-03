@@ -11,7 +11,8 @@
     "db:migrate": "npx prisma migrate dev --name user-entity --create-only && npx prisma generate"
   },
   "prisma": {
-    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts",
+    "seedBooking": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/bookingSeed.ts"
   },
   "dependencies": {
     "@chakra-ui/react": "^1.8.9",

@@ -1,7 +1,8 @@
+import { Promotion } from "@prisma/client";
 import { isAfter, isBefore, isSameDay } from "date-fns";
 import React, { FC, useEffect, useState } from "react";
 import Calendar from "react-calendar";
-import { toast } from "react-hot-toast";
+import { Toaster, toast } from "react-hot-toast";
 import { api } from "~/utils/api";
 
 interface Form {
@@ -11,7 +12,7 @@ interface Form {
   endDate: Date | null;
 }
 const Promotion: FC = ({}) => {
-  const { data: promotions } = api.promotion.getPromotions.useQuery();
+  const { data: promotions, refetch } = api.promotion.getPromotions.useQuery();
   const { mutate: addPromotion } = api.promotion.addPromotion.useMutation({
     onSuccess: () => {
       toast.success("Promotion added successfully");
@@ -21,6 +22,7 @@ const Promotion: FC = ({}) => {
         startDate: null,
         endDate: null,
       });
+      refetch();
     },
   });
   const [form, setForm] = useState<Form>({
@@ -29,6 +31,23 @@ const Promotion: FC = ({}) => {
     startDate: null,
     endDate: null,
   });
+  const [onGoingPromotion, setOnGoingPromotion] = useState<Promotion[] | []>(
+    []
+  );
+  const [endedPromotion, setEndedPromotion] = useState<Promotion[] | []>([]);
+
+  useEffect(() => {
+    if (promotions) {
+      setOnGoingPromotion(
+        promotions.filter((promotion) =>
+          isBefore(new Date(), promotion.endDate)
+        )
+      );
+      setEndedPromotion(
+        promotions.filter((promotion) => isAfter(new Date(), promotion.endDate))
+      );
+    }
+  }, [promotions]);
 
   const submitForm = () => {
     if (form.startDate !== null && form.endDate !== null) {
@@ -36,7 +55,7 @@ const Promotion: FC = ({}) => {
         name: form.name,
         description: form.description,
         startDate: form.startDate,
-        endDate: form.endDate
+        endDate: form.endDate,
       });
     }
   };
@@ -44,6 +63,7 @@ const Promotion: FC = ({}) => {
   return (
     <>
       <div className="p-6">
+        <Toaster />
         <h1 className="mb-6 mt-6 text-center text-3xl font-bold">
           Manage Promotions
         </h1>
@@ -91,7 +111,11 @@ const Promotion: FC = ({}) => {
                   }
                 }}
                 onClickDay={(date) => {
-                  if (form.endDate !== null || form.startDate === null) {
+                  if (
+                    form.endDate !== null ||
+                    form.startDate === null ||
+                    form.startDate.getTime() > date.getTime()
+                  ) {
                     setForm({ ...form, startDate: date, endDate: null });
                   } else {
                     setForm({ ...form, endDate: date });
@@ -119,12 +143,25 @@ const Promotion: FC = ({}) => {
           <p className="text-lg font-medium">Avilable Promotions:</p>
           <div className=" mb-12 mt-6 grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-8 ">
             {/* On Live Promotion */}
-            {promotions &&
-              promotions.map((promotion) => (
+            {onGoingPromotion &&
+              onGoingPromotion.map((promotion) => (
                 <div key={promotion.id}>
-                  <h1>{promotion.name}</h1>
-                  <p>{promotion.description}</p>
-                  <p>{promotion.endDate.toString()}</p>
+                  <button
+                    type="button"
+                    className="block max-w-sm rounded-lg border border-gray-200 bg-white p-6 shadow hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
+                  >
+                    <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                      {promotion.name}
+                    </h5>
+                    <h5 className="text-md mb-2 font-bold tracking-tight text-gray-900 dark:text-white">
+                      <span className="font-bold">Ended at:</span>{" "}
+                      {promotion.endDate.toLocaleString()}
+                    </h5>
+                    <p className="font-normal text-gray-700 dark:text-gray-400">
+                      <span className="font-bold">Description:</span>
+                      {promotion.description}
+                    </p>
+                  </button>
                 </div>
               ))}
           </div>
@@ -133,6 +170,27 @@ const Promotion: FC = ({}) => {
           <p className="text-lg font-medium">Ended Promotions:</p>
           <div className=" mb-12 mt-6 grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-8 ">
             {/* Ended Promotion */}
+            {endedPromotion &&
+              endedPromotion.map((promotion) => (
+                <div key={promotion.id}>
+                  <button
+                    type="button"
+                    className="block max-w-sm rounded-lg border border-gray-200 bg-white p-6 shadow hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
+                  >
+                    <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                      {promotion.name}
+                    </h5>
+                    <h5 className="text-md mb-2 font-bold tracking-tight text-gray-900 dark:text-white">
+                      <span className="font-bold">Ended at:</span>{" "}
+                      {promotion.endDate.toLocaleString()}
+                    </h5>
+                    <p className="font-normal text-gray-700 dark:text-gray-400">
+                      <span className="font-bold">Description:</span>
+                      {promotion.description}
+                    </p>
+                  </button>
+                </div>
+              ))}
           </div>
         </div>
       </div>
