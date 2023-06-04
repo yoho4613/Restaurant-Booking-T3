@@ -22,7 +22,7 @@ const Promotion: FC = ({}) => {
         startDate: null,
         endDate: null,
       });
-      refetch();
+      refetch().then(res => res).catch((err:Error) => console.log(err));
     },
   });
   const [form, setForm] = useState<Form>({
