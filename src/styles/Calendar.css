@@ -140,12 +140,15 @@
   max-width: 100%;
   background: none;
   text-align: center;
+  position: relative;
+  overflow: visible !important;
+  z-index: 0;
 }
 .react-calendar__tile:disabled {
   background-color: #f0f0f0;
   color: rgb(107 114 128);
 }
-.react-calendar__tile:enabled:hover,
+.react-calendar__tile:enabled:hover ,
 .react-calendar__tile:enabled:focus {
   background-color: rgb(238 242 255);
 }
