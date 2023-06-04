@@ -133,7 +133,6 @@ export const userRouter = createTRPCRouter({
       z.object({
         id: z.string(),
         email: z.string(),
-
         name: z.string(),
         verified: z.boolean(),
         role: z.enum(["staff", "manager", "admin", "superadmin"]),

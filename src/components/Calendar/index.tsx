@@ -1,10 +1,11 @@
 import React, { FC } from "react";
 import ReactCalendar from "react-calendar";
-import { format, formatISO, getDay, isBefore, parse } from "date-fns";
+import { format, formatISO, getDay, isAfter, isBefore, parse } from "date-fns";
 import { DateType } from "@types";
 import { getOpeningTimes, roundToNearestMinutes } from "~/utils/helpers";
 import { Day } from "@prisma/client";
 import { OPENING_HOURS_INTERVAL, now } from "~/constants/config";
+import { api } from "~/utils/api";
 
 interface CalendarProps {
   days: Day[];
@@ -23,6 +24,7 @@ const CalendarComponent: FC<CalendarProps> = ({
   setCustomerDetail,
   dayOff,
 }) => {
+  const { data: promotions } = api.promotion.getPromotions.useQuery();
   // Determine if today is closed
   const today = days.find((day) => day.dayOfWeek === now.getDay());
   const rounded = roundToNearestMinutes(now, OPENING_HOURS_INTERVAL);
@@ -31,6 +33,27 @@ const CalendarComponent: FC<CalendarProps> = ({
   if (tooLate) closedDays.push(formatISO(new Date().setHours(0, 0, 0, 0)));
 
   const times = date.justDate && getOpeningTimes(date.justDate, days);
+
+  const PromotionPopup = ({ day }: { day: Date }) => {
+    const foundDay = promotions?.filter(
+      (promotion) =>
+        isBefore(new Date(), promotion.endDate) &&
+        isAfter(new Date(), promotion.startDate)
+    );
+
+    return (
+      <div className="absolute w-32 p-4">
+        <div>
+          {foundDay?.map((promotion) => (
+            <div key={promotion.id}>
+              <h5>{promotion.name}</h5>
+              <p>{promotion.description.slice(0, 30)}...</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="flex h-screen flex-col items-center justify-center">
@@ -96,9 +119,10 @@ const CalendarComponent: FC<CalendarProps> = ({
               closedDays.includes(formatISO(date)) || dayOff.includes(dayOfWeek)
             );
           }}
-          onClickDay={(date) =>
-            setDate((prev: DateType) => ({ ...prev, justDate: date }))
-          }
+          onClickDay={(date) => {
+            setDate((prev: DateType) => ({ ...prev, justDate: date }));
+          }}
+          
         />
       )}
     </div>
