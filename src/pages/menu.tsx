@@ -17,7 +17,6 @@ const MenuPage: FC = ({}) => {
     undefined,
     {}
   );
-  const { mutate: addBooking } = api.booking.addBooking.useMutation({});
 
   const [customerDetail, setCustomerDetail] = useState<CustomerDetail | null>(
     null
