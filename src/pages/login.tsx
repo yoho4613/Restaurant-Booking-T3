@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import React, { FC, useState } from "react";
 import { HiLockClosed } from "react-icons/hi";
+import Spinner from "~/components/Spinner";
 import { api } from "~/utils/api";
 
 const Login: FC = ({}) => {
@@ -15,25 +16,25 @@ const Login: FC = ({}) => {
     setInput((prev) => ({ ...prev, [name]: value }));
   };
 
-  const { mutate: login } = api.admin.login.useMutation({
-    onSuccess: () => {
-      router
-        .push("/dashboard")
-        .then((res) => res)
-        .catch((err: Error) => console.log(err));
-    },
-  });
-  const { mutate: loginUser, isError } = api.user.loginUser.useMutation({
+  const {
+    mutate: loginUser,
+    isError,
+    isLoading,
+  } = api.user.loginUser.useMutation({
     onSuccess: () =>
       router
         .push("/dashboard")
         .then((res) => res)
         .catch((err: Error) => console.log(err)),
-
   });
 
   return (
     <div className="flex min-h-full items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
+      {isLoading && (
+        <div className="fixed left-0 top-0 h-screen w-screen flex justify-center items-center z-10" style={{backgroundColor: "rgba(0, 0, 0, 0.3)"}}>
+          <Spinner />
+        </div>
+      )}
       <div className="w-full max-w-md space-y-8">
         <div>
           {/* If this was a real login screen, you'd want a next/image here */}
@@ -47,7 +48,6 @@ const Login: FC = ({}) => {
           </h2>
         </div>
         <form className="mt-8 space-y-6">
-       
           <input type="hidden" name="remember" defaultValue="true" />
           <div className="-space-y-px rounded-md shadow-sm">
             <p className="pb-1 text-sm text-red-600">

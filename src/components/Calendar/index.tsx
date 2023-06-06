@@ -45,16 +45,14 @@ const CalendarComponent: FC<CalendarProps> = ({
       <div className="w-4">
         {Popup && (
           <div className="absolute bottom-0 right-0 z-10 w-64 -translate-y-1/2 translate-x-full rounded-md border-2 border-emerald-400 bg-slate-400 p-4">
-            <h4 className="text-white font-bold mb-4">Promotion</h4>
+            <h4 className="mb-4 font-bold text-white">Promotion</h4>
             {foundDay?.map((promotion) => (
               <div
                 style={{ zIndex: 999 }}
                 className="relative text-white "
                 key={promotion.id}
               >
-                <h5 className="mb-2">
-                  - {promotion.name}
-                </h5>
+                <h5 className="mb-2">- {promotion.name}</h5>
               </div>
             ))}
           </div>
@@ -145,7 +143,6 @@ const CalendarComponent: FC<CalendarProps> = ({
             setDate((prev: DateType) => ({ ...prev, justDate: date }));
           }}
           tileContent={(day) => {
-            console.log(day);
             if (
               promotions?.find(
                 (promotion) =>
