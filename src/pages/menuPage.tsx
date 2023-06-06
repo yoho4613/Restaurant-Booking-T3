@@ -2,11 +2,11 @@ import React, { FC, useEffect, useState } from "react";
 import { api } from "~/utils/api";
 import { categories } from "~/constants/config";
 import Image from "next/image";
-import { MenuItem } from "@prisma/client";
 
-interface IMenuPageProps {}
 
-const MenuPage: FC<IMenuPageProps> = ({}) => {
+
+
+const MenuPage: FC = ({}) => {
   const { data: menuItems } = api.menu.getMenuItems.useQuery();
 
   const [filter, setFilter] = useState<string>("all");
