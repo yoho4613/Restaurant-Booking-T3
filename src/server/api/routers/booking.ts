@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "../trpc";
+import { mg } from "~/lib/mailgun";
 
 export const bookingRouter = createTRPCRouter({
   addBooking: publicProcedure
@@ -11,11 +12,12 @@ export const bookingRouter = createTRPCRouter({
         email: z.string(),
         preorder: z.boolean(),
         dateTime: z.date(),
-        tableId: z.string()
+        tableId: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { name, people, mobile, email, preorder, dateTime, tableId } = input;
+      const { name, people, mobile, email, preorder, dateTime, tableId } =
+        input;
       const booking = await ctx.prisma.booking.create({
         data: {
           name,
@@ -27,6 +29,17 @@ export const bookingRouter = createTRPCRouter({
           tableId,
         },
       });
+      
+      await mg.messages.create(
+        "sandboxdf2a9aed137e4576b6dbf5fb4f22c946.mailgun.org",
+        {
+          from: "Mailgun Sandbox <postmaster@sandboxdf2a9aed137e4576b6dbf5fb4f22c946.mailgun.org>",
+          to: ["yoho4613@gmail.com"],
+          subject: "Hello",
+          text: "Testing some Mailgun awesomness!",
+        }
+      );
+
       return booking;
     }),
 

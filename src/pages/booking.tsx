@@ -41,7 +41,9 @@ const Booking: FC<BookingProps> = ({ days, closedDays }) => {
     justDate: null,
     dateTime: null,
   });
-  const { mutate: addBooking } = api.booking.addBooking.useMutation({});
+  const { mutate: addBooking } = api.booking.addBooking.useMutation({
+  
+  });
 
   useEffect(() => {
     if (date.dateTime) {
