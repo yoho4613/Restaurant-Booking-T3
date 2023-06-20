@@ -18,17 +18,18 @@ const AddBookingForm: FC<AddBookingFormProps> = ({
 }) => {
   const { mutate: addBooking } = api.booking.addBooking.useMutation({
     onSuccess: () => setOpenForm(false),
-    onError: () => setWarning(true)
+    onError: () => setWarning(true),
   });
-  const [warning, setWarning] = useState(false)
+  const { data: tables } = api.table.getTables.useQuery();
+
+  const [warning, setWarning] = useState(false);
   const [form, setForm] = useState<Form>({
     name: "",
     mobile: "",
     email: "",
     people: "",
     preorder: false,
-    // tableId hard coded
-    tableId: 'clhkg2kho406w03qor8m18nqi',
+    tableId: ""
   });
   const [date, setDate] = useState<DateType>({
     justDate: null,
@@ -44,9 +45,9 @@ const AddBookingForm: FC<AddBookingFormProps> = ({
       addBooking({
         ...form,
         dateTime: date.dateTime!,
-      })
+      });
     } else {
-      setWarning(true)
+      setWarning(true);
     }
   };
   return (
@@ -95,7 +96,7 @@ const AddBookingForm: FC<AddBookingFormProps> = ({
                     name="name"
                     id="name"
                     autoComplete="name"
-                    onChange={(e) => setForm({...form, name: e.target.value})}
+                    onChange={(e) => setForm({ ...form, name: e.target.value })}
                     className=" block w-full rounded-md border-0 p-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   />
                 </div>
@@ -114,7 +115,9 @@ const AddBookingForm: FC<AddBookingFormProps> = ({
                     name="email"
                     type="email"
                     autoComplete="email"
-                    onChange={(e) => setForm({...form, email: e.target.value})}
+                    onChange={(e) =>
+                      setForm({ ...form, email: e.target.value })
+                    }
                     className=" block w-full rounded-md border-0 p-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   />
                 </div>
@@ -133,7 +136,9 @@ const AddBookingForm: FC<AddBookingFormProps> = ({
                     name="contact-number"
                     id="contact-number"
                     autoComplete="phone"
-                    onChange={(e) => setForm({...form, mobile: e.target.value})}
+                    onChange={(e) =>
+                      setForm({ ...form, mobile: e.target.value })
+                    }
                     className=" block w-full rounded-md border-0 p-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   />
                 </div>
@@ -152,15 +157,53 @@ const AddBookingForm: FC<AddBookingFormProps> = ({
                     name="people"
                     id="people"
                     autoComplete="number"
-                    onChange={(e) => setForm({...form, people: e.target.value})}
+                    onChange={(e) =>
+                      setForm({ ...form, people: e.target.value })
+                    }
                     className=" block w-full rounded-md border-0 p-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   />
+                </div>
+              </div>
+
+              <div className="sm:col-span-2">
+                <label
+                  htmlFor="table"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                >
+                  Table
+                </label>
+                <div className="mt-2">
+                  <select
+                    id="table"
+                    className="mb-6 block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+                    onChange={(e) =>
+                      setForm({ ...form, tableId: e.target.value })
+                    }
+                    defaultValue=""
+                  >
+                    <option defaultChecked disabled value="">
+                      Choose a Table
+                    </option>
+                    {tables?.map((table) => (
+                      <option
+                        key={table.id}
+                        selected={Boolean(form.tableId === table.id)}
+                        value={table.id}
+                      >
+                        {table.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </div>
             </div>
           </div>
         </div>
-          {warning && <p className="text-red-500">Something&apos;s wrong. Please check the form and try again.</p>}
+        {warning && (
+          <p className="text-red-500">
+            Something&apos;s wrong. Please check the form and try again.
+          </p>
+        )}
         <div className="mt-6 flex items-center justify-end gap-x-6">
           <button
             type="button"
