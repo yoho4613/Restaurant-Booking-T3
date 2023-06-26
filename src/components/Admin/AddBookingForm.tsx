@@ -56,13 +56,7 @@ const AddBookingForm: FC<AddBookingFormProps> = ({
         <div className="space-y-12">
           <div className="border-b border-gray-900/10 pb-12">
             <div className="sm:col-span-3">
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium leading-6 text-gray-900"
-              >
-                Date
-              </label>
-              <div className="mt-2">
+              <div className="mt-2" >
                 <CalendarComponent
                   date={date}
                   setDate={setDate}

@@ -1,10 +1,8 @@
 import React, { FC } from 'react';
 
-interface ConfirmationEmailProps {
-  
-};
 
-const ConfirmationEmail:FC<ConfirmationEmailProps> = ({}) => {
+
+const ConfirmationEmail:FC = ({}) => {
   
   return(
     <div>Confirmation</div>
