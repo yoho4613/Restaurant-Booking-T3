@@ -19,6 +19,8 @@ export const adminRouter = createTRPCRouter({
         email === process.env.ADMIN_EMAIL &&
         password === process.env.ADMIN_PASSWORD
       ) {
+        console.log("env login")
+
         //user is authenticated as admin
         const token = await new SignJWT({})
           .setProtectedHeader({ alg: "HS256" })
@@ -35,7 +37,6 @@ export const adminRouter = createTRPCRouter({
             secure: process.env.NODE_ENV === "production",
           })
         );
-
         return { success: true };
       }
 
