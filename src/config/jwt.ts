@@ -10,11 +10,11 @@ const customConfig: {
   refreshTokenPublicKey: string;
   redisCacheExpiresIn: number;
 } = {
-  port: 5555,
+  port: 5432,
   accessTokenExpiresIn: 15,
   refreshTokenExpiresIn: 60,
   redisCacheExpiresIn: 60,
-  origin: 'http://localhost:3000',
+  origin: "https://restaurant-booking-t3.vercel.app",
 
   dbUri: process.env.DATABASE_URL as string,
   accessTokenPrivateKey: process.env.ACCESS_TOKEN_PRIVATE_KEY as string,
