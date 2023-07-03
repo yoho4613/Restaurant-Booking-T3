@@ -113,6 +113,9 @@ export const userRouter = createTRPCRouter({
           lastLogin: new Date(),
         },
       });
+
+      return { success: true };
+
     }),
   deleteUser: adminProcedure
     .input(
