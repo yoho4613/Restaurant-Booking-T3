@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { api } from "~/utils/api";
 
-const cancelBooking = () => {
+const CancelBooking = () => {
   const { mutate: cancelBooking, isLoading } =
     api.booking.cancelBooking.useMutation({
       onSuccess: () => {
@@ -74,4 +74,4 @@ const cancelBooking = () => {
   );
 };
 
-export default cancelBooking;
+export default CancelBooking;

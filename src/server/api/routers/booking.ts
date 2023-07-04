@@ -44,39 +44,54 @@ export const bookingRouter = createTRPCRouter({
         },
       });
 
-      const tableName = await ctx.prisma.tables.findFirst({
+      const table = await ctx.prisma.tables.findUnique({
         where: {
           id: tableId,
         },
       });
-      console.log(ctx.req.headers.host);
-      await mg.messages.create(
-        "sandboxdf2a9aed137e4576b6dbf5fb4f22c946.mailgun.org",
-        {
-          from: "no-reply <re-reply@fc-restaurant.co.nz>",
-          to: ["yoho4613@gmail.com"],
-          subject: `Booking for ${name}`,
-          html: `
+
+      const tableName = table ? table.name : "Table Unkown"
+
+      await mg.messages.create(process.env.MAILGUN_API!, {
+        from: "no-reply <re-reply@fc-restaurant.co.nz>",
+        to: ["yoho4613@gmail.com"],
+        subject: `Booking for ${name}`,
+        html: `
         <html>
           <head>
             <title>Booking Confirmation</title>
+            <style>
+              img {
+                width: 150px;
+                height: 150px;
+              }
+              div {
+                width: 100%;
+                text-align: center;
+              }
+            </style>
           </head>
           <body>
-            <div>Confirmation</div>
+            <div>
+            <img src="/assets/logo.jpg" />
             <h1>Thank you for Booking</h1>
             <h2>Here's your booking detail</h2>
             <p>Name: ${name}</p>
             <p>Email: ${email}</p>
-            ${tableName && `<p>table: ${tableName?.name}</p>`}
-            <p>Booking Date & Time: ${dateTime}</p>
+            <p>table: ${tableName}</p>
+            <p>Booking Date & Time: ${dateTime.toLocaleDateString()}</p>
             <p>To cancel the booking click </p>
-            <a target="_blank" href="http://${
-              ctx.req.headers.host
-            }/cancelBooking/${booking.id}">this Link</a>
+            <a target="_blank" href="http://${ctx.req.headers
+              .host!}/cancelBooking/${booking.id}">this Link</a>
+            </div>
+            <div>
+              <h4>FC-Restaurant</h4>
+              <p>info@fc-restaurant@gmail.com</p>
+              <p>+64 21 000 0000</p>
+            </div>
           </body>
         </html>`,
-        }
-      );
+      });
 
       return booking;
     }),
@@ -137,6 +152,6 @@ export const bookingRouter = createTRPCRouter({
         },
       });
 
-      return booking
+      return booking;
     }),
 });
