@@ -44,14 +44,37 @@ export const bookingRouter = createTRPCRouter({
         },
       });
 
+      const tableName = await ctx.prisma.tables.findFirst({
+        where: {
+          id: tableId,
+        },
+      });
+      console.log(ctx.req.headers.host);
       await mg.messages.create(
         "sandboxdf2a9aed137e4576b6dbf5fb4f22c946.mailgun.org",
         {
           from: "no-reply <re-reply@fc-restaurant.co.nz>",
           to: ["yoho4613@gmail.com"],
-          subject: "Hello",
-          text: "Testing some Mailgun awesomness!",
-          html: `<h1>Click the button to cancel booking</h1><a href=""></a>`
+          subject: `Booking for ${name}`,
+          html: `
+        <html>
+          <head>
+            <title>Booking Confirmation</title>
+          </head>
+          <body>
+            <div>Confirmation</div>
+            <h1>Thank you for Booking</h1>
+            <h2>Here's your booking detail</h2>
+            <p>Name: ${name}</p>
+            <p>Email: ${email}</p>
+            ${tableName && `<p>table: ${tableName?.name}</p>`}
+            <p>Booking Date & Time: ${dateTime}</p>
+            <p>To cancel the booking click </p>
+            <a target="_blank" href="http://${
+              ctx.req.headers.host
+            }/cancelBooking/${booking.id}">this Link</a>
+          </body>
+        </html>`,
         }
       );
 
@@ -98,5 +121,22 @@ export const bookingRouter = createTRPCRouter({
       });
 
       return preorder;
+    }),
+
+  findBooking: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { id } = input;
+      const booking = await ctx.prisma.booking.findUnique({
+        where: {
+          id,
+        },
+      });
+
+      return booking
     }),
 });

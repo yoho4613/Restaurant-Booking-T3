@@ -284,14 +284,14 @@ const Booking: FC<BookingProps> = ({ days, closedDays }) => {
         <div className="mb-2 mt-6 flex items-center justify-between p-4">
           <Toaster />
           <div className="ju flex w-full items-center">
-            <label className="mr-2" htmlFor="filter">
+            <label className="mr-2 text-sm md:text-lg" htmlFor="filter">
               Filter
             </label>
             <select
               id="filter"
               name="filter"
               defaultValue="today"
-              className=" block h-full w-1/3 appearance-none rounded-r border border-gray-400 bg-white px-4 py-2 pr-8 leading-tight text-gray-700 focus:border-2 focus:border-gray-500 focus:bg-white focus:outline-none sm:rounded-r-none"
+              className=" block h-full w-18 md:w-1/3 appearance-none rounded-r border border-gray-400 bg-white px-2 py-1 md:px-4 md:py-2 md:pr-8 leading-tight text-gray-700 focus:border-2 focus:border-gray-500 focus:bg-white focus:outline-none sm:rounded-r-none"
               onChange={(e) => setFilter(e.target.value)}
             >
               <option value="all">All</option>
@@ -302,7 +302,7 @@ const Booking: FC<BookingProps> = ({ days, closedDays }) => {
             <button
               onClick={() => setOpenCalendar(true)}
               type="button"
-              className="w-12 "
+              className=" w-8 ml-2 md:w-12 "
             >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                 <path
@@ -313,7 +313,7 @@ const Booking: FC<BookingProps> = ({ days, closedDays }) => {
             </button>
           </div>
 
-          <div className="relative flex w-1/3 ">
+          <div className="relative flex w-full md:w-1/3 ">
             <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
               <svg
                 aria-hidden="true"
@@ -332,7 +332,7 @@ const Booking: FC<BookingProps> = ({ days, closedDays }) => {
             <input
               type="text"
               id="simple-search"
-              className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 pl-10 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500  dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+              className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-1.5 md:p-2.5 pl-10 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500  dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
               placeholder="Search"
               onChange={(e) => {
                 setFilter(e.target.value);
@@ -340,7 +340,7 @@ const Booking: FC<BookingProps> = ({ days, closedDays }) => {
             />
             <button
               onClick={() => setOpenForm(true)}
-              className="w-32 rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
+              className="w-32 text-sm rounded-md border border-transparent bg-indigo-600 md:px-4 md:py-2 md:text-base font-medium text-white shadow-sm hover:bg-indigo-700"
             >
               Add
             </button>
