@@ -41,9 +41,7 @@ const Booking: FC<BookingProps> = ({ days, closedDays }) => {
     justDate: null,
     dateTime: null,
   });
-  const { mutate: addBooking } = api.booking.addBooking.useMutation({
-  
-  });
+  const { mutate: addBooking } = api.booking.addBooking.useMutation({});
 
   useEffect(() => {
     if (date.dateTime) {
@@ -93,14 +91,16 @@ const Booking: FC<BookingProps> = ({ days, closedDays }) => {
           setCustomerDetail={setCustomerDetail}
         />
       ) : (
-        <Calendar
-          date={date}
-          setDate={setDate}
-          days={days}
-          closedDays={closedDays}
-          setCustomerDetail={setCustomerDetail}
-          dayOff={days.filter((day) => !day.open).map((day) => day.dayOfWeek)}
-        />
+        <div className="mt-8">
+          <Calendar
+            date={date}
+            setDate={setDate}
+            days={days}
+            closedDays={closedDays}
+            setCustomerDetail={setCustomerDetail}
+            dayOff={days.filter((day) => !day.open).map((day) => day.dayOfWeek)}
+          />
+        </div>
       )}
 
       {orderConfirmed && (

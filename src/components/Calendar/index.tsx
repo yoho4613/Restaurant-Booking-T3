@@ -76,7 +76,7 @@ const CalendarComponent: FC<CalendarProps> = ({
   };
 
   return (
-    <div className="flex h-screen flex-col items-center justify-center">
+    <div className="flex flex-col items-center justify-center">
       {date?.justDate ? (
         <>
           <div>

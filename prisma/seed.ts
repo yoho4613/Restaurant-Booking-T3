@@ -31,7 +31,7 @@ async function main() {
     },
     {
       email: "admin@email.com",
-      password: "admis",
+      password: "admin",
       name: "admin",
       role: "admin",
     },

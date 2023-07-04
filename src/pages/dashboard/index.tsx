@@ -98,33 +98,33 @@ const Dashboard: FC = ({}) => {
       </div>
       
       <div>
-        <div className="ml-6 flex">
+        <div className="md:ml-6 flex">
           <button
             onClick={() => setChartName("weekly")}
-            className="mr-2 rounded border border-blue-700 bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
+            className="mr-2 rounded border border-blue-700 bg-blue-500 text-sm px-2 py-1 md:text-md md:px-4 md:py-2 font-bold text-white hover:bg-blue-700"
           >
             Weekly
           </button>
           <button
             onClick={() => setChartName("monthly")}
-            className="mr-2 rounded border border-blue-700 bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
+            className=" mr-2 rounded border border-blue-700 bg-blue-500 text-sm px-2 py-1 md:text-md md:px-4 md:py-2 font-bold text-white hover:bg-blue-700"
           >
             Monthly
           </button>
           <button
             onClick={() => setChartName("yearly")}
-            className="mr-2 rounded border border-blue-700 bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
+            className=" mr-2 rounded border border-blue-700 bg-blue-500 text-sm px-2 py-1 md:text-md md:px-4 md:py-2 font-bold text-white hover:bg-blue-700"
           >
             Yearly
           </button>
           <button
             onClick={() => setChartName("total")}
-            className="mr-2 rounded border border-blue-700 bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
+            className=" mr-2 rounded border border-blue-700 bg-blue-500 text-sm px-2 py-1 md:text-md md:px-4 md:py-2 font-bold text-white hover:bg-blue-700"
           >
             Total
           </button>
         </div>
-        <h2 className="text-center text-2xl font-bold">{chartName.toUpperCase()}</h2>
+        <h2 className="mt-4 text-center text-2xl font-bold">{chartName.toUpperCase()}</h2>
         <DayOfWeekRatio bookings={filteredBooking || []} />
       </div>
 

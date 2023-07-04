@@ -1,8 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import React, { FC, useState } from "react";
-
-
+import React, { FC, useEffect, useState } from "react";
 
 const Navbar: FC = ({}) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
@@ -11,6 +9,9 @@ const Navbar: FC = ({}) => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
+  };
 
   return (
     <div>
@@ -60,8 +61,9 @@ const Navbar: FC = ({}) => {
             <ul className="mt-4 flex flex-col rounded-lg border border-gray-100 bg-gray-50 p-4 font-medium dark:border-gray-700 dark:bg-gray-800 md:mt-0 md:flex-row md:space-x-8 md:border-0 md:bg-transparent md:p-0 md:dark:bg-gray-900">
               <li>
                 <Link
+                  onClick={closeMobileMenu}
                   href="/"
-                  className="block rounded py-2 pl-3 pr-4 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:border-0 md:p-0 text-gray-800 font-bold font-mono md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:bg-transparent md:dark:hover:text-blue-500"
+                  className="block rounded py-2 pl-3 pr-4 font-mono font-bold text-gray-800 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:border-0 md:p-0 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:bg-transparent md:dark:hover:text-blue-500"
                   aria-current="page"
                 >
                   Home
@@ -69,40 +71,45 @@ const Navbar: FC = ({}) => {
               </li>
               <li>
                 <Link
+                  onClick={closeMobileMenu}
                   href="/booking"
-                  className="block rounded py-2 pl-3 pr-4 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:border-0 md:p-0 text-gray-800 font-bold font-mono md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:bg-transparent md:dark:hover:text-blue-500"
+                  className="block rounded py-2 pl-3 pr-4 font-mono font-bold text-gray-800 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:border-0 md:p-0 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:bg-transparent md:dark:hover:text-blue-500"
                 >
                   Booking
                 </Link>
               </li>
               <li>
                 <Link
+                  onClick={closeMobileMenu}
                   href="#"
-                  className="block rounded py-2 pl-3 pr-4 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:border-0 md:p-0 text-gray-800 font-bold font-mono md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:bg-transparent md:dark:hover:text-blue-500"
+                  className="block rounded py-2 pl-3 pr-4 font-mono font-bold text-gray-800 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:border-0 md:p-0 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:bg-transparent md:dark:hover:text-blue-500"
                 >
                   Order
                 </Link>
               </li>
               <li>
                 <Link
+                  onClick={closeMobileMenu}
                   href="/menuPage"
-                  className="block rounded py-2 pl-3 pr-4 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:border-0 md:p-0 text-gray-800 font-bold font-mono md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:bg-transparent md:dark:hover:text-blue-500"
+                  className="block rounded py-2 pl-3 pr-4 font-mono font-bold text-gray-800 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:border-0 md:p-0 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:bg-transparent md:dark:hover:text-blue-500"
                 >
                   Menu
                 </Link>
               </li>
               <li>
                 <Link
+                  onClick={closeMobileMenu}
                   href="#"
-                  className="block rounded py-2 pl-3 pr-4 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:border-0 md:p-0 text-gray-800 font-bold font-mono md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:bg-transparent md:dark:hover:text-blue-500"
+                  className="block rounded py-2 pl-3 pr-4 font-mono font-bold text-gray-800 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:border-0 md:p-0 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:bg-transparent md:dark:hover:text-blue-500"
                 >
                   Contact
                 </Link>
               </li>
               <li>
                 <Link
+                  onClick={closeMobileMenu}
                   href="/login"
-                  className="block rounded py-2 pl-3 pr-4 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:border-0 md:p-0 text-red-600 font-bold font-mono md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:bg-transparent md:dark:hover:text-blue-500"
+                  className="block rounded py-2 pl-3 pr-4 font-mono font-bold text-red-600 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:border-0 md:p-0 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:bg-transparent md:dark:hover:text-blue-500"
                 >
                   Admin Login
                 </Link>

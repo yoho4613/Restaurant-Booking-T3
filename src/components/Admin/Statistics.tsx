@@ -57,7 +57,7 @@ const Statistics: FC<StatisticsProps> = ({ bookings, filteredBooking }) => {
 
   return (
     <div className="border-black-125 shadow-soft-xl relative z-20 flex min-w-0 flex-col break-words rounded-2xl border-0 border-solid bg-white bg-clip-border">
-      <div className="flex-auto p-4">
+      <div className="flex-auto md:p-4">
         <div className="rounded-xl bg-gradient-to-tl py-4 pr-1"></div>
         <h6 className="mb-0 ml-2 dark:text-white">Active Bookings</h6>
         <p className="ml-2 text-sm leading-normal ">
