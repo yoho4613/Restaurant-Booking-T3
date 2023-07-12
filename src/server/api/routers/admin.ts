@@ -65,7 +65,6 @@ export const adminRouter = createTRPCRouter({
     .input(z.object({ fileType: z.string() }))
     .mutation(async ({ input }) => {
       const id = nanoid();
-      // const ex = input.fileType.split("/")[1];
       const ex = input.fileType.split("/")[1] || '';
       const key = `${id}.${ex}`;
 

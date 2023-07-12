@@ -6,7 +6,6 @@ import Image from "next/image";
 import { HiArrowLeft } from "react-icons/hi";
 import { useRouter } from "next/router";
 import { format, parseISO } from "date-fns";
-// import { Button } from "@chakra-ui/react";
 
 interface MenuProps {
   selectedTime: string; //as ISO string

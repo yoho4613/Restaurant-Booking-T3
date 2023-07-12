@@ -27,7 +27,6 @@ export async function middleware(req: NextRequest) {
   if (!verifiedToken) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
-
   return
 }
 

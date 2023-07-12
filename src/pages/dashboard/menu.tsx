@@ -1,8 +1,8 @@
-import { Categories } from "@types";
+
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import React, { FC, ReactFragment, useEffect, useState } from "react";
-import Select, { MultiValue } from "react-select";
+import React, { FC, useEffect, useState } from "react";
+import { MultiValue } from "react-select";
 import { MAX_FILE_SIZE } from "~/constants/config";
 import { selectOptions } from "~/utils/helpers";
 import { api } from "~/utils/api";
