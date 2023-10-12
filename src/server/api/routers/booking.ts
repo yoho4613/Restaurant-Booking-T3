@@ -3,6 +3,7 @@ import { createTRPCRouter, publicProcedure } from "../trpc";
 import { mg } from "~/lib/mailgun";
 import { TRPCError } from "@trpc/server";
 
+
 export const bookingRouter = createTRPCRouter({
   addBooking: publicProcedure
     .input(
@@ -73,7 +74,7 @@ export const bookingRouter = createTRPCRouter({
           </head>
           <body>
             <div>
-            <img src="/assets/logo.jpg" />
+            <img src="${ctx.req.headers.origin || ""}/assets/logo.jpg" />
             <h1>Thank you for Booking</h1>
             <h2>Here's your booking detail</h2>
             <p>Name: ${name}</p>
@@ -86,7 +87,7 @@ export const bookingRouter = createTRPCRouter({
             </div>
             <div>
               <h4>FC-Restaurant</h4>
-              <p>info@fc-restaurant@gmail.com</p>
+              <p>info@fc-restaurant.com</p>
               <p>+64 21 000 0000</p>
             </div>
           </body>

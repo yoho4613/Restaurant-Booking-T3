@@ -33,7 +33,6 @@ const Cart: FC<CartProps> = ({ open, setOpen, products, removeFromCart }) => {
   } = api.checkout.checkoutSession.useMutation({
     onSuccess: ({ url }: { url: string }) => {
       router.push(url).then(res => res).catch((err:Error) => console.log(err))
-
     },
     onMutate: ({ products }) => {
       localStorage.setItem("products", JSON.stringify(products));

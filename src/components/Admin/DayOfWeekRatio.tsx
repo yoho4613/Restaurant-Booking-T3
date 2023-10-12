@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState, useRef } from "react";
-import { Chart, ChartData, registerables } from "chart.js";
+import { Chart, registerables } from "chart.js";
 
 import {
   isFriday,
