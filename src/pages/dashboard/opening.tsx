@@ -5,11 +5,9 @@ import { formatISO } from "date-fns";
 import { type FC, useState, ChangeEvent } from "react";
 import { Calendar } from "react-calendar";
 import toast, { Toaster } from "react-hot-toast";
-import { now } from "~/constants/config";
 import { capitalize, classNames, weekdayIndexToName } from "~/utils/helpers";
 import { api } from "~/utils/api";
 import { prisma } from "../../server/db";
-import { Button } from "@chakra-ui/react";
 
 interface OpeningProps {
   days: Day[];
@@ -70,10 +68,20 @@ const Opening: FC<OpeningProps> = ({ days }) => {
     });
 
   const { mutate: closeDay } = api.opening.closeDay.useMutation({
-    onSuccess: () => refetch(),
+    onSuccess: () => {
+      refetch()
+        .then((res) => res)
+        .catch((err) => console.log(err));
+      toast.success("Successfully updated closed day");
+    },
   });
   const { mutate: openDay } = api.opening.openDay.useMutation({
-    onSuccess: () => refetch(),
+    onSuccess: () => {
+      refetch()
+        .then((res) => res)
+        .catch((err) => console.log(err));
+      toast.success("Successfully updated opened day");
+    },
   });
   const { data: closedDays, refetch } = api.opening.getClosedDays.useQuery();
 
@@ -99,14 +107,14 @@ const Opening: FC<OpeningProps> = ({ days }) => {
     let newOpeningHrs;
     if (e.target.checked) {
       newOpeningHrs = openingHrs.map((day, i) =>
-      i === index ? { ...day, open: false } : day
+        i === index ? { ...day, open: false } : day
       );
     } else {
       newOpeningHrs = openingHrs.map((day, i) =>
         i === index ? { ...day, open: true } : day
       );
     }
-    setOpeningHrs(newOpeningHrs)
+    setOpeningHrs(newOpeningHrs);
   };
 
   return (
@@ -140,7 +148,10 @@ const Opening: FC<OpeningProps> = ({ days }) => {
           {days.map((day) => {
             const changeTime = _changeTime(day);
             return (
-              <div className="flex items-center" key={day.id}>
+              <div
+                className="flex flex-col items-center border-2 sm:flex-row"
+                key={day.id}
+              >
                 <div className="grid grid-cols-1 place-items-center sm:grid-cols-3">
                   <h3 className="font-semibold">
                     {capitalize(weekdayIndexToName(day.dayOfWeek)!)}
@@ -173,7 +184,7 @@ const Opening: FC<OpeningProps> = ({ days }) => {
                     />
                   </div>
                 </div>
-                <div className=" ml-6 flex items-center">
+                <div className="flex items-center">
                   <input
                     id="default-checkbox"
                     type="checkbox"
@@ -193,6 +204,7 @@ const Opening: FC<OpeningProps> = ({ days }) => {
           })}
 
           <button
+            className="mx-auto w-36 rounded-md border-2 bg-green-500 px-4 py-2 font-bold text-white"
             onClick={() => {
               const withId = openingHrs.map((day) => ({
                 ...day,
@@ -229,7 +241,7 @@ const Opening: FC<OpeningProps> = ({ days }) => {
             disabled={!selectedDate}
             // isLoading={isLoading}
             // variant="solid"
-            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+            className="mb-2 mr-2 rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
           >
             {dayIsClosed ? "Open shop this day" : "Close shop this day"}
           </button>

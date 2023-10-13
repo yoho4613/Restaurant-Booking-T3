@@ -3,7 +3,6 @@ import { createTRPCRouter, publicProcedure } from "../trpc";
 import { mg } from "~/lib/mailgun";
 import { TRPCError } from "@trpc/server";
 
-
 export const bookingRouter = createTRPCRouter({
   addBooking: publicProcedure
     .input(
@@ -51,7 +50,7 @@ export const bookingRouter = createTRPCRouter({
         },
       });
 
-      const tableName = table ? table.name : "Table Unkown"
+      const tableName = table ? table.name : "Table Unkown";
 
       await mg.messages.create(process.env.MAILGUN_API!, {
         from: "no-reply <re-reply@fc-restaurant.co.nz>",
@@ -74,7 +73,7 @@ export const bookingRouter = createTRPCRouter({
           </head>
           <body>
             <div>
-            <img src="${ctx.req.headers.origin || ""}/assets/logo.jpg" />
+            <img src="${ctx.req.headers.origin!}/assets/logo.jpg" />
             <h1>Thank you for Booking</h1>
             <h2>Here's your booking detail</h2>
             <p>Name: ${name}</p>
@@ -82,8 +81,9 @@ export const bookingRouter = createTRPCRouter({
             <p>table: ${tableName}</p>
             <p>Booking Date & Time: ${dateTime.toLocaleDateString()}</p>
             <p>To cancel the booking click </p>
-            <a target="_blank" href="http://${ctx.req.headers
-              .host!}/cancelBooking/${booking.id}">this Link</a>
+            <a target="_blank" href="${ctx.req.headers.origin!}/cancelBooking/${
+          booking.id
+        }">this Link</a>
             </div>
             <div>
               <h4>FC-Restaurant</h4>

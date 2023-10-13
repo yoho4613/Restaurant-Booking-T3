@@ -20,12 +20,11 @@ const CustomerDetail: FC<CustomerDetailProps> = ({
   setCustomerDetail,
   date,
 }) => {
-  const [isMissing, setIsMissing] = useState(false);
+  const [isMissing, setIsMissing] = useState("");
   const { mutate: checkTable } = api.table.findAvilableTable.useMutation({
     onSuccess: (res) => {
       setForm({ ...form, tableId: res[0]!.id });
       setOrderConfirmed(true);
-      console.log("success", res);
     },
     onError: (err) => {
       alert(`Sorry, ${err.message}`);
@@ -41,12 +40,11 @@ const CustomerDetail: FC<CustomerDetailProps> = ({
       return emailRegex.test(email);
     }
 
-    if (form.name.length && isValidEmail(form.email) && form.people) {
-      //confirmation
-      checkTable({ dateTime: date.dateTime!, people: Number(form.people) });
-    } else {
-      setIsMissing(true);
-    }
+    if (!form.name) setIsMissing("Name");
+    else if (!isValidEmail(form.email)) setIsMissing("Email");
+    else if (!form.people) setIsMissing("Guest");
+    //confirmation
+    else checkTable({ dateTime: date.dateTime!, people: Number(form.people) });
   };
 
   return (
@@ -159,7 +157,7 @@ const CustomerDetail: FC<CustomerDetailProps> = ({
           {isMissing && (
             <div className="mb-4 mt-4">
               <p className=" text-base text-red-600">
-                Please fill all fields correctly.
+                Please fill &quot;{isMissing}&quot; field correctly.
               </p>
             </div>
           )}

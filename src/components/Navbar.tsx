@@ -32,7 +32,7 @@ const Navbar: FC = ({}) => {
           <button
             data-collapse-toggle="navbar-default"
             type="button"
-            className="ml-3 inline-flex items-center rounded-lg p-2 text-sm text-slate-200 hover:bg-gray-100 hover:text-slate-700 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600 md:hidden"
+            className="ml-3 inline-flex items-center rounded-lg p-2 text-sm text-slate-500 border-2 hover:bg-gray-200 hover:text-slate-700 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600 md:hidden"
             aria-controls="navbar-default"
             aria-expanded={isMobileMenuOpen ? "true" : "false"}
             onClick={toggleMobileMenu}
