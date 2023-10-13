@@ -25,8 +25,12 @@ const Success: FC = ({}) => {
 
   useEffect(() => {
     const products = localStorage.getItem("products");
-    if (!products) setProducts(false);
-    else setProducts(JSON.parse(products) as Product[]);
+    if (!products) {
+      setProducts(false);
+    } else {
+      setProducts(JSON.parse(products) as Product[]);
+      localStorage.removeItem("products");
+    }
   }, []);
 
   if (products === null) {
@@ -115,7 +119,7 @@ const Success: FC = ({}) => {
                 href="/menu"
                 className="text-sm font-medium text-indigo-600 hover:text-indigo-500"
               >
-                Continue Shopping<span aria-hidden="true"> &rarr;</span>
+                Back to home<span aria-hidden="true"> &rarr;</span>
               </Link>
             </div>
           </div>
