@@ -1,4 +1,5 @@
 // import { Spinner } from "@chakra-ui/react";
+import Image from "next/image";
 import Link from "next/link";
 import React, { FC, useEffect, useState } from "react";
 import Spinner from "~/components/Spinner";
@@ -85,7 +86,7 @@ const Success: FC = ({}) => {
                 >
                   {itemsInCart?.map((item) => (
                     <li key={item.id} className="flex space-x-6 py-6">
-                      <img
+                      <Image
                         src={item.url}
                         alt={item.name}
                         className="h-24 w-24 flex-none rounded-md bg-gray-100 object-cover object-center"
@@ -116,7 +117,7 @@ const Success: FC = ({}) => {
 
             <div className="mt-16 border-t border-gray-200 py-6 text-right">
               <Link
-                href="/menu"
+                href="/"
                 className="text-sm font-medium text-indigo-600 hover:text-indigo-500"
               >
                 Back to home<span aria-hidden="true"> &rarr;</span>

@@ -11,7 +11,7 @@ import Cart from "~/components/Cart";
 import { CustomerDetail } from "@types";
 
 const MenuPage: FC = ({}) => {
-  const router = useRouter()
+  const router = useRouter();
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const { isFetchedAfterMount } = api.menu.checkMenuStatus.useQuery(
     undefined,
@@ -23,7 +23,9 @@ const MenuPage: FC = ({}) => {
   );
 
   useEffect(() => {
-    setCustomerDetail(JSON.parse(localStorage.getItem("bookingWithPreorder")!) as CustomerDetail);
+    setCustomerDetail(
+      JSON.parse(localStorage.getItem("bookingWithPreorder")!) as CustomerDetail
+    );
   }, []);
 
   const [showCart, setShowCart] = useState<boolean>(false);
@@ -51,11 +53,19 @@ const MenuPage: FC = ({}) => {
 
   useEffect(() => {
     const selectedTime = localStorage.getItem("selectedTime");
-    if (!selectedTime) router.push("/").then(res => res).catch((err:Error) => console.log(err))
+    if (!selectedTime)
+      router
+        .push("/")
+        .then((res) => res)
+        .catch((err: Error) => console.log(err));
     else {
       const date = parseISO(selectedTime);
 
-      if (date < new Date()) router.push("/").then(res => res).catch((err:Error) => console.log(err))
+      if (date < new Date())
+        router
+          .push("/")
+          .then((res) => res)
+          .catch((err: Error) => console.log(err));
 
       // Date is valied
       setSelectedTime(selectedTime);
@@ -73,11 +83,12 @@ const MenuPage: FC = ({}) => {
       {isFetchedAfterMount && selectedTime ? (
         <div className="mx-auto mt-12 max-w-7xl sm:px-6 lg:px-8">
           {/* Cart Icon */}
-          <div className="flex w-full justify-end">
+          <div className="sticky bg-white top-0 z-10 flex w-full items-center justify-end">
+            <p className="mr-2 text-lg font-light">Checkout</p>
             <button
               type="button"
               onClick={() => setShowCart((prev) => !prev)}
-              className="flex items-center justify-center rounded-lg bg-gray-200 p-3 text-lg font-medium text-indigo-600"
+              className="flex mr-2 items-center justify-center rounded-lg bg-gray-200 p-3 text-lg font-medium text-indigo-600"
             >
               <BsCart className="mr-2 text-lg" />
               {productsInCart.reduce((acc, item) => acc + item.quantity, 0)}
