@@ -1,4 +1,3 @@
-
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import React, { FC, useEffect, useState } from "react";

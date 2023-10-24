@@ -44,15 +44,16 @@ export const bookingRouter = createTRPCRouter({
         },
       });
 
-      const table = await ctx.prisma.tables.findUnique({
-        where: {
-          id: tableId,
-        },
-      });
+      if (!checkTable) {
+        throw new TRPCError({
+          message: "Table does not exist",
+          code: "BAD_REQUEST",
+        });
+      }
 
-      const tableName = table ? table.name : "Table Unkown";
+      const tableName = checkTable ? checkTable.name : "Table Unkown";
 
-      await mg.messages.create(process.env.MAILGUN_API!, {
+      const emailSent = await mg.messages.create(process.env.MAILGUN_API!, {
         from: "no-reply <re-reply@fc-restaurant.co.nz>",
         to: ["yoho4613@gmail.com"],
         subject: `Booking for ${name}`,
@@ -93,6 +94,12 @@ export const bookingRouter = createTRPCRouter({
           </body>
         </html>`,
       });
+      if (emailSent.status !== 200) {
+        throw new TRPCError({
+          message: "Could not sent Email",
+          code: "BAD_REQUEST",
+        });
+      }
 
       return booking;
     }),
