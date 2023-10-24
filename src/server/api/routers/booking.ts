@@ -96,7 +96,7 @@ export const bookingRouter = createTRPCRouter({
       });
       if (emailSent.status !== 200) {
         throw new TRPCError({
-          message: "Could not sent Email",
+          message: "Could not sent",
           code: "BAD_REQUEST",
         });
       }
@@ -161,5 +161,64 @@ export const bookingRouter = createTRPCRouter({
       });
 
       return booking;
+    }),
+  findCustomerBooking: publicProcedure
+    .input(
+      z.object({
+        data: z.string(),
+        method: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { data, method } = input;
+      if (method === "email") {
+        const booking = await ctx.prisma.booking.findMany({
+          where: { email: data },
+        });
+        const lastBooking = booking[booking.length - 1];
+        if (!lastBooking) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "No Booking Found",
+          });
+        }
+        const table = await ctx.prisma.tables.findFirst({
+          where: { id: lastBooking.tableId },
+        });
+        if (!table) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "No Table Found",
+          });
+        }
+        return {
+          ...lastBooking,
+          table: table.name,
+        };
+      } else {
+        const booking = await ctx.prisma.booking.findMany({
+          where: { mobile: data },
+        });
+        const lastBooking = booking[booking.length - 1];
+        if (!lastBooking) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "No Booking Found",
+          });
+        }
+        const table = await ctx.prisma.tables.findFirst({
+          where: { id: lastBooking.tableId },
+        });
+        if (!table) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "No Table Found",
+          });
+        }
+        return {
+          ...lastBooking,
+          table: table.name,
+        };
+      }
     }),
 });
