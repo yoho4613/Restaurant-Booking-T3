@@ -3,9 +3,6 @@ import { api } from "~/utils/api";
 import { categories } from "~/constants/config";
 import Image from "next/image";
 
-
-
-
 const MenuPage: FC = ({}) => {
   const { data: menuItems } = api.menu.getMenuItems.useQuery();
 
@@ -19,7 +16,7 @@ const MenuPage: FC = ({}) => {
   return (
     <div>
       <div className="p-6">
-        <div className="m-auto mb-6 mt-6 flex w-1/2 justify-between">
+        <div className="m-auto mb-6 mt-6 flex flex-wrap w-1/2 justify-between">
           {categories.map((category) => (
             <button
               key={category}
@@ -31,23 +28,23 @@ const MenuPage: FC = ({}) => {
             </button>
           ))}
         </div>
-        <div className="flex justify-evenly flex-wrap">
+        <div className="">
           {filteredMenuItems &&
             filteredMenuItems.map((food) => (
               <div
                 key={food.id}
-                className=" max-w-md flex flex-col justify-between rounded-lg border border-gray-200 bg-white shadow dark:border-gray-700 dark:bg-gray-800"
+                className="flex flex-wrap w-full justify-between rounded-lg border border-gray-200 bg-white shadow dark:border-gray-700 dark:bg-gray-800"
               >
-                <div className="w-full">
+                <div>
                   <Image
-                    className="max-h-1/2 w-full rounded-t-lg"
+                    className="max-h-1/2 w-[280px] h-[180px] rounded-t-lg"
                     src={food.url}
                     alt={food.name}
                     width={100}
                     height={100}
                   />
                 </div>
-                <div className="p-5">
+                <div className="p-4">
                   <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
                     {food.name}
                   </h5>
@@ -60,6 +57,7 @@ const MenuPage: FC = ({}) => {
                 <svg aria-hidden="true" className="w-4 h-4 ml-2 -mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
             </a> */}
                 </div>
+
               </div>
             ))}
         </div>
