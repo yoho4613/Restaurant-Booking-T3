@@ -1,10 +1,15 @@
 import React, { FC, useEffect, useState } from "react";
 import { api } from "~/utils/api";
 import { now } from "~/constants/config";
-import { isBefore } from "date-fns";
+import { formatISO, getDay, isBefore, isSameDay } from "date-fns";
 import { isAfter } from "date-fns";
 import { isToday } from "date-fns";
-import { tomorrow } from "~/constants/config";
+import ReactCalendar from "react-calendar";
+import { prisma } from "../../server/db";
+import { Day } from "@prisma/client";
+import toast, { Toaster } from "react-hot-toast";
+import { useRouter } from "next/router";
+import AddBookingForm from "~/components/Admin/AddBookingForm";
 
 interface booking {
   id: string;
@@ -15,50 +20,101 @@ interface booking {
   email: string;
   preorder: boolean;
   dateTime: Date;
-}
-interface Preorder {
-  id: string;
-  bookingId: string;
-  item: string;
-  quantity: string;
-  createdAt: Date;
-  updatedAt: Date;
+  canceled: boolean;
+  tableId: string;
 }
 
-const Booking: FC = ({}) => {
-  const [booking, setBooking] = useState<booking[] | null | false>(null);
-  const [preorders, setPreorders] = useState<Preorder[] | null>(null);
+interface BookingProps {
+  days: Day[];
+  closedDays: string[];
+}
+
+const Booking: FC<BookingProps> = ({ days, closedDays }) => {
+  const router = useRouter();
+  const [openForm, setOpenForm] = useState(false);
+  const [bookingCopy, setBookingCopy] = useState<booking[] | undefined>();
+  const [openCalendar, setOpenCalendar] = useState<boolean>(false);
   const [filteredBooking, setFilteredBooking] = useState<
     booking[] | null | false | undefined
   >(null);
-  const [filter, setFilter] = useState<string>("");
-  const { data: bookings } = api.admin.getBookings.useQuery();
+  const [filter, setFilter] = useState<string>("today");
+  const { data: bookings, refetch } = api.admin.getBookings.useQuery();
   const { data: findPreorders } = api.admin.getPreorders.useQuery(
     bookings?.map((booking) => booking.id) || []
   );
+  const { mutate: cancel } = api.booking.cancelBooking.useMutation({
+    onSuccess: () => {
+      refetch()
+        .then((res) => res)
+        .catch((err: Error) => console.log(err));
+    },
+  });
+  const { data: tables } = api.table.getTables.useQuery();
+
+  const song = "notification.mp3";
+  const icon = "https://via.placeholder.com/50x50";
+  const title = "New Booking";
+  const msg = "There's a new booking!";
+
+  // useEffect(() => {
+  //   setInterval(() => {
+  //     refetch()
+  //       .then((res) => res)
+  //       .catch((err: Error) => console.log(err));
+  //   }, 10000);
+  // }, []);
 
   useEffect(() => {
     if (bookings && bookings.length) {
-      setBooking([...bookings]);
+      if (bookingCopy) {
+        if (bookingCopy.length < bookings.length) {
+          const newBookings = findNewBooking(bookingCopy, bookings);
+          notifyMe(newBookings);
+          // if (newBookings.length) {
+          //   console.log(newBookings);
+          //   const tags: HTMLTableCellElement[] = []
+          //   document.querySelectorAll("th").forEach((el) =>{
+          //     console.log(el.textContent)
+          //     if(newBookings.includes(el.textContent)) {
+          //       tags.push(el)
+          //     }
+          //   }
+          //   );
+          //   console.log(tags)
+          //   tags.map((tag) => {
+          //     tag?.parentElement?.classList.add("blink_me");
+          //     setTimeout(() => {
+          //       tag?.parentElement?.classList.remove("blink_me");
+          //     }, 3000);
+          //   });
+          // }
+        }
+      }
+      filterBookings();
+      setBookingCopy(bookings);
     }
   }, [bookings]);
 
   useEffect(() => {
-    if (booking) {
-      setFilteredBooking(
-        [...booking].sort((a, b) => a.dateTime.getTime() - b.dateTime.getTime())
-      );
-    }
-  }, [booking]);
+    filterBookings();
+  }, [filter]);
 
-  useEffect(() => {
+  const findNewBooking = (oldArr: booking[], newArr: booking[]) => {
+    const oldArrIds = oldArr.map((el) => el.id);
+    const newArrIds = newArr.map((el) => el.id);
+    const bookingIds = newArrIds.filter((id) => !oldArrIds.includes(id));
+
+    return newArr.filter((booking) => bookingIds.includes(booking.id));
+  };
+
+  const filterBookings = () => {
     if (bookings && bookings.length) {
       switch (filter) {
         case "all":
-          setBooking(bookings);
+          setFilteredBooking(bookings);
           break;
         case "passed":
-          setBooking(
+          setFilteredBooking(
             bookings.filter(
               (booking) =>
                 isBefore(booking.dateTime, now.setHours(0, 0, 0, 0)) &&
@@ -67,21 +123,32 @@ const Booking: FC = ({}) => {
           );
           break;
         case "today":
-          setBooking(bookings.filter((booking) => isToday(booking.dateTime)));
+          setFilteredBooking(
+            bookings.filter((booking) => isToday(booking.dateTime))
+          );
           break;
         case "upcoming":
-          setBooking(
+          setFilteredBooking(
             bookings.filter((booking) =>
               isAfter(booking.dateTime, now.setHours(0, 0, 0, 0))
             )
           );
           break;
         default:
-          setBooking(bookings);
+          setFilteredBooking(
+            bookings.filter(
+              (book) =>
+                book.name.toLowerCase().includes(filter.toLowerCase()) ||
+                book.id.includes(filter) ||
+                book.dateTime.toString().includes(filter) ||
+                book.mobile.includes(filter) ||
+                book.email.includes(filter)
+            )
+          );
           break;
       }
     }
-  }, [filter]);
+  };
 
   const toggleHidden = (event: React.MouseEvent<HTMLButtonElement>) => {
     const button = event.target as HTMLButtonElement;
@@ -100,18 +167,131 @@ const Booking: FC = ({}) => {
     }
   };
 
+  const cancelBooking = (id: string) => {
+    cancel({ id });
+  };
+
+  function notifyMe(bookings: booking[]) {
+    if (!("Notification" in window)) {
+      alert("This browser does not support Desktop notifications");
+    }
+    if (Notification.permission === "granted") {
+      callNotify(title, msg, icon, bookings);
+      return;
+    }
+    if (Notification.permission !== "denied") {
+      Notification.requestPermission((permission) => {
+        if (permission === "granted") {
+          callNotify(title, msg, icon, bookings);
+        }
+      })
+        .then((res) => res)
+        .catch((err: Error) => console.log(err));
+      return;
+    }
+  }
+
+  function callNotify(
+    title: string,
+    msg: string,
+    icone: string,
+    bookings: booking[]
+  ) {
+    new Notification(title, { body: msg, icon: icone });
+    new Audio(`/assets/${song}`)
+      .play()
+      .then((res) => res)
+      .catch((err: Error) => console.log(err));
+    toast((t) => (
+      <div>
+        <button
+          onClick={() => toast.dismiss(t.id)}
+          type="button"
+          className="right-0 mb-2 mr-2 rounded-full bg-red-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+        >
+          X
+        </button>
+        <br />
+        <p className="font-bold">{msg}</p>
+        {bookings.map((booking) => (
+          <button
+            key={booking.id}
+            type="button"
+            onClick={() => {
+              router
+                .push("/dashboard/booking")
+                .then((res) => res)
+                .catch((err: Error) => console.log(err));
+            }}
+          >
+            <p>{booking.dateTime.toLocaleString()}</p>
+            <p>{booking.name}</p>
+            <p>{booking.people} people</p>
+          </button>
+        ))}
+      </div>
+    ));
+  }
+
   return (
     <div>
+      {openForm && (
+        <div className="absolute left-0 top-0 z-10 rounded-md bg-gray-200 md:left-24 md:top-24">
+          <AddBookingForm
+            setOpenForm={setOpenForm}
+            days={days}
+            closedDays={closedDays}
+          />
+        </div>
+      )}
+      {openCalendar && (
+        <div className="absolute left-0 top-0 z-10 rounded-md bg-gray-600 p-6 sm:left-1/3 sm:top-24">
+          <button
+            onClick={() => setOpenCalendar(false)}
+            type="button"
+            className="right-0 mb-2 mr-2 rounded-full bg-red-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+          >
+            X
+          </button>
+          <ReactCalendar
+            className="REACT-CALENDAR w-full p-2"
+            view="month"
+            tileDisabled={({ date }) => {
+              const dayOfWeek = getDay(date);
+              return (
+                closedDays.includes(formatISO(date)) ||
+                days
+                  .filter((day) => !day.open)
+                  .map((day) => day.dayOfWeek)
+                  .includes(dayOfWeek)
+              );
+            }}
+            onClickDay={(date) => {
+              const time =
+                bookings &&
+                bookings
+                  .find((book) => isSameDay(book.dateTime, date))
+                  ?.dateTime.toString()
+                  .slice(0, 15);
+              setFilter(time || "");
+              setOpenCalendar(false);
+            }}
+          />
+        </div>
+      )}
+
       <div className="relative overflow-x-auto">
         <div className="mb-2 mt-6 flex items-center justify-between p-4">
+          <Toaster />
           <div className="ju flex w-full items-center">
-            <label className="mr-2" htmlFor="filter">
+            <label className="mr-2 text-sm md:text-lg" htmlFor="filter">
               Filter
             </label>
             <select
               id="filter"
               name="filter"
-              className=" block h-full w-1/3 appearance-none rounded-r border border-gray-400 bg-white px-4 py-2 pr-8 leading-tight text-gray-700 focus:border-2 focus:border-gray-500 focus:bg-white focus:outline-none sm:rounded-r-none"
+              defaultValue="today"
+              className=" block h-full w-18 md:w-1/3 appearance-none rounded-r border border-gray-400 bg-white px-2 py-1 md:px-4 md:py-2 md:pr-8 leading-tight text-gray-700 focus:border-2 focus:border-gray-500 focus:bg-white focus:outline-none sm:rounded-r-none"
               onChange={(e) => setFilter(e.target.value)}
             >
               <option value="all">All</option>
@@ -119,11 +299,21 @@ const Booking: FC = ({}) => {
               <option value="today">Today</option>
               <option value="upcoming">Upcoming</option>
             </select>
+            <button
+              onClick={() => setOpenCalendar(true)}
+              type="button"
+              className=" w-8 ml-2 md:w-12 "
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path
+                  d="M9 1V3H15V1H17V3H21C21.5523 3 22 3.44772 22 4V20C22 20.5523 21.5523 21 21 21H3C2.44772 21 2 20.5523 2 20V4C2 3.44772 2.44772 3 3 3H7V1H9ZM20 11H4V19H20V11ZM7 5H4V9H20V5H17V7H15V5H9V7H7V5Z"
+                  fill="rgba(70,146,221,1)"
+                ></path>
+              </svg>
+            </button>
           </div>
-          <label htmlFor="simple-search" className="sr-only">
-            Search
-          </label>
-          <div className="relative w-1/3 ">
+
+          <div className="relative flex w-full md:w-1/3 ">
             <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
               <svg
                 aria-hidden="true"
@@ -142,25 +332,18 @@ const Booking: FC = ({}) => {
             <input
               type="text"
               id="simple-search"
-              className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 pl-10 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500  dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+              className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-1.5 md:p-2.5 pl-10 md:pl-10 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500  dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
               placeholder="Search"
               onChange={(e) => {
-                console.log(e.target.value);
-                setFilteredBooking(
-                  booking &&
-                    booking.filter(
-                      (book) =>
-                        book.name
-                          .toLowerCase()
-                          .includes(e.target.value.toLowerCase()) ||
-                        book.id.includes(e.target.value) ||
-                        book.dateTime.toString().includes(e.target.value) ||
-                        book.mobile.includes(e.target.value) ||
-                        book.email.includes(e.target.value)
-                    )
-                );
+                setFilter(e.target.value);
               }}
             />
+            <button
+              onClick={() => setOpenForm(true)}
+              className="w-32 text-sm rounded-md border border-transparent bg-indigo-600 md:px-4 md:py-2 md:text-base font-medium text-white shadow-sm hover:bg-indigo-700"
+            >
+              Add
+            </button>
           </div>
         </div>
 
@@ -177,6 +360,9 @@ const Booking: FC = ({}) => {
                 Table People
               </th>
               <th scope="col" className="px-6 py-3">
+                Table Name
+              </th>
+              <th scope="col" className="px-6 py-3">
                 Date & Time
               </th>
               <th scope="col" className="px-6 py-3">
@@ -188,14 +374,20 @@ const Booking: FC = ({}) => {
               <th scope="col" className="px-6 py-3">
                 Preorder
               </th>
+              <th scope="col" className="px-6 py-3">
+                Cancel
+              </th>
             </tr>
           </thead>
           <tbody>
             {filteredBooking &&
+              tables && filteredBooking.length ?
               filteredBooking.map((booking) => (
                 <tr
                   key={booking.id}
-                  className={`border-b bg-white  dark:border-gray-700 dark:bg-gray-800
+                  className={`border-b bg-white  decoration-red-600 dark:border-gray-700 dark:bg-gray-800 ${
+                    booking.canceled ? "line-through" : ""
+                  }
                   ${
                     checkDatePassed(booking.dateTime) === "today"
                       ? "text-green-600"
@@ -214,6 +406,9 @@ const Booking: FC = ({}) => {
                   </th>
                   <td className="px-6 py-4">{booking.name}</td>
                   <td className="px-6 py-4">{booking.people}</td>
+                  <td className="px-6 py-4">
+                    {tables.find((table) => table.id === booking.tableId)?.name}
+                  </td>
                   <td className="px-6 py-4 font-bold">
                     {booking.dateTime.toLocaleDateString("en-GB")}{" "}
                     {booking.dateTime.getHours() % 12 === 0
@@ -236,7 +431,7 @@ const Booking: FC = ({}) => {
                         </button>
                         <div className="fixed left-1/2 top-1/2 hidden bg-slate-600 bg-opacity-60 p-6">
                           <button
-                            className=" p-2 text-xl font-extrabold text-white"
+                            className="mb-2 mr-2 rounded-full bg-red-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
                             onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
                               (
                                 e.target as HTMLButtonElement
@@ -265,8 +460,21 @@ const Booking: FC = ({}) => {
                       "No"
                     )}
                   </td>
+                  <td className="px-6 py-4">
+                    {booking.canceled ? (
+                      <button className="cursor-text">Canceled</button>
+                    ) : (
+                      <button
+                        onClick={() => cancelBooking(booking.id)}
+                        type="button"
+                        className="rounded-lg bg-red-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300  dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+                      >
+                        Cancel
+                      </button>
+                    )}
+                  </td>
                 </tr>
-              ))}
+              )) : <tr><td className="px-6 py-4 font-bold text-lg">No Booking...</td></tr>}
           </tbody>
         </table>
       </div>
@@ -275,3 +483,11 @@ const Booking: FC = ({}) => {
 };
 
 export default Booking;
+
+export async function getServerSideProps() {
+  const days = await prisma.day.findMany();
+  const closedDays = (await prisma.closedDay.findMany())?.map((day) =>
+    formatISO(day.date)
+  );
+  return { props: { days, closedDays } };
+}

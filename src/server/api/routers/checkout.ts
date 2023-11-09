@@ -24,6 +24,7 @@ export const checkoutRouter = createTRPCRouter({
           people: z.string(),
           dateTime: z.date(),
           preorder: z.boolean(),
+          tableId: z.string()
         }),
         url: z.string()
       })
@@ -101,6 +102,7 @@ export const checkoutRouter = createTRPCRouter({
                   bookingId: res.id,
                   item: product.name,
                   quantity: product.quantity,
+                  price: product.price
                 })),
               })
             ),

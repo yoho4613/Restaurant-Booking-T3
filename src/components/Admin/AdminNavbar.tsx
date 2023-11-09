@@ -15,7 +15,7 @@ const AdminNavBar: FC = ({}) => {
   const { mutate: logout } = api.admin.logout.useMutation({
     onSuccess: () => {
       router
-        .push("/dashboard")
+        .push("/login")
         .then((res) => res)
         .catch((err: Error) => console.log(err));
     },

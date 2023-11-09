@@ -13,7 +13,6 @@ import { OPENING_HOURS_INTERVAL, categories, now } from "~/constants/config";
 
 export const NavigateTo = (url: string) => {
   const router = useRouter();
-
   router
     .push(url)
     .then((res) => res)

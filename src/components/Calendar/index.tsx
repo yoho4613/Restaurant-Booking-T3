@@ -1,10 +1,11 @@
-import React, { FC } from "react";
+import React, { FC, useState } from "react";
 import ReactCalendar from "react-calendar";
-import { format, formatISO, isBefore, parse } from "date-fns";
+import { format, formatISO, getDay, isAfter, isBefore, parse } from "date-fns";
 import { DateType } from "@types";
 import { getOpeningTimes, roundToNearestMinutes } from "~/utils/helpers";
 import { Day } from "@prisma/client";
 import { OPENING_HOURS_INTERVAL, now } from "~/constants/config";
+import { api } from "~/utils/api";
 
 interface CalendarProps {
   days: Day[];
@@ -12,6 +13,7 @@ interface CalendarProps {
   date: DateType;
   setDate: (date: any) => void;
   setCustomerDetail: React.Dispatch<React.SetStateAction<boolean>>;
+  dayOff: number[];
 }
 
 const CalendarComponent: FC<CalendarProps> = ({
@@ -20,7 +22,9 @@ const CalendarComponent: FC<CalendarProps> = ({
   days,
   closedDays,
   setCustomerDetail,
+  dayOff,
 }) => {
+  const { data: promotions } = api.promotion.getPromotions.useQuery();
   // Determine if today is closed
   const today = days.find((day) => day.dayOfWeek === now.getDay());
   const rounded = roundToNearestMinutes(now, OPENING_HOURS_INTERVAL);
@@ -29,8 +33,50 @@ const CalendarComponent: FC<CalendarProps> = ({
   if (tooLate) closedDays.push(formatISO(new Date().setHours(0, 0, 0, 0)));
 
   const times = date.justDate && getOpeningTimes(date.justDate, days);
+
+  const PromotionPopup = ({ day }: { day: Date }) => {
+    const foundDay = promotions?.filter(
+      (promotion) =>
+        isBefore(day, promotion.endDate) && isAfter(day, promotion.startDate)
+    );
+    const [Popup, setPopup] = useState(false);
+
+    return (
+      <div className="w-4">
+        {Popup && (
+          <div className="absolute bottom-0 right-0 z-10 w-64 -translate-y-1/2 translate-x-full rounded-md border-2 border-emerald-400 bg-slate-400 p-4">
+            <h4 className="mb-4 font-bold text-white">Promotion</h4>
+            {foundDay?.map((promotion) => (
+              <div
+                style={{ zIndex: 999 }}
+                className="relative text-white "
+                key={promotion.id}
+              >
+                <h5 className="mb-2">- {promotion.name}</h5>
+              </div>
+            ))}
+          </div>
+        )}
+        <div
+          className="m-auto rounded-md bg-red-800"
+          onMouseEnter={() => setPopup(true)}
+          onMouseLeave={() => setPopup(false)}
+        >
+          <span className="text-xs">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path
+                d="M12.0003 3C17.3924 3 21.8784 6.87976 22.8189 12C21.8784 17.1202 17.3924 21 12.0003 21C6.60812 21 2.12215 17.1202 1.18164 12C2.12215 6.87976 6.60812 3 12.0003 3ZM12.0003 19C16.2359 19 19.8603 16.052 20.7777 12C19.8603 7.94803 16.2359 5 12.0003 5C7.7646 5 4.14022 7.94803 3.22278 12C4.14022 16.052 7.7646 19 12.0003 19ZM12.0003 16.5C9.51498 16.5 7.50026 14.4853 7.50026 12C7.50026 9.51472 9.51498 7.5 12.0003 7.5C14.4855 7.5 16.5003 9.51472 16.5003 12C16.5003 14.4853 14.4855 16.5 12.0003 16.5ZM12.0003 14.5C13.381 14.5 14.5003 13.3807 14.5003 12C14.5003 10.6193 13.381 9.5 12.0003 9.5C10.6196 9.5 9.50026 10.6193 9.50026 12C9.50026 13.3807 10.6196 14.5 12.0003 14.5Z"
+                fill="rgba(255,255,255,1)"
+              ></path>
+            </svg>
+          </span>
+        </div>
+      </div>
+    );
+  };
+
   return (
-    <div className="flex h-screen flex-col items-center justify-center">
+    <div className="flex flex-col items-center justify-center">
       {date?.justDate ? (
         <>
           <div>
@@ -62,13 +108,18 @@ const CalendarComponent: FC<CalendarProps> = ({
               <div key={`tim-${i}`} className=" bg-gray-1090 rounded-sm p-2">
                 <button
                   type="button"
-                  className="bg-gray-200 p-2"
-                  onClick={() => {
+                  className={`border-2 bg-gray-200 p-2 ${
+                    date.dateTime?.toString() === time.toString()
+                      ? "border-red-600"
+                      : ""
+                  }`}
+                  onClick={(e) => {
                     setDate((prev: DateType) => ({
                       ...prev,
                       dateTime: time,
                     }));
                     setCustomerDetail(true);
+                    // e.currentTarget.classList.toggle("border-red-600")
                   }}
                 >
                   {format(time, "kk:mm")}
@@ -79,13 +130,32 @@ const CalendarComponent: FC<CalendarProps> = ({
         </>
       ) : (
         <ReactCalendar
-          minDate={now}
-          className="REACT-CALENDAR p-2"
+          minDate={new Date()}
+          className="REACT-CALENDAR relative p-2"
           view="month"
-          tileDisabled={({ date }) => closedDays.includes(formatISO(date))}
-          onClickDay={(date) =>
-            setDate((prev: DateType) => ({ ...prev, justDate: date }))
-          }
+          tileDisabled={({ date }) => {
+            const dayOfWeek = getDay(date);
+            return (
+              closedDays.includes(formatISO(date)) || dayOff.includes(dayOfWeek)
+            );
+          }}
+          onClickDay={(date) => {
+            setDate((prev: DateType) => ({ ...prev, justDate: date }));
+          }}
+          tileContent={(day) => {
+            if (
+              promotions?.find(
+                (promotion) =>
+                  isBefore(day.date, promotion.endDate) &&
+                  isAfter(day.date, promotion.startDate)
+              )
+            )
+              return (
+                <div className="flex justify-end">
+                  <PromotionPopup day={day.date} />
+                </div>
+              );
+          }}
         />
       )}
     </div>

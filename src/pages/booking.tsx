@@ -21,6 +21,7 @@ export interface Form {
   email: string;
   people: string;
   preorder: boolean;
+  tableId: string;
 }
 
 const Booking: FC<BookingProps> = ({ days, closedDays }) => {
@@ -33,6 +34,7 @@ const Booking: FC<BookingProps> = ({ days, closedDays }) => {
     email: "",
     people: "",
     preorder: false,
+    tableId: "",
   });
   const [withPreOrder, setWithPreOrder] = useState<boolean | null>(null);
   const [date, setDate] = useState<DateType>({
@@ -57,7 +59,7 @@ const Booking: FC<BookingProps> = ({ days, closedDays }) => {
         sendForm(form);
 
         router
-          .push("/")
+          .push("/success")
           .then((res) => res)
           .catch((err: Error) => console.log(err));
       }
@@ -69,10 +71,10 @@ const Booking: FC<BookingProps> = ({ days, closedDays }) => {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       return emailRegex.test(email);
     }
-    if (isValidEmail(form.email)) {
+    if (isValidEmail(form.email) && date.dateTime) {
       addBooking({
         ...form,
-        dateTime: date.dateTime!,
+        dateTime: date.dateTime,
       });
     }
   };
@@ -84,23 +86,30 @@ const Booking: FC<BookingProps> = ({ days, closedDays }) => {
           setOrderConfirmed={setOrderConfirmed}
           setForm={setForm}
           form={form}
+          date={date}
           setDate={setDate}
           setCustomerDetail={setCustomerDetail}
         />
       ) : (
-        <Calendar
-          date={date}
-          setDate={setDate}
-          days={days}
-          closedDays={closedDays}
-          setCustomerDetail={setCustomerDetail}
-        />
+        <div className="mt-8">
+          <Calendar
+            date={date}
+            setDate={setDate}
+            days={days}
+            closedDays={closedDays}
+            setCustomerDetail={setCustomerDetail}
+            dayOff={days.filter((day) => !day.open).map((day) => day.dayOfWeek)}
+          />
+        </div>
       )}
+
       {orderConfirmed && (
         <Confirmation
           onCancel={() => {
             setDate({ ...date, dateTime: null });
           }}
+          optionOne="With Pre-Order"
+          optionTwo="Without Pre-Order"
           onConfirm={setWithPreOrder}
           message="Would you like to pre-order food?"
         />

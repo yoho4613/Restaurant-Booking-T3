@@ -19,12 +19,13 @@ export const adminRouter = createTRPCRouter({
         email === process.env.ADMIN_EMAIL &&
         password === process.env.ADMIN_PASSWORD
       ) {
+
         //user is authenticated as admin
         const token = await new SignJWT({})
           .setProtectedHeader({ alg: "HS256" })
           .setJti(nanoid())
-          .setIssuedAt()
-          .setExpirationTime("1h")
+          .setIssuedAt()  
+          .setExpirationTime("24h")
           .sign(new TextEncoder().encode(getJwtSecretKey()));
 
         res.setHeader(
@@ -35,7 +36,6 @@ export const adminRouter = createTRPCRouter({
             secure: process.env.NODE_ENV === "production",
           })
         );
-
         return { success: true };
       }
 
@@ -65,7 +65,6 @@ export const adminRouter = createTRPCRouter({
     .input(z.object({ fileType: z.string() }))
     .mutation(async ({ input }) => {
       const id = nanoid();
-      // const ex = input.fileType.split("/")[1];
       const ex = input.fileType.split("/")[1] || '';
       const key = `${id}.${ex}`;
 
@@ -136,8 +135,7 @@ export const adminRouter = createTRPCRouter({
   getBookings: adminProcedure
     .query(async ({ ctx, input }) => {
       const bookings = await ctx.prisma.booking.findMany();
-
-      return bookings;
+      return bookings.sort((a, b) => a.dateTime.getTime() - b.dateTime.getTime());
     }),
 
   getPreorders: adminProcedure
@@ -152,4 +150,7 @@ export const adminRouter = createTRPCRouter({
       });
       return preorders
     }),
+  
 });
+
+

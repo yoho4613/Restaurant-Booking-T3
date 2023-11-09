@@ -33,7 +33,6 @@ const Cart: FC<CartProps> = ({ open, setOpen, products, removeFromCart }) => {
   } = api.checkout.checkoutSession.useMutation({
     onSuccess: ({ url }: { url: string }) => {
       router.push(url).then(res => res).catch((err:Error) => console.log(err))
-
     },
     onMutate: ({ products }) => {
       localStorage.setItem("products", JSON.stringify(products));
@@ -180,6 +179,8 @@ const Cart: FC<CartProps> = ({ open, setOpen, products, removeFromCart }) => {
                               products,
                               customerDetail: {
                                 ...customerDetail!,
+                                // hard coded. Should be fixed later
+                                tableId: "clhkg2kho406w03qor8m18nqi",
                                 dateTime: customerDetail?.dateTime
                                   ? new Date(customerDetail.dateTime)
                                   : new Date(),

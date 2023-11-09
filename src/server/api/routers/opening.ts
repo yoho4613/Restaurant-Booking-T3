@@ -1,4 +1,4 @@
-import { adminProcedure, createTRPCRouter  } from "../trpc";
+import { adminProcedure, createTRPCRouter } from "../trpc";
 import { z } from "zod";
 import { formatISO } from "date-fns";
 
@@ -11,6 +11,7 @@ export const openingRouter = createTRPCRouter({
           name: z.string(),
           openTime: z.string(),
           closeTime: z.string(),
+          open: z.boolean(),
         })
       )
     )
@@ -24,6 +25,7 @@ export const openingRouter = createTRPCRouter({
             data: {
               closeTime: day.closeTime,
               openTime: day.openTime,
+              open: day.open,
             },
           });
 

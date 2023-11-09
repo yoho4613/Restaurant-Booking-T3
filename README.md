@@ -1,30 +1,36 @@
-# Create T3 App
+# Restaurant Booking App
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+The Restaurant Booking App is a comprehensive solution for restaurant owners to manage their bookings, orders, payments, and administrative tasks. It provides a user-friendly interface for customers to make reservations, place orders, and make payments online. The app also includes an admin dashboard with features for managing tables, user access, opening hours, menu items, and booking lists.
 
-## What's next? How do I make an app with this?
+## Features
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+- Booking Management: Customers can easily make table reservations through the app.
+- Order Placement: Customers can browse the menu, select items, and place orders for dine-in or takeout.
+- Payment Integration: Secure payment processing is integrated for seamless transactions.
+- Admin Dashboard: A dedicated dashboard for restaurant owners to manage various aspects of the business.
+  - Table Management: Add, edit, or remove tables and their configurations.
+  - User Access Control: Manage user roles and permissions for staff members.
+  - Opening Hours: Set and update the restaurant's opening hours.
+  - Menu Items: Create, update, and delete menu items, including their descriptions and prices.
+  - Booking List: View and manage the list of bookings, including details and status.
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+## Technologies Used
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+- Prisma: A modern database toolkit for working with databases in a type-safe and efficient way.
+- Next.js: A React framework for building server-side rendered and static websites.
+- tRPC: A TypeScript-first framework for building scalable and type-safe APIs.
 
-## Restaurant - Bokking - Online Order - App
+## How to Use
 
-- Booking 
-- Order online
-- Stripe Payment
+1. Clone the repository: `git clone https://github.com/yoho4613/Restaurant-Booking-T3`
+2. Install dependencies: `npm install`
+3. Configure the environment variables:
+   - Rename `.env.example` to `.env` and update the values according to your setup.
+4. Set up the Prisma database:
+   - Run database migrations: `npx prisma migrate dev`
+   - Seed initial data: `npx prisma db seed`
+5. Start the development server: `npm run dev`
+6. Access the app in your browser at `http://localhost:3000`.
 
-## How to start
+Please note that this is a sample README.md file and you may need to modify it based on your specific project structure and requirements.
 
-- clone repo
-- npm install
-- fill .env file
-- `npx prisma db push`
-- `npx prisma generate`
-- `npm run dev`

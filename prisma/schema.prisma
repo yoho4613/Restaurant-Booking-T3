@@ -1,5 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
   provider = "prisma-client-js"
@@ -10,24 +8,47 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User{
+  @@map(name: "users")
+
+  id String  @id @default(uuid())
+  name String  
+  email String @unique
+  verified Boolean? @default(false) 
+  
+  password String
+  role RoleEnumType? @default(staff)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  lastLogin DateTime @default(now())
+}
+
+enum RoleEnumType {
+  staff
+  manager
+  admin
+  superadmin
+}
+
 model MenuItem {
   id         String   @id @default(cuid())
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   name       String
   price      Float
-  // description String
   categories String[]
   imageKey   String
   active     Boolean  @default(true)
 }
 
 model Day {
-  id        String @id @default(cuid())
-  name      String // monday, tuesday, ...
-  dayOfWeek Int // @see getDay() documentation, 0 for Sunday, 1 for Monday, ...
+  id        String  @id @default(cuid())
+  name      String
+  dayOfWeek Int
   openTime  String
   closeTime String
+  open      Boolean @default(true)
 }
 
 model ClosedDay {
@@ -36,15 +57,17 @@ model ClosedDay {
 }
 
 model Booking {
-  id   String   @id @default(cuid())
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  name       String
-  people     String
-  mobile     String
-  email      String
-  preorder   Boolean
-  dateTime   DateTime
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String
+  people    String
+  mobile    String
+  email     String
+  preorder  Boolean
+  dateTime  DateTime
+  tableId   String
+  canceled  Boolean @default(false)
 }
 
 model Preorder {
@@ -52,6 +75,25 @@ model Preorder {
   bookingId String
   item      String
   quantity  Int
+  price     Float
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model Tables {
+  id        String  @id @default(cuid())
+  name      String
+  location  String
+  capacity  Int
+}
+
+model Promotion {
+  id            String  @id @default(cuid())
+  name          String
+  isAvailable   Boolean
+  startDate     DateTime @default(now())
+  endDate       DateTime
+  description   String
+}
+
+

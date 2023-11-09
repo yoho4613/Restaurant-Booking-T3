@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState, useRef } from "react";
-import { Chart, ChartData, registerables } from "chart.js";
+import { Chart, registerables } from "chart.js";
 
 import {
   isFriday,
@@ -24,7 +24,6 @@ const DayOfWeekRatio: FC<DayOfWeekRatioProps> = ({ bookings }) => {
 
   useEffect(() => {
     if (bookings.length) {
-      console.log(bookings);
       const dataArray: number[] = [];
       const preorderArray: number[] = [];
       for (let i = 0; i < 7; i++) {

@@ -8,3 +8,4 @@ export const categories = ["all", "breakfast", "lunch", "dinner"] as const;
 
 export const now = new Date();
 export const tomorrow = new Date(now.setDate(now.getDate() + 1));
+

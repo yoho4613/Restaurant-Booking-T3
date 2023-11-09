@@ -1,6 +1,7 @@
 import { s3 } from "~/lib/s3";
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { adminProcedure, createTRPCRouter, publicProcedure } from "../trpc";
 import { z } from "zod";
+import { TRPCError } from "@trpc/server";
 
 export const sleep = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
@@ -47,7 +48,6 @@ export const menuRouter = createTRPCRouter({
       return withUrls;
     }),
 
-    
   checkMenuStatus: publicProcedure.query(async () => {
     // Handle menu checking logic
     await sleep(1000);

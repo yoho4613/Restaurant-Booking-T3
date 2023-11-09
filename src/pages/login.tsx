@@ -1,10 +1,8 @@
 import { useRouter } from "next/router";
 import React, { FC, useState } from "react";
 import { HiLockClosed } from "react-icons/hi";
+import Spinner from "~/components/Spinner";
 import { api } from "~/utils/api";
-
-
-
 
 const Login: FC = ({}) => {
   const router = useRouter();
@@ -18,34 +16,36 @@ const Login: FC = ({}) => {
     setInput((prev) => ({ ...prev, [name]: value }));
   };
 
-  const { mutate: login, isError } = api.admin.login.useMutation({
-    onSuccess: () => {
-      router.push('/dashboard').then(res => res).catch((err:Error) => console.log(err))
-    }
+  const {
+    mutate: loginUser,
+    isError,
+    isLoading,
+  } = api.user.loginUser.useMutation({
+    onSuccess: () =>
+      router
+        .push("/dashboard")
+        .then((res) => res)
+        .catch((err: Error) => console.log(err)),
   });
 
   return (
     <div className="flex min-h-full items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
+      {isLoading && (
+        <div className="fixed left-0 top-0 h-screen w-screen flex justify-center items-center z-10" style={{backgroundColor: "rgba(0, 0, 0, 0.3)"}}>
+          <Spinner />
+        </div>
+      )}
       <div className="w-full max-w-md space-y-8">
         <div>
           {/* If this was a real login screen, you'd want a next/image here */}
           <img
-            className="mx-auto h-12 w-auto"
-            src="https://tailwindui.com/img/logos/workflow-mark-indigo-600.svg"
+            className="mx-auto h-24 w-auto rounded-md"
+            src="/assets/logo.jpg"
             alt="Workflow"
           />
           <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">
             Sign in to your account
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Or{" "}
-            <a
-              href="#"
-              className="font-medium text-indigo-600 hover:text-indigo-500"
-            >
-              start your 14-day free trial
-            </a>
-          </p>
         </div>
         <form className="mt-8 space-y-6">
           <input type="hidden" name="remember" defaultValue="true" />
@@ -118,7 +118,7 @@ const Login: FC = ({}) => {
               type="submit"
               onClick={(e) => {
                 e.preventDefault();
-                login(input);
+                loginUser(input);
               }}
               className="group relative flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
             >
