@@ -7,7 +7,6 @@ import "~/styles/globals.css";
 import "~/styles/Calendar.css";
 import "~/styles/Spinner.css";
 import "~/styles/Confirmation.css";
-import { ChakraProvider } from "@chakra-ui/react";
 import Navbar from "~/components/Navbar";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
@@ -71,12 +70,11 @@ window.dataLayer = window.dataLayer || [];
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <ChakraProvider>
-        <header>{isAdmin ? <AdminNavBar /> : <Navbar />}</header>
-        <main>
-          <Component {...pageProps} />
-        </main>
-      </ChakraProvider>
+
+      <header>{isAdmin ? <AdminNavBar /> : <Navbar />}</header>
+      <main>
+        <Component {...pageProps} />
+      </main>
     </>
   );
 };

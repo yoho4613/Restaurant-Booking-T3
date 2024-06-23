@@ -11,12 +11,12 @@ const FindBooking: FC = ({}) => {
   const { mutate: findBooking } = api.booking.findCustomerBooking.useMutation({
     onSuccess: (res) => {
       setLoading(false);
-      setError("")
+      setError("");
       setBooking(res);
     },
     onError: (err) => {
       setError(err.message);
-      setLoading(false)
+      setLoading(false);
     },
   });
   const [email, setEmail] = useState<string>("");
@@ -33,10 +33,10 @@ const FindBooking: FC = ({}) => {
   }, [booking]);
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setBooking(null)
+    e.preventDefault();
+    setBooking(null);
     setLoading(true);
-    setError("")
+    setError("");
     findBooking({
       method: selectedMethod,
       data: selectedMethod === "email" ? email : mobile,
@@ -49,7 +49,7 @@ const FindBooking: FC = ({}) => {
         <div className="flex items-center justify-between">
           <button
             className={`focus:shadow-outline w-1/2 ${
-              selectedMethod === "email" && "bg-blue-500"
+              selectedMethod === "email" ? "bg-blue-500" : ""
             } px-4 py-2 font-bold ${
               selectedMethod === "email" ? "text-white" : "black"
             } hover:bg-blue-700 hover:text-white focus:outline-none`}
@@ -60,7 +60,7 @@ const FindBooking: FC = ({}) => {
           </button>
           <button
             className={`focus:shadow-outline w-1/2 ${
-              selectedMethod === "mobile" && "bg-blue-500"
+              selectedMethod === "mobile" ? "bg-blue-500" : ""
             } px-4 py-2 font-bold ${
               selectedMethod === "mobile" ? "text-white" : "black"
             } hover:bg-blue-700 hover:text-white focus:outline-none`}
@@ -70,7 +70,10 @@ const FindBooking: FC = ({}) => {
             Find with Mobile
           </button>
         </div>
-        <form onSubmit={(e) => handleSubmit(e)} className="mb-4 rounded bg-white px-8 pb-8 pt-6 shadow-md">
+        <form
+          onSubmit={(e) => handleSubmit(e)}
+          className="mb-4 rounded bg-white px-8 pb-8 pt-6 shadow-md"
+        >
           {selectedMethod === "email" ? (
             <div className="mb-4">
               <label
@@ -122,19 +125,25 @@ const FindBooking: FC = ({}) => {
         {booking && (
           <div>
             <ul>
-              <li className="text-center font-bold mb-4">Booking Detail</li>
+              <li className="mb-4 text-center font-bold">Booking Detail</li>
               <li>
-                Booking Date: <span className="font-bold">{booking.dateTime.toLocaleString()}</span>
+                Booking Date:{" "}
+                <span className="font-bold">
+                  {booking.dateTime.toLocaleString()}
+                </span>
               </li>
               <li>
                 Booking Name: <span className="font-bold">{booking.name}</span>
               </li>
               <li>
-                Email Address: <span className="font-bold">{booking.email}</span>
+                Email Address:{" "}
+                <span className="font-bold">{booking.email}</span>
               </li>
               <li>
                 Contact Number:
-                <span className="font-bold">{booking.mobile || "Not Registered"}</span>
+                <span className="font-bold">
+                  {booking.mobile || "Not Registered"}
+                </span>
               </li>
               <li>
                 People: <span className="font-bold">{booking.people}</span>
@@ -143,7 +152,10 @@ const FindBooking: FC = ({}) => {
                 Table: <span className="font-bold">{booking.table}</span>
               </li>
               <li>
-                Preorder: <span className="font-bold">{booking.preorder ? "Yes" : "No"}</span>
+                Preorder:{" "}
+                <span className="font-bold">
+                  {booking.preorder ? "Yes" : "No"}
+                </span>
               </li>
             </ul>
           </div>
